@@ -53,6 +53,8 @@ a{color:inherit;text-decoration:none}
 /* ===== Top bar ===== */
 #top{position:sticky;top:0;z-index:60;background:rgba(246,242,233,.9);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
 .topin{max-width:1180px;margin:auto;display:flex;align-items:center;gap:11px;padding:10px 20px}
+#top .nav{margin-inline-start:auto}
+#top .topin>.btn{margin-inline-start:auto}
 .brand{display:flex;align-items:center;gap:10px;cursor:pointer;flex-shrink:0}
 .brand .lg{width:40px;height:40px;border-radius:13px;background:linear-gradient(135deg,var(--grn),var(--grn2));color:#F6F2E9;display:grid;place-items:center;font-family:Alexandria;font-weight:800;font-size:18px;box-shadow:var(--sh2)}
 .brand .bt b{font-family:Alexandria;font-weight:800;font-size:18px;color:var(--grn);display:block;line-height:1.2}
@@ -87,25 +89,24 @@ a{color:inherit;text-decoration:none}
 .hero h1{font-size:clamp(20px,3.2vw,29px);font-weight:800;color:var(--grn)}
 .hero h1 em{color:var(--amb);font-style:normal}
 .hero p{color:var(--mut);font-size:13px;margin-top:1px}
-.bubzone{margin:16px 0 2px}
-.bubzone .lbl{display:flex;align-items:center;gap:9px;font-size:11.5px;font-weight:700;color:var(--mut);margin-bottom:8px}
+.bubzone{margin:20px 0 4px}
+.bubzone .lbl{display:flex;align-items:center;gap:9px;font-size:12px;font-weight:800;color:var(--mut);margin-bottom:10px}
 .bubzone .lbl::after{content:'';flex:1;height:1px;background:var(--line)}
-.bubzone .lbl .dot{width:7px;height:7px;border-radius:50%;background:var(--amb);animation:pulse 1.6s infinite}
-.bubzone .lbl .sw{margin-inline-start:auto;display:flex;gap:5px}
-.bubzone .lbl .sw i{width:6px;height:6px;border-radius:50%;background:var(--line);transition:.3s}
-.bubzone .lbl .sw i.on{background:var(--amb);width:18px;border-radius:9px}
+.bubzone .lbl .dot{width:8px;height:8px;border-radius:50%;background:var(--amb);box-shadow:0 0 0 4px #B07E2B26;animation:pulse 1.6s infinite}
 @keyframes pulse{50%{opacity:.35;transform:scale(.75)}}
-.bubwrap{overflow:hidden;padding:7px 0 5px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent)}
-.bubtrack{display:flex;gap:26px;width:max-content;animation:bmove 48s linear infinite}
+.bubwrap{overflow:hidden;padding:18px 0 8px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+.bubtrack{display:flex;gap:36px;width:max-content;animation:bmove 58s linear infinite}
 .bubwrap:hover .bubtrack{animation-play-state:paused}
 @keyframes bmove{to{transform:translateX(50%)}}
-.bub{display:flex;flex-direction:column;align-items:center;gap:7px;width:94px;cursor:pointer}
-.bub .ring{width:82px;height:82px;border-radius:50%;padding:3px;background:var(--c,#1D4432);transition:.25s;box-shadow:0 5px 14px rgba(0,0,0,.12)}
-.bub:hover .ring{transform:scale(1.08) translateY(-2px)}
-.bub .ring>div{width:100%;height:100%;border-radius:50%;overflow:hidden;border:2.5px solid #fff}
-.bub img{width:100%;height:100%;object-fit:cover}
-.bub b{font-size:10.5px;font-weight:600;line-height:1.35;text-align:center;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;max-width:94px}
-.bub span{font-size:10.5px;font-weight:800;color:var(--grn);font-family:Alexandria}
+.bub{display:flex;flex-direction:column;align-items:center;gap:9px;width:126px;cursor:pointer}
+.bub .ring{width:112px;height:112px;border-radius:50%;padding:4px;background:conic-gradient(from 210deg,var(--c,#1D4432) 0%,#B07E2B 28%,var(--c,#1D4432) 52%,#E8D5A8 76%,var(--c,#1D4432) 100%);transition:.3s;box-shadow:0 10px 26px rgba(0,0,0,.15)}
+.bub:hover .ring{transform:scale(1.09) translateY(-3px);box-shadow:0 18px 38px rgba(0,0,0,.22)}
+.bub .ring>div{width:100%;height:100%;border-radius:50%;overflow:hidden;border:3px solid #fff;background:#F6F2E9;animation:bfloat 5.4s ease-in-out infinite;animation-delay:var(--d,0s)}
+.bub img{width:100%;height:100%;object-fit:cover;transition:.45s}
+.bub:hover img{transform:scale(1.1)}
+.bub b{font-size:11.5px;font-weight:700;line-height:1.4;text-align:center;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;max-width:126px}
+.bub span{font-size:12px;font-weight:800;color:var(--grn);font-family:Alexandria;background:#1D44320F;padding:2.5px 11px;border-radius:99px}
+@keyframes bfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 .trust{display:flex;justify-content:center;gap:9px;flex-wrap:wrap;margin:14px 0 2px}
 .tchip{display:flex;align-items:center;gap:7px;background:var(--card);border:1px solid var(--line);border-radius:99px;padding:6px 14px;font-size:11px;font-weight:600;color:#4c5546}
 .tchip i{font-style:normal}
@@ -114,16 +115,22 @@ a{color:inherit;text-decoration:none}
 .secthead{display:flex;align-items:center;gap:10px;margin:28px 0 13px}
 .secthead h2{font-size:16.5px;font-weight:800;color:var(--grn)}
 .secthead .ln{flex:1;height:1px;background:var(--line)}
-.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.tri{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px;cursor:pointer;transition:.22s;position:relative;overflow:hidden}
-.tri::before{content:'';position:absolute;inset-inline-start:0;top:0;bottom:0;width:4px;background:var(--c)}
-.tri:hover{transform:translateY(-3px);box-shadow:var(--sh);border-color:var(--c)}
-.tri .ic{width:46px;height:46px;border-radius:14px;background:var(--c);display:grid;place-items:center;font-size:21px;flex-shrink:0;color:#fff}
-.tri .tx b{display:block;font-family:Alexandria;font-size:14px;font-weight:700;line-height:1.4}
-.tri .tx span{font-size:10.5px;color:var(--mut);display:block;line-height:1.5}
-.tri .win{margin-inline-start:auto;flex-shrink:0;text-align:center;background:var(--c)14;border:1px dashed var(--c)88;padding:5px 10px;border-radius:11px}
-.tri .win i{display:block;font-style:normal;font-size:9px;color:var(--mut);line-height:1.3}
-.tri .win b{font-size:11px;color:var(--c);font-family:Alexandria;font-weight:700}
+.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:4px}
+.tri{position:relative;height:252px;border-radius:22px;overflow:hidden;cursor:pointer;box-shadow:var(--sh);transition:.3s;background:#EDE7DA}
+.tri .bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:.65s}
+.tri:hover .bg{transform:scale(1.09)}
+.tri .shade{position:absolute;inset:0;background:linear-gradient(180deg,#0000001A 0%,#00000024 38%,#000000A6 72%,#000000C4 100%);transition:.3s}
+.tri:hover .shade{background:linear-gradient(180deg,#00000026 0%,#00000030 38%,#000000B4 72%,#000000D2 100%)}
+.tri .win{position:absolute;top:14px;inset-inline-end:14px;background:#FFFFFFE8;backdrop-filter:blur(6px);border:1px solid #FFFFFFAA;border-radius:12px;padding:5px 12px;text-align:center}
+.tri .win i{display:block;font-style:normal;font-size:9.5px;color:var(--mut);line-height:1.4}
+.tri .win b{font-size:12.5px;color:var(--c);font-family:Alexandria;font-weight:800}
+.tri .body{position:absolute;inset-inline:0;bottom:0;padding:16px 17px;color:#fff;display:flex;align-items:flex-end;gap:12px}
+.tri .ic{width:52px;height:52px;border-radius:16px;background:#FFFFFF2B;backdrop-filter:blur(9px);display:grid;place-items:center;font-size:25px;border:1px solid #FFFFFF55;flex-shrink:0}
+.tri .tx b{display:block;font-family:Alexandria;font-size:17.5px;font-weight:800;line-height:1.35;text-shadow:0 2px 14px #0007}
+.tri .tx span{font-size:11.5px;opacity:.95;display:block;line-height:1.6;margin-top:4px;text-shadow:0 1px 8px #0006}
+.tri .tx .stx{display:flex;align-items:center;flex-wrap:wrap;gap:5px;margin-top:8px}
+.tri .tx .stx em{font-style:normal;font-size:10.5px;font-weight:800;background:#FFFFFF2B;border:1px solid #FFFFFF40;padding:3px 10px;border-radius:99px;backdrop-filter:blur(6px)}
+.tri:hover{transform:translateY(-5px);box-shadow:0 20px 44px rgba(0,0,0,.2)}
 .how{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:6px}
 .howc{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;gap:11px;align-items:flex-start}
 .howc .n{width:30px;height:30px;border-radius:10px;background:var(--grn);color:#fff;display:grid;place-items:center;font-family:Alexandria;font-weight:800;font-size:14px;flex-shrink:0}
@@ -164,6 +171,24 @@ a{color:inherit;text-decoration:none}
 .mstore .lg{width:38px;height:38px;border-radius:50%;background:var(--c);color:#fff;display:grid;place-items:center;font-family:Alexandria;font-weight:800;font-size:15px;flex-shrink:0}
 .mstore b{font-size:12px;font-family:Alexandria;font-weight:700;display:block;white-space:nowrap;line-height:1.4}
 .mstore .mr{font-size:10px;color:var(--mut);display:flex;gap:7px;align-items:center;white-space:nowrap}
+
+/* ===== بطاقات المتاجر الكبيرة ===== */
+.storegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(252px,1fr));gap:15px}
+.bigstore{position:relative;border-radius:20px;overflow:hidden;background:var(--card);border:1px solid var(--line);cursor:pointer;transition:.28s}
+.bigstore:hover{transform:translateY(-5px);box-shadow:0 18px 42px rgba(0,0,0,.14);border-color:var(--c)}
+.bigstore .cov{height:132px;position:relative;overflow:hidden;background:#EDE7DA}
+.bigstore .cov img{width:100%;height:100%;object-fit:cover;transition:.55s}
+.bigstore:hover .cov img{transform:scale(1.08)}
+.bigstore .cov .tint{position:absolute;inset:0;background:linear-gradient(180deg,#00000000 35%,var(--c)D9 100%)}
+.bigstore .winb{position:absolute;top:11px;inset-inline-end:11px;background:#FFFFFFEB;backdrop-filter:blur(6px);border:1px solid var(--c)30;border-radius:99px;padding:4px 11px;font-size:10px;font-weight:800;color:var(--c)}
+.bigstore .info{padding:0 15px 15px}
+.bigstore .lg{width:56px;height:56px;border-radius:50%;background:var(--c);color:#fff;display:grid;place-items:center;font-family:Alexandria;font-weight:800;font-size:21px;border:3.5px solid #fff;margin-top:-31px;position:relative;box-shadow:0 7px 18px rgba(0,0,0,.2);overflow:hidden}
+.bigstore h3{font-family:Alexandria;font-size:15px;font-weight:800;margin:9px 0 3px}
+.bigstore .desc{font-size:11px;color:var(--mut);line-height:1.65;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:36px}
+.bigstore .meta{display:flex;flex-wrap:wrap;gap:4px 13px;font-size:10.5px;color:var(--mut);margin:9px 0 12px}
+.bigstore .meta b{color:var(--amb2);font-family:Alexandria}
+.bigstore .vst{display:flex;align-items:center;justify-content:center;gap:7px;padding:9.5px;border-radius:12px;background:var(--c)12;color:var(--c);font-weight:800;font-size:12.5px;transition:.22s}
+.bigstore:hover .vst{background:var(--c);color:#fff}
 .storeban{border-radius:20px;padding:22px 24px;color:#fff;display:flex;align-items:center;gap:16px;flex-wrap:wrap;box-shadow:var(--sh);background:linear-gradient(140deg,var(--c),color-mix(in srgb,var(--c) 52%,#171412));position:relative;overflow:hidden}
 .storeban .lg{width:64px;height:64px;border-radius:19px;background:#ffffff24;border:1px solid #ffffff40;display:grid;place-items:center;font-family:Alexandria;font-weight:800;font-size:26px}
 .storeban h1{font-size:20px}
@@ -424,7 +449,7 @@ a{color:inherit;text-decoration:none}
 
 @media(max-width:940px){
 .ppage{grid-template-columns:1fr}.accgrid{grid-template-columns:1fr}
-.trio{grid-template-columns:1fr;gap:9px}.how{grid-template-columns:1fr;gap:9px}
+.trio{grid-template-columns:1fr;gap:13px}.tri{height:212px}.how{grid-template-columns:1fr;gap:9px}.storegrid{grid-template-columns:1fr 1fr;gap:11px}
 .cartgrid{grid-template-columns:1fr}.sumbox{position:static}
 .grid2{grid-template-columns:1fr}
 }
@@ -433,6 +458,8 @@ a{color:inherit;text-decoration:none}
 .sbox{order:5;flex-basis:100%;max-width:none}
 .nav{order:6;width:100%;padding-bottom:2px}
 .wrap{padding:14px 14px 110px}
+.storegrid{grid-template-columns:1fr}
+.bub{width:106px}.bub .ring{width:94px;height:94px}.bubtrack{gap:26px}
 .fgrid{grid-template-columns:1fr}
 .brand .bt small{display:none}
 }
@@ -465,27 +492,28 @@ const STARS=r=>{r=Math.round(r);return '<span class="stars">'+'★'.repeat(r)+'�
 
 /* ================= الأقسام ================= */
 const SECTIONS=[
-{id:'fashion',name:'عالم الأزياء والجمال',icon:'👗',color:'#7A3B44',winMin:120,win:'ساعتان',desc:'عبايات وأزياء وعطور وعناية بلمسة محلية'},
-{id:'family',name:'عالم المأكولات والضيافة',icon:'🏡',color:'#556636',winMin:30,win:'٣٠ دقيقة',desc:'عسل وتمور وأطباق مطابخ وحلويات طازجة'},
-{id:'deco',name:'عالم الهدايا والديكور والمناسبات',icon:'🎁',color:'#A45A3A',winMin:1440,win:'٢٤ ساعة',desc:'هدايا وديكور وتنسيق مناسبات ميداني'}];
+{id:'fashion',name:'عالم الأزياء والجمال',icon:'👗',color:'#7A3B44',winMin:120,win:'ساعتان',desc:'عبايات وأزياء وعطور وعناية بلمسة محلية',img:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/6f94d1cccea3.jpg'},
+{id:'family',name:'عالم المأكولات والضيافة',icon:'🏡',color:'#556636',winMin:30,win:'٣٠ دقيقة',desc:'عسل وتمور وأطباق مطابخ وحلويات طازجة',img:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/b2f1f08ffc64.png'},
+{id:'deco',name:'عالم الهدايا والديكور والمناسبات',icon:'🎁',color:'#A45A3A',winMin:1440,win:'٢٤ ساعة',desc:'هدايا وديكور وتنسيق مناسبات ميداني',img:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/0dcd6b176ac1.jpg'}];
 const CATS={fashion:[{n:'عبايات',comm:2.5},{n:'أزياء',comm:2.5},{n:'حقائب وعطور',comm:2.5},{n:'العناية والجمال',comm:2.5}],family:[{n:'عسل وتمور',comm:2.5},{n:'ألبان ومخبوزات',comm:2.5},{n:'حلويات وأطباق',comm:2.5},{n:'سدو وحرف',comm:2.5}],deco:[{n:'ديكور',comm:2.5},{n:'هدايا',comm:2.5},{n:'قهوة وضيافة',comm:2.5},{n:'تنسيق مناسبات',comm:2.5}]};
 const catComm=(sec,cat)=>{const c=(CATS[sec]||[]).find(x=>x.n===cat);return +((c?c.comm:2.5).toFixed(2))};
 const SEC=id=>SECTIONS.find(s=>s.id===id);
 
 /* ================= المتاجر ================= */
 const STORES=[
-{id:'s1',name:'دَفى العبايات',sec:'fashion',owner:'0500000002',color:'#7A3B44',desc:'عبايات كتان وخامات فاخرة بخياطة سعودية متقنة',rt:4.8,sales:342,approved:true,susp:false,open:true,city:'الرياض',dlMode:'customer',freeMin:300},
-{id:'s2',name:'خيوط الغندورة',sec:'fashion',owner:'0500000004',color:'#96505E',desc:'طرق بيتية وأزياء مطرزة يدوياً بخيوط ملونة',rt:4.6,sales:198,approved:true,susp:false,open:true,city:'جدة',dlMode:'customer',freeMin:350},
-{id:'s3',name:'مزرعة الواحة',sec:'family',owner:'0500000005',color:'#556636',desc:'عسل سدر وتمور خلاص من مزارعنا مباشرة',rt:4.9,sales:521,approved:true,susp:false,open:true,city:'الأحساء',dlMode:'half',freeMin:250},
-{id:'s4',name:'بيت السدو',sec:'family',owner:'0500000006',color:'#6B7A3F',desc:'منتجات سدو أصيلة منسوجة على النول التقليدي',rt:4.7,sales:87,approved:true,susp:false,open:true,city:'بريدة',dlMode:'customer',freeMin:0,qs:['هل لديك ملاحظة على درجة تمليح الجبن؟','التميس بالبر أم بالعسل الأسود؟']},
-{id:'s5',name:'لمسة ديكور',sec:'deco',owner:'0500000007',color:'#A45A3A',desc:'شموع ومباخر ومستلزمات منزل بأناقة هادئة',rt:4.5,sales:264,approved:true,susp:false,open:true,city:'الطائف',dlMode:'customer',freeMin:400},
-{id:'s6',name:'هدايا المعمور',sec:'deco',owner:'0500000008',color:'#B26640',desc:'بوكسات هدايا مغلفة بفخامة تناسب كل مناسبة',rt:4.8,sales:173,approved:true,susp:false,open:true,city:'الرياض',dlMode:'free',freeMin:0},
-{id:'s7',name:'فخار الطائف',sec:'deco',owner:'0500000009',color:'#8F5B36',desc:'فخاريات مدوّرة يدوياً من طين الطائف',rt:4.4,sales:12,approved:false,susp:false,open:true,city:'الطائف',dlMode:'customer',freeMin:0},
-{id:'s8',name:'مطبخ أم خالد',sec:'family',owner:'0500000010',color:'#7C5A3A',desc:'طبخ بيتي سعودي — كيك مناسبات وورق عنب على أصولها',rt:4.7,sales:156,approved:true,susp:false,open:true,city:'الرياض',dlMode:'customer',freeMin:150,qs:['هل لديك حساسية من أي مكسرات؟','الكريمة أم التمر على الكيكة؟','وقت التسليم المفضل لديك؟']}];
+{id:'s1',name:'دَفى العبايات',sec:'fashion',owner:'0500000002',color:'#7A3B44',cover:'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?q=80&w=760&auto=format&fit=crop',desc:'عبايات كتان وخامات فاخرة بخياطة سعودية متقنة',rt:4.8,sales:342,approved:true,susp:false,open:true,city:'الرياض',dlMode:'customer',freeMin:300},
+{id:'s2',name:'خيوط الغندورة',sec:'fashion',owner:'0500000004',color:'#96505E',cover:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/b79232a91370.jpg',desc:'طرق بيتية وأزياء مطرزة يدوياً بخيوط ملونة',rt:4.6,sales:198,approved:true,susp:false,open:true,city:'جدة',dlMode:'customer',freeMin:350},
+{id:'s3',name:'مزرعة الواحة',sec:'family',owner:'0500000005',color:'#556636',cover:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/c2626d093c49.jpg',desc:'عسل سدر وتمور خلاص من مزارعنا مباشرة',rt:4.9,sales:521,approved:true,susp:false,open:true,city:'الأحساء',dlMode:'half',freeMin:250},
+{id:'s4',name:'بيت السدو',sec:'family',owner:'0500000006',color:'#6B7A3F',cover:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/cfe35a802f4f.jpg',desc:'منتجات سدو أصيلة منسوجة على النول التقليدي',rt:4.7,sales:87,approved:true,susp:false,open:true,city:'بريدة',dlMode:'customer',freeMin:0,qs:['هل لديك ملاحظة على درجة تمليح الجبن؟','التميس بالبر أم بالعسل الأسود؟']},
+{id:'s5',name:'لمسة ديكور',sec:'deco',owner:'0500000007',color:'#A45A3A',cover:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/11c491ea9778.jpg',desc:'شموع ومباخر ومستلزمات منزل بأناقة هادئة',rt:4.5,sales:264,approved:true,susp:false,open:true,city:'الطائف',dlMode:'customer',freeMin:400},
+{id:'s6',name:'هدايا المعمور',sec:'deco',owner:'0500000008',color:'#B26640',cover:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/98a1ab5d2183.jpg',desc:'بوكسات هدايا مغلفة بفخامة تناسب كل مناسبة',rt:4.8,sales:173,approved:true,susp:false,open:true,city:'الرياض',dlMode:'free',freeMin:0},
+{id:'s7',name:'فخار الطائف',sec:'deco',owner:'0500000009',color:'#8F5B36',cover:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/9a3a0638140e.jpg',desc:'فخاريات مدوّرة يدوياً من طين الطائف',rt:4.4,sales:12,approved:false,susp:false,open:true,city:'الطائف',dlMode:'customer',freeMin:0},
+{id:'s8',name:'مطبخ أم خالد',sec:'family',owner:'0500000010',color:'#7C5A3A',cover:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/1c2383e2b42c.jpg',desc:'طبخ بيتي سعودي — كيك مناسبات وورق عنب على أصولها',rt:4.7,sales:156,approved:true,susp:false,open:true,city:'الرياض',dlMode:'customer',freeMin:150,qs:['هل لديك حساسية من أي مكسرات؟','الكريمة أم التمر على الكيكة؟','وقت التسليم المفضل لديك؟']}];
 const ST=id=>STORES.find(s=>s.id===id);
 const U='https://images.unsplash.com/photo-';
 const IM=(id,s)=>U+id+'?q=80&w=760&auto=format&fit=crop';
 const PICS=(s)=>'https://picsum.photos/seed/'+encodeURIComponent(s)+'/760/760';
+const ZPOOL=['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/271fff8e23ab.jpeg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/650709575035.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/cfe35a802f4f.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/291826012a56.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/ed876a628b49.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/8792c1cd454c.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/11c491ea9778.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/559a027cf1cb.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/285d08d3a5ca.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/98a1ab5d2183.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/2f0ce9ff82fd.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/ffebfbe70844.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/9a3a0638140e.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/1c2383e2b42c.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/991d8bb4c001.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/e44feac627da.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/53aef9882d40.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/b79232a91370.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/a2ad882f2382.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/c2626d093c49.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/7bd7eee784a6.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/cce49520b1e4.jpeg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/6f94d1cccea3.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/b2f1f08ffc64.png','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/0dcd6b176ac1.jpg'];
 
 /* ================= المنتجات ================= */
 let PRODUCTS=[
@@ -498,10 +526,10 @@ specs:{'الخامة':'حرير طبيعي','التطريز':'لؤلؤ يدوي'
 {id:'p3',store:'s1',name:'طرحة شيفون مزدوجة',cat:'عبايات',price:95,off:20,stock:30,sold:186,rt:4.6,rc:52,imgs:[IM('1523381210434-271e8be1f52b')],
 desc:'طرحة شيفون بطبقتين لا تكشف ولا تنزلق، بخياطة مزدوجة تحفظ شكلها بعد الغسيل. متوفرة بعدة ألوان هادئة تناسب العبايات اليومية.',
 specs:{'الخامة':'شيفون مزدوج','المقاس':'١٨٠ × ٧٥ سم','الألوان':'أسود / كحلي / زيتي'},ratings:[]},
-{id:'p4',store:'s2',name:'طقم بيت قطني مطرز «دفء»',cat:'أزياء',price:189,off:0,stock:15,sold:143,rt:4.6,rc:33,imgs:[PICS('طقم-بيتي'),PICS('قطن-مطرز')],
+{id:'p4',store:'s2',name:'طقم بيت قطني مطرز «دفء»',cat:'أزياء',price:189,off:0,stock:15,sold:143,rt:4.6,rc:33,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/53aef9882d40.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/b79232a91370.jpg'],
 desc:'طقم بيت من القطن المشغول بتطريز يدوي على الصدر. مريح للاستخدام اليومي والاستقبالات العائلية، خامة تتنفس ولا تسبب الحكة.',
 specs:{'الخامة':'قطن مشغول','المقاسات':'M / L / XL','الألوان':'بيج / رمادي'},ratings:[]},
-{id:'p5',store:'s2',name:'فستان سواريه مخمل «سهرة»',cat:'أزياء',price:640,off:10,stock:4,sold:58,rt:4.8,rc:19,imgs:[PICS('فستان-سهرة')],
+{id:'p5',store:'s2',name:'فستان سواريه مخمل «سهرة»',cat:'أزياء',price:640,off:10,stock:4,sold:58,rt:4.8,rc:19,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/a2ad882f2382.jpg'],
 desc:'فستان مخمل بقَصّة A كلاسيكية وأزرار لؤلؤية ظهرية. مثالي لحفلات الزواج والمناسبات المسائية، مع حاشية داخلية ناعمة تمنع الالتصاق.',
 specs:{'الخامة':'مخمل مستورد','الطول':'ميدي','التنظيف':'تنظيف جاف فقط'},ratings:[]},
 {id:'p6',store:'s2',name:'حقيبة يد جلد طبيعي',cat:'حقائب وعطور',price:280,off:0,stock:9,sold:121,rt:4.8,rc:22,imgs:[IM('1548036328-c9fa89d128fa')],
@@ -510,55 +538,55 @@ specs:{'الخامة':'جلد طبيعي مدبوغ','الحجم':'٢٤ × ١٦ 
 {id:'p7',store:'s2',name:'عطر عود ملكي ٥٠ مل',cat:'حقائب وعطور',price:220,off:0,stock:18,sold:167,rt:4.7,rc:44,imgs:[IM('1541643600914-78a08a3003d8')],
 desc:'عطر زيتي مركّز بمزيج العود الكمبودي والورد الطائفي، ثبات يمتد لأكثر من ثماني ساعات. يأتي في علبة خشبية تصلح للإهداء.',
 specs:{'النوع':'زيتي مركّز','الحجم':'٥٠ مل','الثبات':'٨+ ساعات','التغليف':'علبة خشب'},ratings:[]},
-{id:'p8',store:'s3',name:'عسل سدر جبلي ٥٠٠ جم',cat:'عسل وتمور',price:185,off:0,stock:26,sold:412,rt:4.9,rc:154,imgs:[PICS('عسل-سدر'),PICS('برطمان-عسل')],
+{id:'p8',store:'s3',name:'عسل سدر جبلي ٥٠٠ جم',cat:'عسل وتمور',price:185,off:0,stock:26,sold:412,rt:4.9,rc:154,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/c2626d093c49.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/7bd7eee784a6.jpg'],
 desc:'عسل سدر جبلي خام غير مبستر، يُقطف من مناحلنا في مرتفعات الجنوب مرة واحدة في السنة. قوامه كثيف وطعمه غني، ويأتي ببرطمان زجاجي محكم الغلق مع شهادة منشأ.',
 specs:{'النوع':'سدر خام','الوزن':'٥٠٠ جم','المصدر':'مرتفعات الجنوب','التخزين':'بعيداً عن الشمس'},ratings:[{by:'0500000001',name:'نورة',stars:5,txt:'طعمه ما يشبه عسل جدي الله يرحمه، أصلي وواضح.',at:Date.now()-864e5*2}]},
-{id:'p9',store:'s3',name:'تمر خلاص فاخر ١ كجم',cat:'عسل وتمور',price:65,off:10,stock:40,sold:380,rt:4.8,rc:96,imgs:[PICS('تمر-خلاص')],
+{id:'p9',store:'s3',name:'تمر خلاص فاخر ١ كجم',cat:'عسل وتمور',price:65,off:10,stock:40,sold:380,rt:4.8,rc:96,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/cce49520b1e4.jpeg'],
 desc:'تمر خلاص مفضل بدرجة أولى، حبة كبيرة لينة بحلاوة متوازنة. يُنتقى حبة حبة ويُعبأ في علبة أنيقة مناسبة للضيافة والإهداء.',
 specs:{'النوع':'خلاص مفضل','الوزن':'١ كجم','الدرجة':'أولى'},ratings:[]},
-{id:'p10',store:'s3',name:'دبس تمر بلدي',cat:'عسل وتمور',price:45,off:0,stock:22,sold:154,rt:4.6,rc:38,imgs:[PICS('دبس-تمر')],
+{id:'p10',store:'s3',name:'دبس تمر بلدي',cat:'عسل وتمور',price:45,off:0,stock:22,sold:154,rt:4.6,rc:38,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/271fff8e23ab.jpeg'],
 desc:'دبس تمر بلدي مطبوخ على الحطب دون أي إضافات أو سكريات. كثيف بلون العنبر، مثالي مع الفطور الشتوي والحلويات الشعبية.',
 specs:{'الوزن':'٤٠٠ جم','المكوّنات':'تمر فقط'},ratings:[]},
-{id:'p11',store:'s3',name:'سلة الواحة (عسل + تمر + دبس)',cat:'عسل وتمور',price:265,off:12,stock:14,sold:98,rt:4.9,rc:27,imgs:[PICS('سلة-هدايا-عسل')],
+{id:'p11',store:'s3',name:'سلة الواحة (عسل + تمر + دبس)',cat:'عسل وتمور',price:265,off:12,stock:14,sold:98,rt:4.9,rc:27,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/650709575035.jpg'],
 desc:'سلة خشبية تجمع عسل سدر ٢٥٠ جم وتمر خلاص ٥٠٠ جم ودبس بلدي، مغلفة بجبينة كتان وشريط. الهدية المثالية للمناسبات وزيارات العزيمة.',
 specs:{'المحتوى':'٣ منتجات','التغليف':'سلة خشب + كتان'},ratings:[]},
-{id:'p12',store:'s4',name:'مفرش سدو للطاولة',cat:'سدو وحرف',price:420,off:0,stock:5,sold:64,rt:4.7,rc:29,imgs:[PICS('سدو-مفرش')],
+{id:'p12',store:'s4',name:'مفرش سدو للطاولة',cat:'سدو وحرف',price:420,off:0,stock:5,sold:64,rt:4.7,rc:29,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/cfe35a802f4f.jpg'],
 desc:'مفرش منسوج على النول الأصلي بخيوط صوف ملونة بنقوش السدو النجدية. كل قطعة تستغرق أسبوعين من النسج اليدوي، ولا تتكرر بنفس توزيعة الألوان.',
 specs:{'الخامة':'صوف طبيعي','المقاس':'١٤٠ × ٩٠ سم','الصناعة':'نول يدوي'},ratings:[]},
-{id:'p13',store:'s4',name:'حزام سدو منسوج',cat:'سدو وحرف',price:150,off:0,stock:8,sold:73,rt:4.5,rc:17,imgs:[PICS('حزام-سدو')],
+{id:'p13',store:'s4',name:'حزام سدو منسوج',cat:'سدو وحرف',price:150,off:0,stock:8,sold:73,rt:4.5,rc:17,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/291826012a56.jpg'],
 desc:'حزام منسوج بخيوط السدو الملوّنة مع إبزيم نحاسي مصقول. قطعة تراثية عملية تلبس مع الثوب أو كإكسسوار عصري فوق المعطف.',
 specs:{'العرض':'٤ سم','الإبزيم':'نحاس'},ratings:[]},
-{id:'p14',store:'s4',name:'جبن قريش بلدي ٣٥٠ جم',cat:'ألبان ومخبوزات',ptype:'chilled',price:25,off:0,stock:20,sold:96,rt:4.6,rc:31,imgs:[PICS('جبن-قريش')],
+{id:'p14',store:'s4',name:'جبن قريش بلدي ٣٥٠ جم',cat:'ألبان ومخبوزات',ptype:'chilled',price:25,off:0,stock:20,sold:96,rt:4.6,rc:31,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/ed876a628b49.jpg'],
 desc:'جبن قريش بلدي يُحضّر صباح كل يوم من حليب المزرعة، قوامه طري وملحه خفيف. يُسلّم مبرداً في نفس يوم صناعته.',
 specs:{'الوزن':'٣٥٠ جم','الصلاحية':'٥ أيام مبردة'},ratings:[]},
-{id:'p15',store:'s4',name:'خبز تميس بيتي (٤ حبات)',cat:'ألبان ومخبوزات',ptype:'instant',price:12,off:0,stock:35,sold:640,rt:4.8,rc:203,imgs:[PICS('خبز-تميس')],
+{id:'p15',store:'s4',name:'خبز تميس بيتي (٤ حبات)',cat:'ألبان ومخبوزات',ptype:'instant',price:12,off:0,stock:35,sold:640,rt:4.8,rc:203,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/8792c1cd454c.jpg'],
 desc:'تميس بيتي يُخبز على التنور الحجري بعجين مخمّر ببطء. يخرج ساخناً مع الزبدة والعسل الأسود، ويُسلّم في أكياس حرارية تحفظ حرارته.',
 specs:{'الكمية':'٤ حبات','التسليم':'ساخن يومياً'},ratings:[]},
-{id:'p16',store:'s5',name:'شمعة ياسمين معطرة',cat:'ديكور',price:65,off:0,stock:28,sold:231,rt:4.5,rc:47,imgs:[PICS('شمعة-ياسمين')],
+{id:'p16',store:'s5',name:'شمعة ياسمين معطرة',cat:'ديكور',price:65,off:0,stock:28,sold:231,rt:4.5,rc:47,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/11c491ea9778.jpg'],
 desc:'شمعة صويا معطرة برائحة الياسمين المسائي، فتيل قطني نظيف يحترق دون دخان. تعبئ المنزل بهدوء لأكثر من ٣٥ ساعة، في وعاء زجاجي يعاد استخدامه.',
 specs:{'الشمعة':'شمع صويا','الرائحة':'ياسمين','مدة الاحتراق':'٣٥+ ساعة','الوزن':'٢٢٠ جم'},ratings:[]},
-{id:'p17',store:'s5',name:'مبخرة نحاسية مزخرفة',cat:'ديكور',price:140,off:20,stock:11,sold:158,rt:4.7,rc:39,imgs:[PICS('مبخرة-نحاس')],
+{id:'p17',store:'s5',name:'مبخرة نحاسية مزخرفة',cat:'ديكور',price:140,off:20,stock:11,sold:158,rt:4.7,rc:39,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/559a027cf1cb.jpg'],
 desc:'مبخرة نحاسية بنقش يدوي ومقبض حراري معزول. تأتي مع طبق فحم عازل وغطاء محفور يوزع الدخان بلطف، قطعة تجمع بين الأصالة والاستخدام اليومي.',
 specs:{'الخامة':'نحاس مطروق','التشطيب':'نقش يدوي','يشمل':'طبق فحم + غطاء'},ratings:[]},
-{id:'p18',store:'s5',name:'طقم فناجيل قهوة مذهّب (٦)',cat:'قهوة وضيافة',price:195,off:0,stock:9,sold:129,rt:4.8,rc:26,imgs:[PICS('فناجيل-قهوة')],
+{id:'p18',store:'s5',name:'طقم فناجيل قهوة مذهّب (٦)',cat:'قهوة وضيافة',price:195,off:0,stock:9,sold:129,rt:4.8,rc:26,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/285d08d3a5ca.jpg'],
 desc:'ستة فناجيل بورسلين بحافة مذهّبة مقاومة للاحتكاك، تصلح للقهوة والشاي. تصميم بقوارير رفيعة يليق بالمجالس، وتأتي في علبة مبطنة تصلح للإهداء.',
 specs:{'العدد':'٦ فناجيل','الخامة':'بورسلين','الطلاء':'ذهبي ٢٤ قيراط'},ratings:[]},
-{id:'p19',store:'s6',name:'بوكس هدايا «شكراً» مخمل',cat:'هدايا',ptype:'ship',giftOk:true,price:240,off:0,stock:16,sold:174,rt:4.8,rc:31,imgs:[IM('1549465220-1a8b9238cd48'),PICS('بوكس-هدايا')],
+{id:'p19',store:'s6',name:'بوكس هدايا «شكراً» مخمل',cat:'هدايا',ptype:'ship',giftOk:true,price:240,off:0,stock:16,sold:174,rt:4.8,rc:31,imgs:[IM('1549465220-1a8b9238cd48'),'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/98a1ab5d2183.jpg'],
 desc:'بوكس مخمل فارغ يضم ٤ علب داخلية و٣ بطاقات إهداء بألوان هادئة، يعاد تشكيله حسب المناسبة. التغليف يشمل شريط ساتان وبطاقة يدوية بخط جميل.',
 specs:{'المحتوى':'٤ علب + ٣ بطاقات','اللون':'أخضر زيتي / كحلي','التغليف':'ساتان + بطاقة'},ratings:[]},
-{id:'p20',store:'s6',name:'لوحة خط عربي مؤطرة «الفرج»',cat:'هدايا',ptype:'ship',giftOk:true,price:160,off:0,stock:7,sold:88,rt:4.6,rc:18,imgs:[PICS('لوحة-خط')],
+{id:'p20',store:'s6',name:'لوحة خط عربي مؤطرة «الفرج»',cat:'هدايا',ptype:'ship',giftOk:true,price:160,off:0,stock:7,sold:88,rt:4.6,rc:18,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/ffebfbe70844.jpg'],
 desc:'لوحة خط ديواني بكلمة «الفرج» مرسومة يدوياً بالحبر الأسود على ورق مقوى عاجي، بإطار خشب طبيعي وزجاج عاكس. توقيع الخطاط على الزاوية.',
 specs:{'المقاس':'٤٠ × ٣٠ سم','الإطار':'خشب طبيعي','الخط':'ديواني حر'},ratings:[]},
-{id:'p21',store:'s7',name:'مزهرية فخار مزججة',cat:'ديكور',price:110,off:0,stock:6,sold:12,rt:4.4,rc:5,imgs:[PICS('مزهرية-فخار')],
+{id:'p21',store:'s7',name:'مزهرية فخار مزججة',cat:'ديكور',price:110,off:0,stock:6,sold:12,rt:4.4,rc:5,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/9a3a0638140e.jpg'],
 desc:'مزهرية فخارية مدوّرة على الدولاب ومزججة بطلاء لامع غير متكرر. كل قطعة فريدة بدرجة لونها، من طين الطائف الأحمر.',
 specs:{'الارتفاع':'٢٤ سم','الخامة':'فخار مزجج'},ratings:[]},
-{id:'p22',store:'s8',name:'كيكة العيد بالكريمة (حساسة للحرارة)',cat:'حلويات وأطباق',ptype:'chilled',price:145,off:0,stock:6,sold:89,rt:4.8,rc:21,imgs:[PICS('كيكة-العيد')],
+{id:'p22',store:'s8',name:'كيكة العيد بالكريمة (حساسة للحرارة)',cat:'حلويات وأطباق',ptype:'chilled',price:145,off:0,stock:6,sold:89,rt:4.8,rc:21,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/1c2383e2b42c.jpg'],
 desc:'كيكة إسفنجية بطبقات الكريمة المخفوقة، تُخبز يوم الطلب وتُسلّم مبردة في صندوق حافظ للحرارة. حساسة للحرارة — يُجدول لها النظام تلقائياً توصيلاً مبرداً مع أقرب شركة متعاقدة.',
 specs:{'الحجم':'٨ أشخاص','الحفظ':'مبردة حتى التسليم','التحضير':'يوم الطلب'},ratings:[]},
-{id:'p23',store:'s8',name:'صحن ورق عنب عائلي (طازج)',cat:'حلويات وأطباق',ptype:'instant',price:55,off:0,stock:15,sold:132,rt:4.7,rc:30,imgs:[PICS('ورق-عنب')],
+{id:'p23',store:'s8',name:'صحن ورق عنب عائلي (طازج)',cat:'حلويات وأطباق',ptype:'instant',price:55,off:0,stock:15,sold:132,rt:4.7,rc:30,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/991d8bb4c001.jpg'],
 desc:'ورق عنب بلدي ملفوف يدوياً ومطبوخ على أصوله مع لحم مفروم وأرز بسمتي. يُحضّر يوم الطلب ويُرسل فور تأكيده مع مندوب فوري — وقت التسليم المتوقع ٤٥ دقيقة.',
 specs:{'الحجم':'صحن عائلي','التسليم':'فوري خلال ٤٥ دقيقة','التحضير':'يوم الطلب'},ratings:[]},
-{id:'p24',store:'s5',name:'تنسيق طاولة ضيافة كاملة (خدمة ميدانية)',cat:'تنسيق مناسبات',ptype:'field',price:850,off:0,stock:4,sold:23,rt:4.9,rc:9,imgs:[PICS('تنسيق-طاولة')],
+{id:'p24',store:'s5',name:'تنسيق طاولة ضيافة كاملة (خدمة ميدانية)',cat:'تنسيق مناسبات',ptype:'field',price:850,off:0,stock:4,sold:23,rt:4.9,rc:9,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/e44feac627da.jpg'],
 desc:'خدمة تنسيق ميداني لطاولة المناسبة: خلفية قماش، تنسيق ورد طبيعي، أدوات تقديم وإضاءة هادئة. فريق المتجر يركّب قبل المناسبة ويفكّ بعدها — بلا بوليصة شحن تجاري، ومع حجز موعد مسبق ومشاركة موقع المناسبة.',
 specs:{'الخدمة':'تركيب + فك','المدة':'حتى ٦ ساعات','الحجز':'موعد مسبق إلزامي'},ratings:[]}
 ];
@@ -605,13 +633,13 @@ disputes:[
 ruling:{act:'refund',by:'الإدارة',text:'بعد الاطلاع على الصور المرفقة ومقارنتها بوصف المنتج، تبيّن اختلاف درجة اللون بشكل جوهري. اعتُمد استرجاع كامل المبلغ إلى محفظة العميلة.',at:NOW-864e5*10},
 messages:[
 {r:'sys',t:'فتحت العميلة نزاعاً على الطلب #١٠١٨ (متجر هدايا المعمور) بسبب: لا يطابق الوصف',at:NOW-864e5*11},
-{r:'customer',t:'طلبت البوكس باللون الأخضر الزيتي كما في الصورة ووصل كحلي غامق تماماً، الفرق واضح جداً.',at:NOW-864e5*11+5e5,img:PICS('دليل-لون')},
+{r:'customer',t:'طلبت البوكس باللون الأخضر الزيتي كما في الصورة ووصل كحلي غامق تماماً، الفرق واضح جداً.',at:NOW-864e5*11+5e5,img:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/2f0ce9ff82fd.jpg'},
 {r:'merchant',t:'نعتذر عن الخطأ، يبدو أنه التباس في اللون عند التغليف. مستعدون لاستبدالها أو استرجاع المبلغ حسب ما تقرر الإدارة.',at:NOW-864e5*11+9e5},
 {r:'sys',t:'أصدرت الإدارة حكمها: استرجاع كامل المبلغ للعميلة + تحذير للمتجر بضبط مطابقة الألوان.',at:NOW-864e5*10}]},
 {id:'d1',order:1024,store:'s4',customer:'0500000001',subject:'المنتج تالف',openedAt:NOW-864e5+36e5,status:'open',ruling:null,
 messages:[
 {r:'sys',t:'فتحت العميلة نزاعاً على الطلب #١٠٢٤ (متجر بيت السدو) بسبب: المنتج تالف',at:NOW-864e5+36e5},
-{r:'customer',t:'المفرش وصل بشد واضح عند أحد الأطراف مع خيط مقطوع، الضرر ظاهر من أول نظرة. مرفق صور الوضع عند الوصول.',at:NOW-864e5+36e5+3e5,img:PICS('دليل-سدو')},
+{r:'customer',t:'المفرش وصل بشد واضح عند أحد الأطراف مع خيط مقطوع، الضرر ظاهر من أول نظرة. مرفق صور الوضع عند الوصول.',at:NOW-864e5+36e5+3e5,img:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/2ee34fcf2428.jpg'},
 {r:'merchant',t:'وعليكم السلام، نعتذر جداً عما وصلك. راجعنا تقرير الجودة قبل الشحن وكان سليماً، ويحتمل أن يكون الضرر من النقل. نرجو احتساب صور زاوية آخر للتأكد.',at:NOW-864e5+36e5+7e5}]}],
 coupons:{DAMIN10:{type:'pct',v:10,max:50},SAVE20:{type:'pct',v:20,max:80}},
 ptsVal:0.1,freeDlPts:250,aPtsWallet:0,ptsFunding:[],logiWallet:418.6,vat:527.4,
@@ -700,22 +728,23 @@ function searchGo(){const q=($('#sq')||{}).value||'';if(q.trim())go('search',q.t
 function renderTop(){
 const t=$('#top');
 const sbox=`<div class="sbox"><input id="sq" placeholder="ابحث عن منتج أو متجر…" value="${esc(VIEW.q||'')}" onkeydown="if(event.key==='Enter')searchGo()"><span class="si">🔎</span></div>`;
+const sb=VIEW.page==='home'?'':sbox;
 const brand=`<div class="brand" onclick="go('home')"><div class="lg">ض</div><div class="bt"><b>ضمين</b><small>تسوّق مضمون بثقة</small></div></div>`;
 let h='';
-if(!SES){ /* زائر: الاسم + البحث + الدخول فقط */
-h=`<div class="topin">${brand}${sbox}<button class="btn" onclick="openAuth()">تسجيل الدخول</button></div>`;
+if(!SES){ /* زائر: الرئيسية نظيفة بلا بحث — البحث يظهر داخل الأقسام والمتاجر */
+h=`<div class="topin">${brand}${sb}<button class="btn" onclick="openAuth()">تسجيل الدخول</button></div>`;
 }else if(SES.role==='merchant'){
 const st=ST(SES.store);
-h=`<div class="topin">${brand}${sbox}<nav class="nav">
+h=`<div class="topin">${brand}${sb}<nav class="nav">
 ${mnav('m-dash','📊 لوحة التحكم')}${mnav('m-prods','🧺 المنتجات')}${mnav('m-orders','📦 الطلبات')}${mnav('m-wallet','💰 المحفظة')}${mnav('m-disputes','⚖️ النزاعات')}${mnav('m-set','⚙️ الإعدادات')}
 </nav>${bellBtn()}${roleDD()}</div>`;
 }else if(SES.role==='admin'){
-h=`<div class="topin">${brand}${sbox}<nav class="nav">
+h=`<div class="topin">${brand}${sb}<nav class="nav">
 ${mnav('a-over','📊 نظرة عامة')}${mnav('a-disputes','⚖️ التحكيم')}${mnav('a-stores','🏪 المتاجر')}${mnav('a-reqs','📋 طلبات التسجيل')}${mnav('a-cats','🗂️ الأقسام')}${mnav('a-rev','📈 الإيرادات')}
 </nav>${bellBtn()}${roleDD()}</div>`;
 }else{ /* عميل مسجّل: القائمة الكاملة */
 const u=me();
-h=`<div class="topin">${brand}${sbox}<nav class="nav">
+h=`<div class="topin">${brand}${sb}<nav class="nav">
 ${mnav('home','الرئيسية')}
 <div class="dd" onclick="event.stopPropagation();this.classList.toggle('open')">
 <button class="nlink ${['section','store','product'].includes(VIEW.page)?'on':''}">🗂️ الأقسام ▾</button>
@@ -969,10 +998,10 @@ const pubProds=()=>PRODUCTS.filter(p=>stOK(ST(p.store)));
 function pgHome(){
 const u=me();
 const bubs=[...pubProds()].sort((a,b)=>b.sold-a.sold).slice(0,12);
-const best=[...pubProds()].sort((a,b)=>b.sold-a.sold).slice(0,8);
+let fi=0;
 const track=bubs.map(p=>{const sec=secOf(p.store);
 return `<div class="bub" style="--c:${sec.color}" onclick="go('product','${p.id}')">
-<div class="ring"><div>${imgTag(p.imgs[0],'','')}</div></div><b>${esc(p.name)}</b><span>${ard(eff(p))} ر.س</span></div>`}).join('');
+<div class="ring"><div style="--d:${(fi++*0.55).toFixed(2)}s">${imgTag(p.imgs[0],'','')}</div></div><b>${esc(p.name)}</b><span>${ard(eff(p))} ر.س</span></div>`}).join('');
 return `
 <div class="hero">
 <h1>${u?'أهلاً بك يا '+esc(u.name.split(' ')[0])+' 👋':'تسوّق <em>بضمين</em>… مالك محجوز حتى ترضى'}</h1>
@@ -980,20 +1009,18 @@ return `
 <div class="trust"><span class="tchip"><i>🔒</i> خزنة ضمان مستقلة</span><span class="tchip"><i>⏱️</i> تحرير تلقائي بانتهاء نافذة الحماية</span><span class="tchip"><i>⚖️</i> تحكيم ثلاثي الأطراف</span><span class="tchip"><i>🚚</i> شحن آلي عبر OTO وTorod</span><span class="tchip"><i>💳</i> مدى وApple Pay وتقسيط تابي وتمارا</span></div>
 </div>
 
-<div class="bubzone"><div class="lbl"><span class="dot"></span> يتحرك الآن بين المتاجر — انقر أي منتج${''} <span class="sw"><i class="on"></i><i></i><i></i></span></div>
+<div class="bubzone"><div class="lbl"><span class="dot"></span> يتجدّد الآن بين متاجر ضمين — انقر أي منتج لتفاصيله</div>
 <div class="bubwrap"><div class="bubtrack">${track}${track}</div></div></div>
 
-<div class="secthead"><h2>الأقسام الثلاثة</h2><div class="ln"></div><span class="hint">اختر قسمك وابدأ بضمان</span></div>
+<div class="secthead"><h2>عوالم ضمين الثلاثة</h2><div class="ln"></div><span class="hint">اختر عالمك وابدأ بضمان</span></div>
 <div class="trio">${SECTIONS.map(s=>{
 const sts=STORES.filter(x=>x.sec===s.id&&stOK(x)).length;
 const prs=PRODUCTS.filter(p=>SEC(ST(p.store).sec).id===s.id&&stOK(ST(p.store))).length;
 return `<div class="tri" style="--c:${s.color}" onclick="go('section','${s.id}')">
-<div class="ic">${s.icon}</div>
-<div class="tx"><b>${s.name}</b><span>${ars(sts)} متاجر · ${ars(prs)} منتج</span></div>
-<div class="win"><i>نافذة الحماية</i><b>${s.win}</b></div></div>`}).join('')}</div>
-
-<div class="secthead"><h2>الأكثر مبيعاً في ضمين</h2><div class="ln"></div><span class="more" onclick="go('section','${best[0]?secOf(best[0].store).id:'fashion'}')">تصفّح الأقسام ←</span></div>
-<div class="pgrid">${best.map(pcard).join('')}</div>
+<img class="bg" src="${s.img}" alt="${esc(s.name)}" loading="lazy" onerror="this.style.display='none'">
+<div class="shade"></div>
+<div class="win"><i>🛡️ نافذة الحماية</i><b>${s.win}</b></div>
+<div class="body"><div class="ic">${s.icon}</div><div class="tx"><b>${s.name}</b><span>${s.desc}</span><div class="stx"><em>${ars(sts)} متاجر</em><em>${ars(prs)} منتج</em><em>تسوّق الآن ←</em></div></div></div></div>`}).join('')}</div>
 
 <div class="secthead"><h2>كيف يعمل ضمين؟</h2><div class="ln"></div></div>
 <div class="how">
@@ -1024,6 +1051,18 @@ return `<div class="mstore" style="--c:${s.color}" onclick="go('store','${s.id}'
 <div class="lg">${s.logo?`<img src="${s.logo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`:s.name[0]}</div>
 <div><b>${esc(s.name)}</b><span class="mr">★ ${ard(s.rt)} · 📍 ${esc(s.city||'')} · ${ar(n)} منتج${n>4?'':' جديد'}</span></div></div>`;
 }
+function bigstore(s){
+const sec=SEC(s.sec);const n=PRODUCTS.filter(p=>p.store===s.id).length;
+return `<div class="bigstore" style="--c:${s.color}" onclick="go('store','${s.id}')">
+<div class="cov"><img src="${s.cover||sec.img}" alt="${esc(s.name)}" loading="lazy" onerror="this.onerror=null;this.src='${sec.img}'"><div class="tint"></div><span class="winb">🛡️ حماية ${sec.win}</span></div>
+<div class="info">
+<div class="lg">${s.logo?`<img src="${s.logo}" style="width:100%;height:100%;object-fit:cover">`:s.name[0]}</div>
+<h3>${esc(s.name)}</h3>
+<div class="desc">${esc(s.desc)}</div>
+<div class="meta"><span>★ <b>${ard(s.rt)}</b> تقييم</span><span>📍 ${esc(s.city||'—')}</span><span>🧺 <b>${ar(n)}</b> منتج</span><span>🛒 ${ars(s.sales)} طلباً</span></div>
+<div class="vst">🚪 زيارة المتجر</div>
+</div></div>`;
+}
 
 /* ================= صفحة القسم ================= */
 function pgSection(){
@@ -1033,13 +1072,13 @@ const stores=STORES.filter(s=>s.sec===sec.id&&stOK(s));
 let ps=PRODUCTS.filter(p=>ST(p.store).sec===sec.id&&stOK(ST(p.store)));
 if(VIEW.cat!=='الكل')ps=ps.filter(p=>p.cat===VIEW.cat);
 return `<div class="pghead"><button class="backb" onclick="go('home')">→</button><h1>${sec.icon} ${sec.name}</h1></div>
-<div class="sechero" style="--acc:${sec.color}">
+<div class="sechero" style="--acc:${sec.color};background-image:linear-gradient(115deg,${sec.color}F2 0%,${sec.color}C9 55%,${sec.color}9C 100%),url('${sec.img}');background-size:cover;background-position:center">
 <div class="ic">${sec.icon}</div>
 <div style="flex:1"><h1>${sec.name}</h1><p>${sec.desc} — ${ars(stores.length)} متاجر موثوقة بنفس القسم</p></div>
 <div class="winb">🛡️ نافذة الحماية: ${sec.win}</div>
 </div>
 <div class="secthead"><h2>متاجر القسم</h2><div class="ln"></div></div>
-<div class="ministores">${stores.map(mstore).join('')}</div>
+<div class="storegrid">${stores.map(bigstore).join('')}</div>
 <div class="chiprow" style="margin-top:6px">${cats.map(c=>`<button class="chip ${VIEW.cat===c?'on':''}" style="--acc:${sec.color}" onclick="VIEW.cat='${c}';render()">${c}</button>`).join('')}</div>
 <div class="secthead"><h2>${ars(ps.length)} منتجاً</h2><div class="ln"></div></div>
 ${ps.length?`<div class="pgrid">${ps.map(pcard).join('')}</div>`:`<div class="empty"><div class="em">🧺</div><b>لا منتجات في هذا التصنيف حالياً</b><span>تابع المتاجر قريباً</span></div>`}`;
@@ -2132,7 +2171,7 @@ $('#fup').onchange=e=>{const f=e.target.files[0];if(!f)return;
 const rd=new FileReader();rd.onload=()=>{MIMG=rd.result;$('#fup').value='';
 const pv=$('#mp-prev');pv.src=MIMG;pv.style.display='block';toast('جهزت الصورة ✓','ok')};rd.readAsDataURL(f)};
 $('#fup').click();}
-function mAutoImg(){MIMG=PICS('منتج-'+Math.floor(Math.random()*99));const pv=$('#mp-prev');pv.src=MIMG;pv.style.display='block';toast('اختيرت صورة تلقائية','ok')}
+function mAutoImg(){MIMG=ZPOOL[Math.floor(Math.random()*ZPOOL.length)];const pv=$('#mp-prev');pv.src=MIMG;pv.style.display='block';toast('اختيرت صورة تلقائية','ok')}
 function mSaveProd(pid){
 const s=myStore(),sec=SEC(s.sec);
 const nm=($('#mp-nm').value||'').trim(),pr=+($('#mp-pr').value||0),st=+($('#mp-st').value||0);
@@ -2148,7 +2187,7 @@ DB.ptsFunding.unshift({store:s.id,amt:cost,pts:dPts,pname:nm,at:Date.now()})}
 if(pid){const p=P(pid);Object.assign(p,{name:nm,cat:$('#mp-cat').value,price:pr,off,stock:st,desc:$('#mp-ds').value.trim(),specs,pts,ptype:($('#mp-ptype')?$('#mp-ptype').value:(p.ptype||'std')),giftOk:$('#mp-gift')?$('#mp-gift').checked:!!p.giftOk});
 if(MIMG)p.imgs=[MIMG,...p.imgs.slice(1)];
 toast('حُفظ تعديل المنتج ✓'+(dPts?` — ${dPts>0?'خُصمت':'استُرجعت'} ${money(Math.abs(cost))} تمويل نقاط`:''),'ok')}
-else{PRODUCTS.unshift({id:'p'+(Date.now()%100000),store:s.id,name:nm,cat:$('#mp-cat').value,price:pr,off,stock:st,pts,ptype:($('#mp-ptype')?$('#mp-ptype').value:'std'),giftOk:$('#mp-gift')?$('#mp-gift').checked:false,sold:0,rt:0,rc:0,imgs:[MIMG||PICS('منتج-'+pr)],desc:$('#mp-ds').value.trim()||nm,specs,specsFallback:{},ratings:[]});
+else{PRODUCTS.unshift({id:'p'+(Date.now()%100000),store:s.id,name:nm,cat:$('#mp-cat').value,price:pr,off,stock:st,pts,ptype:($('#mp-ptype')?$('#mp-ptype').value:'std'),giftOk:$('#mp-gift')?$('#mp-gift').checked:false,sold:0,rt:0,rc:0,imgs:[MIMG||ZPOOL[Math.floor(Math.random()*ZPOOL.length)]],desc:$('#mp-ds').value.trim()||nm,specs,specsFallback:{},ratings:[]});
 toast('أُضيف المنتج لمتجرك ✓'+(pts?` — خُصمت ${money(cost)} تمويل ${ar(pts)} نقطة`:''),'ok')}
 MPID=null;closeModal();render();
 }
