@@ -138,6 +138,7 @@ a{color:inherit;text-decoration:none}
 .pcard .ph img{width:100%;height:100%;object-fit:cover;transition:.45s}
 .pcard:hover .ph img{transform:scale(1.07)}
 .offb{position:absolute;top:9px;inset-inline-start:9px;background:var(--red);color:#fff;font-size:10px;font-weight:800;padding:2.5px 9px;border-radius:99px;z-index:2}
+.ptsb{position:absolute;bottom:9px;inset-inline-end:9px;background:#B07E2BEB;color:#FFF8E8;font-size:9.5px;font-weight:800;padding:2.5px 9px;border-radius:99px;z-index:2;box-shadow:0 2px 8px rgba(0,0,0,.18);white-space:nowrap}
 .secb{position:absolute;bottom:9px;inset-inline-start:9px;background:rgba(255,255,255,.94);color:var(--c);font-size:9.5px;font-weight:800;padding:2.5px 9px;border-radius:99px;z-index:2}
 .favh{position:absolute;top:8px;inset-inline-end:8px;width:31px;height:31px;border-radius:50%;background:rgba(255,255,255,.95);border:0;display:grid;place-items:center;cursor:pointer;font-size:13.5px;z-index:3;transition:.18s;box-shadow:0 2px 8px rgba(0,0,0,.1);color:#a39f8f}
 .favh:hover{transform:scale(1.14)}
@@ -303,6 +304,35 @@ a{color:inherit;text-decoration:none}
 .sw::after{content:'';position:absolute;top:3px;inset-inline-start:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:.22s;box-shadow:0 1px 4px rgba(0,0,0,.25)}
 .sw.on{background:var(--grn)}
 .sw.on::after{transform:translateX(-18px)}
+
+/* ===== بطاقات منتجات التاجر ===== */
+.mpgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(236px,1fr));gap:14px}
+.mpcard{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;transition:.22s;display:flex;flex-direction:column;position:relative}
+.mpcard:hover{transform:translateY(-4px);box-shadow:var(--sh);border-color:var(--acc,var(--grn))}
+.mpcard .mph{aspect-ratio:1/.8;overflow:hidden;position:relative;background:#EFE9DA;cursor:pointer}
+.mpcard .mph img{width:100%;height:100%;object-fit:cover;transition:.45s}
+.mpcard:hover .mph img{transform:scale(1.06)}
+.mpcard .mpb{padding:11px 13px 13px;display:flex;flex-direction:column;gap:7px;flex:1}
+.mpstats{display:flex;gap:5px;flex-wrap:wrap}
+.mpstat{display:inline-flex;align-items:center;gap:4px;background:var(--card2);border:1px solid var(--line);border-radius:9px;padding:3px 8px;font-size:9.8px;font-weight:700;color:#5c5849;white-space:nowrap}
+.mpacts{display:flex;gap:5px;flex-wrap:wrap;margin-top:auto}
+.mprev{border-bottom:1px dashed #EAE3D0;padding:11px 0}
+.mprev:last-child{border-bottom:0}
+.mprev p{font-size:12px;margin-top:6px;line-height:1.85;color:#3d443a}
+
+/* ===== هوية المتجر ===== */
+.storeid{border-radius:16px;border:1.5px dashed var(--line);padding:16px;text-align:center;background:var(--card2)}
+.storeid .big{width:86px;height:86px;border-radius:24px;margin:0 auto 9px;background:linear-gradient(135deg,var(--c),color-mix(in srgb,var(--c) 55%,#171412));color:#fff;display:grid;place-items:center;font-family:Alexandria;font-weight:800;font-size:34px;overflow:hidden;box-shadow:var(--sh2)}
+.storeid .big img{width:100%;height:100%;object-fit:cover}
+.storeid .cov{width:100%;height:76px;border-radius:13px;margin-top:10px;background:linear-gradient(140deg,var(--c),color-mix(in srgb,var(--c) 52%,#171412));overflow:hidden;display:flex;align-items:center;justify-content:center;color:#fffc;font-size:11px;font-weight:700}
+.storeid .cov img{width:100%;height:100%;object-fit:cover}
+
+/* ===== شريط انقسام التحويل ===== */
+.splitbar{display:flex;height:13px;border-radius:9px;overflow:hidden;border:1px solid var(--line)}
+.splitbar i{display:block}
+.splitbar i.net{background:linear-gradient(90deg,var(--grn2),var(--grn));flex:97.5}
+.splitbar i.comm{background:linear-gradient(90deg,var(--amb2),var(--amb));flex:2.5}
+.splitrow{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;font-size:10.5px;font-weight:700}
 
 /* ===== KPIs / dashboards ===== */
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(163px,1fr));gap:12px}
@@ -531,7 +561,10 @@ messages:[
 {r:'sys',t:'فتحت العميلة نزاعاً على الطلب #١٠٢٤ (متجر بيت السدو) بسبب: المنتج تالف',at:NOW-864e5+36e5},
 {r:'customer',t:'المفرش وصل بشد واضح عند أحد الأطراف مع خيط مقطوع، الضرر ظاهر من أول نظرة. مرفق صور الوضع عند الوصول.',at:NOW-864e5+36e5+3e5,img:PICS('دليل-سدو')},
 {r:'merchant',t:'وعليكم السلام، نعتذر جداً عما وصلك. راجعنا تقرير الجودة قبل الشحن وكان سليماً، ويحتمل أن يكون الضرر من النقل. نرجو احتساب صور زاوية آخر للتأكد.',at:NOW-864e5+36e5+7e5}]}],
-coupons:{DAMIN10:{type:'pct',v:10,max:50},SAVE20:{type:'pct',v:20,max:80}}};
+coupons:{DAMIN10:{type:'pct',v:10,max:50},SAVE20:{type:'pct',v:20,max:80}},
+ptsVal:0.1,freeDlPts:250,aPtsWallet:0,ptsFunding:[]};
+const ptsVal=()=>DB.ptsVal||0.1;
+const fdPts=()=>DB.freeDlPts||250;
 const P=id=>PRODUCTS.find(p=>p.id===id);
 const eff=p=>p.off?r2(p.price*(1-p.off/100)):p.price;
 const stOK=s=>s.approved&&!s.susp;
@@ -539,7 +572,7 @@ const storeOwner=id=>{const s=ST(id);return s?USERS[s.owner]:null};
 const secOf=id=>{const s=ST(id);return s?SEC(s.sec):SECTIONS[0]};
 
 /* ================= الحالة ================= */
-let SES=null,VIEW={page:'home'},CART=[],GFav=[],CK={step:0,addr:0,pay:'mada'},CPN=null,PTS=0,RATE={stars:0},COMP={sub:'damaged'},EVP=[];
+let SES=null,VIEW={page:'home'},CART=[],GFav=[],CK={step:0,addr:0,pay:'mada'},CPN=null,PTS=0,RATE={stars:0},COMP={sub:'damaged'},EVP=[],FREE_DL=false;
 const me=()=>SES?USERS[SES.phone]:null;
 const isFav=pid=>{if(!SES)return GFav.includes(pid);const u=me();return u&&u.favs&&u.favs.includes(pid)};
 const cartCount=()=>CART.reduce((a,c)=>a+c.qty,0);
@@ -711,7 +744,7 @@ function zoomImg(src){openModal(`<div class="mhead"><b>عرض الصورة</b><b
 function pcard(p){
 const s=ST(p.store),sec=SEC(s.sec),e=eff(p),fav=isFav(p.id);
 return `<div class="pcard" onclick="go('product','${p.id}')">
-<div class="ph">${p.off?`<span class="offb">خصم ${ar(p.off)}٪</span>`:''}<span class="secb" style="--c:${sec.color}">${sec.name}</span>
+<div class="ph">${p.off?`<span class="offb">خصم ${ar(p.off)}٪</span>`:''}${p.pts?`<span class="ptsb">🌟 ${ar(p.pts)} نقطة</span>`:''}<span class="secb" style="--c:${sec.color}">${sec.name}</span>
 <button class="favh ${fav?'on':''}" onclick="event.stopPropagation();toggleFav('${p.id}')">${fav?'♥':'♡'}</button>
 ${imgTag(p.imgs[0],'','')} </div>
 <div class="pb"><div class="nm">${esc(p.name)}</div>
@@ -776,7 +809,7 @@ ${ps.length?`<div class="pgrid">${ps.map(pcard).join('')}</div>`:`<div class="em
 function mstore(s){
 const n=PRODUCTS.filter(p=>p.store===s.id).length;
 return `<div class="mstore" style="--c:${s.color}" onclick="go('store','${s.id}')">
-<div class="lg">${s.name[0]}</div>
+<div class="lg">${s.logo?`<img src="${s.logo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`:s.name[0]}</div>
 <div><b>${esc(s.name)}</b><span class="mr">★ ${ard(s.rt)} · ${ar(n)} منتج${n>4?'':' جديد'}</span></div></div>`;
 }
 
@@ -807,8 +840,8 @@ if(!s)return pgHome();
 const sec=SEC(s.sec);
 const ps=PRODUCTS.filter(p=>p.store===s.id);
 return `<div class="pghead"><button class="backb" onclick="go('section','${sec.id}')">→</button><h1>${esc(s.name)}</h1><span class="tag" style="background:${s.color}18;color:${s.color}">${sec.name}</span></div>
-<div class="storeban" style="--c:${s.color}">
-<div class="lg">${s.name[0]}</div>
+<div class="storeban" style="--c:${s.color};${s.cover?`background-image:linear-gradient(100deg,${s.color}F2,${s.color}C4),url('${s.cover}');background-size:cover;background-position:center`:''}">
+<div class="lg">${s.logo?`<img src="${s.logo}" style="width:100%;height:100%;object-fit:cover">`:s.name[0]}</div>
 <div style="flex:1"><h1>${esc(s.name)}</h1><p>${esc(s.desc)}</p>
 <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:7px;font-size:11.5px;opacity:.95">
 <span>★ ${ard(s.rt)} تقييم المتجر</span><span>·</span><span>${ars(s.sales)} طلباً مكتمل البيع</span><span>·</span><span>🛡️ نافذة حماية ${sec.win}</span></div></div>
@@ -842,10 +875,11 @@ ${p.imgs.length>1?`<div class="thumbs">${p.imgs.map((im,i)=>`<img src="${im}" cl
 ${STARS(p.rt)} <b style="font-size:12.5px">${ard(p.rt)}</b><span class="hint">(${ar(p.rc)} تقييم)</span>
 <span class="hint">· بيع ${ar(p.sold)} مرة</span><span class="hint">· ${p.stock>0?'متوفر ('+ar(p.stock)+')':'نفدت الكمية'}</span>
 </div>
-<div style="display:flex;align-items:baseline;gap:10px;margin-bottom:12px">
+<div style="display:flex;align-items:baseline;gap:10px;margin-bottom:5px">
 <span class="fx" style="font-size:26px;font-weight:800;color:var(--grn)">${money(e)}</span>
 ${p.off?`<s class="mut">${money(p.price)}</s><span class="tag red">وفّر ${ar(p.off)}٪</span>`:''}
 </div>
+${p.pts?`<div class="hint" style="color:var(--amb2);font-weight:700;margin-bottom:10px">🌟 يمنح هذا المنتج ${ar(p.pts)} نقطة ولاء للعميل عند تحرير الطلب</div>`:'<div style="height:6px"></div>'}
 <div class="hint mb">يبيعه متجر <a style="color:${s.color};font-weight:700;cursor:pointer" onclick="go('store','${s.id}')">${esc(s.name)}</a> ★ ${ard(s.rt)} · شحنة ضمن ${sec.win} حماية</div>
 <div class="spread" style="gap:10px;flex-wrap:wrap">
 <div class="qty"><button onclick="qStep(1)">＋</button><b id="qv">${ar(QTY)}</b><button onclick="qStep(-1)">−</button></div>
@@ -910,13 +944,17 @@ function cartCalc(){
 const items=CART.map(c=>({...c,p:P(c.pid)})).filter(c=>c.p);
 const groups={};items.forEach(c=>{(groups[c.p.store]=groups[c.p.store]||[]).push(c)});
 const sub=r2(items.reduce((a,c)=>a+eff(c.p)*c.qty,0));
-const dl=r2(Object.values(groups).reduce((a,g)=>a+(g.reduce((x,c)=>x+eff(c.p)*c.qty,0)>=200?0:12),0));
+const dlRaw=r2(Object.values(groups).reduce((a,g)=>a+(g.reduce((x,c)=>x+eff(c.p)*c.qty,0)>=200?0:12),0));
+const pv=ptsVal(),fn=fdPts();
+const fd=FREE_DL&&SES&&(me().pts||0)>=fn&&dlRaw>0;
+const dl=fd?0:dlRaw;
 let cpn=0;if(CPN&&DB.coupons[CPN]){const c=DB.coupons[CPN];cpn=r2(Math.min(c.type==='pct'?sub*c.v/100:c.v,c.max))}
-const ptsMax=SES?Math.floor(Math.min((me().pts||0))/100)*100:0;
-let ptsUse=Math.min(PTS,Math.floor(Math.max(sub-cpn,0)/10)*100,ptsMax);ptsUse=Math.max(0,Math.floor(ptsUse/100)*100);
-const ptsAmt=r2(ptsUse/10);
+const avail=SES?Math.max(0,(me().pts||0)-(fd?fn:0)):0;
+const ptsMax=SES?Math.floor(avail/100)*100:0;
+let ptsUse=Math.min(PTS,ptsMax,Math.floor(Math.max(sub-cpn,0)/(pv*100))*100);ptsUse=Math.max(0,Math.floor(ptsUse/100)*100);
+const ptsAmt=r2(ptsUse*pv);
 const total=r2(Math.max(0,sub+dl-cpn-ptsAmt));
-return{items,groups,sub,dl,cpn,ptsMax,ptsUse,ptsAmt,total};
+return{items,groups,sub,dlRaw,dl,fd,fdN:fn,cpn,ptsMax,ptsUse,ptsAmt,total};
 }
 function pgCart(){
 if(!CART.length)return `<div class="pghead"><h1>🛒 سلة التسوق</h1></div>
@@ -963,14 +1001,19 @@ ${CPN?`<button class="btn gray sm" onclick="CPN=null;render()">إلغاء</butto
 ${c.cpn?`<div class="srow disc"><span>خصم الكوبون ${CPN}</span><b>− ${money(c.cpn)}</b></div>`:''}
 ${SES?`
 <div class="srow"><span>🌟 نقاطك: ${ar(me().pts||0)} نقطة</span>
-<div style="display:flex;gap:5px">
+<div style="display:flex;gap:5px;flex-wrap:wrap">
 ${c.ptsMax>=100?`<button class="btn soft xs" onclick="ptsSet(${Math.min(100,c.ptsMax)})">+١٠٠</button>
 ${c.ptsMax>=300?`<button class="btn soft xs" onclick="ptsSet(${Math.min(300,c.ptsMax)})">+٣٠٠</button>`:''}
 <button class="btn soft xs" onclick="ptsSet(${c.ptsMax})">الكل</button>`:''}
 ${PTS?`<button class="btn gray xs" onclick="ptsSet(0)">إلغاء ${ar(PTS)}</button>`:''}
 </div></div>
-${c.ptsUse?`<div class="srow disc"><span>خصم النقاط (${ar(c.ptsUse)} نقطة)</span><b>− ${money(c.ptsAmt)}</b></div>`:''}`
-:`<div class="hint mb">🌟 سجّل دخولك لاستبدال نقاط الولاء (كل ١٠٠ نقطة = ١٠ ريال)</div>`}
+${c.ptsUse?`<div class="srow disc"><span>خصم النقاط (${ar(c.ptsUse)} نقطة)</span><b>− ${money(c.ptsAmt)}</b></div>`:''}
+${c.dlRaw>0?`
+<div class="srow"><span>🚚 توصيل مجاني؟</span>
+${(me().pts||0)>=c.fdN?`<button class="btn ${c.fd?'gray':'amb'} xs" onclick="FREE_DL=!FREE_DL;render()">${c.fd?'إلغاء الاستبدال':'استبدال '+ar(c.fdN)+' نقطة'}</button>`:`<span class="hint">تحتاج ${ar(c.fdN-(me().pts||0))} نقطة أخرى</span>`}</div>
+${c.fd?`<div class="srow disc"><span>توصيل مجاني بالنقاط (${ar(c.fdN)} نقطة)</span><b>− ${money(c.dlRaw)}</b></div>`:''}`
+:''}`
+:`<div class="hint mb">🌟 سجّل دخولك لاستبدال نقاط الولاء (كل ١٠٠ نقطة = ${money(100*ptsVal())} — أو توصيل مجاني بـ${ar(fdPts())} نقطة)</div>`}
 <div class="srow tot"><span>الإجمالي</span><b>${money(c.total)}</b></div>
 <button class="btn amb wide mt" onclick="startCheckout()">🔒 إتمام الطلب الآمن</button>
 <p class="hint" style="text-align:center;margin-top:8px">عمولة ضمين ٢٫٥٪ تُحسم من التاجر — لا تُضاف عليك</p>
@@ -1091,18 +1134,20 @@ if(CK.pay==='bal'&&u.bal<c.total){toast('رصيد المحفظة لا يكفي',
 CK.addrTxt=u.addrs[CK.addr].a;
 CK.step=3;CK.oid=OID;CK.gcount=Object.keys(c.groups).length;
 const o={id:OID++,customer:SES.phone,at:Date.now(),pay:CK.pay,addr:CK.addrTxt,
-coupon:{code:CPN,amt:c.cpn},ptsUsed:c.ptsUse,ptsAmt:c.ptsAmt,total:c.total,
+coupon:{code:CPN,amt:c.cpn},ptsUsed:c.ptsUse,ptsAmt:c.ptsAmt,freeDl:c.fd,total:c.total,
 groups:Object.entries(c.groups).map(([sid,its])=>({store:sid,
 items:its.map(x=>({pid:x.pid,qty:x.qty,price:eff(x.p)})),
 sub:r2(its.reduce((a,x)=>a+eff(x.p)*x.qty,0)),
-dl:its.reduce((a,x)=>a+eff(x.p)*x.qty,0)>=200?0:12,status:'pending'}))};
+dl:(c.fd||its.reduce((a,x)=>a+eff(x.p)*x.qty,0)>=200)?0:12,status:'pending'}))};
+if(c.fd)o.freeDl=true;
 if(CK.pay==='bal'){u.bal=r2((u.bal||0)-c.total);o.paidBy='محفظة ضمين'}
+if(c.fd){u.pts=(u.pts||0)-c.fdN;u.ptsLog.unshift({t:'استبدال نقاط بتوصيل مجاني في الطلب #'+(OID-1),v:-c.fdN,at:Date.now()})}
 if(c.ptsUse){u.pts=(u.pts||0)-c.ptsUse;u.ptsLog.unshift({t:'استبدال نقاط في الطلب #'+(OID-1),v:-c.ptsUse,at:Date.now()})}
 DB.orders.unshift(o);
 Object.keys(c.groups).forEach(sid=>{const own=ST(sid).owner;
 if(own&&USERS[own])pushNotif(own,'📦','طلب جديد بانتظار قبولك','عميل جديد أرسل طلباً بقيمة '+money(o.groups.find(g=>g.store===sid).sub),['m-orders'])});
 pushNotif(SES.phone,'🔒','تم حجز مبلغ طلبك','مبلغ '+money(c.total)+' محجوز بأمان في خزنة ضمين',['orders']);
-CART=[];CPN=null;PTS=0;
+CART=[];CPN=null;PTS=0;FREE_DL=false;
 ckRefresh();
 }
 /* ================= الطلبات ================= */
@@ -1119,6 +1164,7 @@ os.map(o=>`<div class="ocard">
 <div><b class="fx" style="font-size:14px">طلب #${ar(o.id)}</b><div class="hint">${dt(o.at)} · ${({mada:'مدى',visa:'بطاقة',apple:'Apple Pay',bal:'محفظة ضمين'}[o.pay])||'دفع إلكتروني'}${o.paidBy?' ('+o.paidBy+')':''}</div></div>
 ${o.coupon&&o.coupon.amt?`<span class="tag amb">كوبون −${money(o.coupon.amt)}</span>`:''}
 ${o.ptsUsed?`<span class="tag amb">نقاط −${money(o.ptsAmt)}</span>`:''}
+${o.freeDl?`<span class="tag grn">🚚 توصيل مجاني (نقاط)</span>`:''}
 </div>
 <div class="hint">📍 ${esc(o.addr)}</div>
 ${o.groups.map((g,gi)=>ogroup(o,g,gi)).join('')}
@@ -1188,8 +1234,12 @@ DB.aRevenue=r2(DB.aRevenue+comm);
 const rm=DB.revMonths[DB.revMonths.length-1];rm.v=r2(rm.v+comm);
 DB.storeWallets[g.store]=r2((DB.storeWallets[g.store]||0)+net);
 g.payout={sub:g.sub,comm,net};
-const u=USERS[o.customer];const pts=Math.floor(net/10)+(bonus?10:0);
-if(u){u.pts=(u.pts||0)+pts;u.ptsLog.unshift({t:'تحرير طلب #'+o.id+(bonus?' + مكافأة تقييم':''),v:pts,at:Date.now()})}
+const u=USERS[o.customer];
+const giftPts=g.items.reduce((a,it)=>{const pd=P(it.pid);return a+((pd&&pd.pts)||0)*it.qty},0);
+const pts=Math.floor(net/10)+(bonus?10:0);
+if(u){u.pts=(u.pts||0)+pts+giftPts;
+u.ptsLog.unshift({t:'تحرير طلب #'+o.id+(bonus?' + مكافأة تقييم':''),v:pts,at:Date.now()});
+if(giftPts)u.ptsLog.unshift({t:'نقاط هدية على منتجات الطلب #'+o.id,v:giftPts,at:Date.now()})}
 pushNotif(o.customer,'🔓','تم تحرير مبلغ طلبك','صافي '+money(net)+' حُوِّل إلى '+ST(g.store).name+' — كسبت '+ar(pts)+' نقطة ولاء',['orders']);
 const own=ST(g.store).owner;if(own)pushNotif(own,'💰','تحرير دفعة جديدة','استلمت '+money(net)+' صافي الطلب #'+ar(o.id)+' (عمولة ضمين '+money(comm)+')',['m-wallet']);
 }
@@ -1430,13 +1480,13 @@ return `<div class="pghead"><h1>👤 حسابي وإعداداتي</h1></div>
 <button class="btn soft sm" onclick="profileForm()">تعديل</button>
 </div>
 <div class="ptshero">
-<div class="spread"><b class="fx" style="font-size:14px">🌟 نقاط الولاء</b><span class="tag wht">كل ١٠٠ نقطة = ١٠ ر.س</span></div>
+<div class="spread"><b class="fx" style="font-size:14px">🌟 نقاط الولاء</b><span class="tag wht">كل ١٠٠ نقطة = ${money(100*ptsVal())}</span></div>
 <div style="display:flex;align-items:baseline;gap:9px;margin-top:6px">
 <span class="fx" style="font-size:34px;font-weight:800">${ar(u.pts||0)}</span><span style="font-size:12px;opacity:.9">نقطة</span></div>
 <div class="pbar"><i style="width:${(u.pts%100)||100}%"></i></div>
 <div style="font-size:10.5px;opacity:.92">${nextHund?`تبقّى ${ar(nextHund)} نقطة لخصم ١٠ ريال القادم`:'أنت عند حد خصم جاهز — استخدمه في السلة! 🎉'}</div>
 <div class="hr" style="background:#ffffff30"></div>
-<div style="font-size:10.5px;opacity:.95;line-height:1.9">✦ نقطة عن كل ١٠ ريال عند تحرير أي شحنة<br>✦ +١٠ نقاط مكافأة عند تقييمك للطلب<br>✦ استبدلها من ملخص السلة قبل الدفع</div>
+<div style="font-size:10.5px;opacity:.95;line-height:1.9">✦ نقطة عن كل ١٠ ريال عند تحرير أي شحنة<br>✦ +١٠ نقاط مكافأة عند تقييمك للطلب<br>✦ استبدلها بخصم مباشر من ملخص السلة<br>✦ ${ar(fdPts())} نقطة = 🚚 توصيل مجاني لطلباتك</div>
 ${(u.ptsLog&&u.ptsLog.length)?`<div class="hr" style="background:#ffffff30"></div><b style="font-size:11px">سجل النقاط</b>
 ${u.ptsLog.slice(0,4).map(l=>`<div class="spread" style="font-size:10.5px;padding:2.5px 0"><span style="opacity:.92">${esc(l.t)}</span><b>${l.v>0?'+':''}${ar(l.v)}</b></div>`).join('')}`:''}
 </div>
@@ -1541,7 +1591,7 @@ function faqOpen(){
 const F=[['متى يستلم التاجر المبلغ؟','عند استلامك وتقييمك، أو تلقائياً بانتهاء نافذة حماية القسم (من ٣٠ دقيقة حتى ٢٤ ساعة حسب القسم).'],
 ['ماذا لو كان المنتج تالفاً؟','افتح نزاعاً خلال نافذة الحماية — يبقى مبلغك معلقاً وتحكم الإدارة بعد دردشة ثلاثية مع الأدلة.'],
 ['كم عمولة ضمين؟','٢٫٥٪ فقط من قيمة الشحنة، تُحسم من التاجر ولا تُضاف على العميل أبداً.'],
-['كيف أكسب النقاط؟','نقطة عن كل ١٠ ريال عند تحرير أي شحنة + ١٠ نقاط مع كل تقييم — وكل ١٠٠ نقطة تساوي ١٠ ريال خصم.'],
+['كيف أكسب النقاط؟',`نقطة عن كل ١٠ ريال عند تحرير أي شحنة + ١٠ نقاط مع كل تقييم + نقاط هدية على منتجات مختارة — وكل ١٠٠ نقطة تساوي ${money(100*ptsVal())} خصم، أو ${ar(fdPts())} نقطة مقابل توصيل مجاني.`],
 ['هل يمكن الدفع من المحفظة؟','نعم — مبالغ الاسترجاع تضاف لمحفظة ضمين وتستخدمها كوسيلة دفع مباشرة.']];
 openModal(`<div class="mhead"><b>❓ الأسئلة الشائعة</b><button class="x" onclick="closeModal()">✕</button></div><div class="mbody">
 ${F.map(([q,a])=>`<div style="border-bottom:1px dashed var(--line);padding:9px 2px"><b style="font-size:12.5px">${q}</b><p class="hint" style="margin-top:2px">${a}</p></div>`).join('')}</div>`)}
@@ -1582,21 +1632,33 @@ function pgMProds(){
 const s=myStore(),sec=SEC(s.sec);
 const ps=PRODUCTS.filter(p=>p.store===s.id);
 return `<div class="pghead"><h1>🧺 منتجاتي (${ar(ps.length)})</h1><button class="btn sm" onclick="mProdForm()">＋ منتج جديد</button></div>
-<div class="acard"><div class="rows">
-${ps.map(p=>`<div class="row">
-<div style="width:52px;height:52px;border-radius:13px;overflow:hidden;flex-shrink:0;position:relative">${imgTag(p.imgs[0],'','')}${p.off?`<span class="tag red" style="position:absolute;bottom:2px;inset-inline-start:2px;font-size:8px;padding:1px 6px">−${ar(p.off)}٪</span>`:''}</div>
-<div style="flex:1;min-width:0"><b>${esc(p.name)}</b>
-<div class="hint">${esc(p.cat)} · ${money(eff(p))}${p.off?` <s>${money(p.price)}</s>`:''} · مخزون ${ar(p.stock)} · بيع ${ar(p.sold)}</div></div>
-<div style="display:flex;gap:5px;flex-wrap:wrap">
-<div class="dd" onclick="event.stopPropagation();this.classList.toggle('open')">
-<button class="btn soft xs">🏷️ عروض ▾</button>
-<div class="ddmenu">${[10,20,30,40,0].map(v=>`<div class="it" onclick="mOfferSet('${p.id}',${v})">${v?'خصم '+ar(v)+'٪':'إلغاء العرض'}</div>`).join('')}</div></div>
-<button class="btn gray xs" onclick="mProdForm('${p.id}')">تعديل</button>
-<button class="btn red xs" onclick="mDelProd('${p.id}')">حذف</button>
-</div></div>`).join('')||'<div class="empty" style="padding:26px"><div class="em">🧺</div><b>لا منتجات بعد</b><span>أضف منتجك الأول</span></div>'}
-</div></div>`;
+<div class="kpis mb">
+<div class="kpi nvy"><i>🧺</i><b>${ar(ps.length)}</b><span>منتج معروض</span></div>
+<div class="kpi amb"><i>🏷️</i><b>${ar(ps.filter(p=>p.off>0).length)}</b><span>عليه عرض نشط</span></div>
+<div class="kpi grn"><i>🌟</i><b>${ar(ps.filter(p=>(p.pts||0)>0).length)}</b><span>منتج يمنح نقاطاً</span></div>
+<div class="kpi red"><i>⚠️</i><b>${ar(ps.filter(p=>!p.stock).length)}</b><span>نفد مخزونه</span></div>
+</div>
+<div class="mpgrid">
+${ps.map(p=>{const e=eff(p);return `<div class="mpcard" style="--acc:${s.color}">
+<div class="mph" onclick="go('product','${p.id}')">${p.off?`<span class="offb">خصم ${ar(p.off)}٪</span>`:''}${(p.pts||0)>0?`<span class="ptsb">🌟 ${ar(p.pts)} نقطة</span>`:''}<span class="secb" style="--c:${sec.color}">${esc(p.cat)}</span>${imgTag(p.imgs[0],'','')}</div>
+<div class="mpb">
+<div onclick="go('product','${p.id}')" style="cursor:pointer"><b style="font-size:12.8px;display:block;line-height:1.5">${esc(p.name)}</b></div>
+<div style="display:flex;align-items:baseline;gap:7px"><b class="fx" style="font-size:15px;color:var(--grn)">${money(e)}</b>${p.off?`<s class="mut" style="font-size:10.5px">${money(p.price)}</s>`:''}</div>
+<div class="mpstats">
+<span class="mpstat">📦 مخزون ${ar(p.stock)}</span>
+<span class="mpstat">🛒 بيع ${ar(p.sold)}</span>
+<span class="mpstat" style="color:var(--amb2)">★ ${ard(p.rt)}</span>
+</div>
+<div class="mpacts">
+<button class="btn soft xs" onclick="mOfferForm('${p.id}')">🏷️ عروض</button>
+<button class="btn ${(p.rc?'soft':'gray')} xs" onclick="mProdRevs('${p.id}')">⭐ التقييمات${p.rc?' ('+ar(p.rc)+')':''}</button>
+<button class="btn gray xs" onclick="mProdForm('${p.id}')">✏️ تعديل</button>
+<button class="btn red xs" onclick="mDelProd('${p.id}')">🗑️</button>
+</div></div></div>`}).join('')||`<div class="empty" style="grid-column:1/-1"><div class="em">🧺</div><b>لا منتجات بعد</b><span>أضف منتجك الأول وزوّده بنقاط ولاء تجذب العملاء</span><button class="btn mt" onclick="mProdForm()">＋ منتج جديد</button></div>`}
+</div>`;
 }
 function mProdForm(pid){
+MPID=pid||null;
 const s=myStore(),sec=SEC(s.sec);
 const p=pid?P(pid):null;
 openModal(`<div class="mhead"><b>${p?'تعديل منتج':'منتج جديد'}</b><button class="x" onclick="closeModal()">✕</button></div>
@@ -1610,6 +1672,10 @@ openModal(`<div class="mhead"><b>${p?'تعديل منتج':'منتج جديد'}<
 <div class="fld"><label>خصم ٪ (0 = بلا عرض)</label><input class="inp" id="mp-off" type="number" min="0" max="90" value="${p?p.off:0}"></div>
 <div class="fld"><label>المخزون</label><input class="inp" id="mp-st" type="number" min="0" value="${p?p.stock:10}"></div>
 </div>
+<div class="fld mt"><label>🌟 نقاط ولاء يمنحها المنتج للعميل (اختياري)</label>
+<input class="inp" id="mp-pts" type="number" min="0" max="500" step="5" value="${p?(p.pts||0):0}" oninput="ptsCostPrev()" placeholder="مثال: 50">
+<div class="hint" id="ptscost" style="margin-top:7px;background:#B07E2B12;border:1px dashed #B07E2B66;border-radius:11px;padding:8px 12px"></div>
+<p class="hint" style="margin-top:5px">الإدارة تحدد قيمة النقطة حالياً <b>${money(ptsVal())}</b> — تكلفة النقاط تُخصم من محفظة متجرك وتُحوَّل لمحفظة الإدارة، والعميل يستلمها عند تحرير طلبه.</p></div>
 <div class="fld mt"><label>الوصف</label><textarea class="inp" id="mp-ds" style="min-height:70px" placeholder="وصف تسويقي جاذب ب٣ أسطر…">${p?esc(p.desc):''}</textarea></div>
 <div class="fld mt"><label>المواصفات (كل سطر: المفتاح: القيمة)</label><textarea class="inp" id="mp-sp" style="min-height:60px" placeholder="الخامة: كتان&#10;اللون: كحلي">${p?esc(Object.entries(p.specs).map(([k,v])=>k+': '+v).join('\n')):''}</textarea></div>
 <div class="mt" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
@@ -1620,6 +1686,18 @@ openModal(`<div class="mhead"><b>${p?'تعديل منتج':'منتج جديد'}<
 <button class="btn wide mt" onclick="mSaveProd('${pid||''}')">${p?'حفظ التعديلات':'إضافة المنتج'}</button>
 </div>`,'lg');
 MIMG=p?p.imgs[0]:'';
+ptsCostPrev();
+}
+let MPID=null;
+function ptsCostPrev(){
+const el=$('#ptscost');if(!el)return;
+const pv=ptsVal();
+const np=Math.max(0,Math.min(500,Math.round(+((($('#mp-pts')||{value:0}).value)||0))));
+const old=(MPID&&P(MPID))?(P(MPID).pts||0):0;
+const d=r2((np-old)*pv);
+if(!np&&!old){el.innerHTML='بلا نقاط — المنتج يبقى دون تمويل إضافي، ويمكنك إضافتها لاحقاً';return}
+if(d===0){el.innerHTML='لا تغيير على تمويل النقاط ('+ar(np)+' نقطة للعميل)';return}
+el.innerHTML=d>0?`تُخصم من محفظتك <b style="color:var(--amb2)">− ${money(d)}</b> وتُحوَّل لمحفظة الإدارة (${ar(np-old)} نقطة × ${money(pv)})`:`يُسترجع لمحفظتك <b style="color:var(--grn)">+ ${money(-d)}</b> (${ar(old-np)} نقطة × ${money(pv)})`;
 }
 let MIMG='';
 function mPickImg(){
@@ -1634,14 +1712,61 @@ const nm=($('#mp-nm').value||'').trim(),pr=+($('#mp-pr').value||0),st=+($('#mp-s
 if(!nm||pr<1){toast('أكمل الاسم والسعر','err');return}
 const specs={};($('#mp-sp').value||'').split('\n').forEach(l=>{const i=l.indexOf(':');if(i>0)specs[l.slice(0,i).trim()]=l.slice(i+1).trim()});
 const off=Math.min(90,Math.max(0,+($('#mp-off').value||0)));
-if(pid){const p=P(pid);Object.assign(p,{name:nm,cat:$('#mp-cat').value,price:pr,off,stock:st,desc:$('#mp-ds').value.trim(),specs});
+const pts=Math.max(0,Math.min(500,Math.round(+($('#mp-pts').value||0)||0)));
+const pv=ptsVal();const old=pid?(P(pid).pts||0):0;const dPts=pts-old;const cost=r2(dPts*pv);
+if(cost>0&&(DB.storeWallets[s.id]||0)<cost){toast('محفظتك لا تكفي لتمويل '+ar(pts)+' نقطة ('+money(cost)+') — قلّل النقاط أو راجع محفظتك','err');return}
+if(dPts!==0){DB.storeWallets[s.id]=r2((DB.storeWallets[s.id]||0)-cost);
+DB.aPtsWallet=r2((DB.aPtsWallet||0)+cost);
+DB.ptsFunding.unshift({store:s.id,amt:cost,pts:dPts,pname:nm,at:Date.now()})}
+if(pid){const p=P(pid);Object.assign(p,{name:nm,cat:$('#mp-cat').value,price:pr,off,stock:st,desc:$('#mp-ds').value.trim(),specs,pts});
 if(MIMG)p.imgs=[MIMG,...p.imgs.slice(1)];
-toast('حُفظ تعديل المنتج ✓','ok')}
-else{PRODUCTS.unshift({id:'p'+(Date.now()%100000),store:s.id,name:nm,cat:$('#mp-cat').value,price:pr,off,stock:st,sold:0,rt:0,rc:0,imgs:[MIMG||PICS('منتج-'+pr)],desc:$('#mp-ds').value.trim()||nm,specs,specsFallback:{},ratings:[]});
-toast('أُضيف المنتج لمتجرك ✓','ok')}
-closeModal();render();
+toast('حُفظ تعديل المنتج ✓'+(dPts?` — ${dPts>0?'خُصمت':'استُرجعت'} ${money(Math.abs(cost))} تمويل نقاط`:''),'ok')}
+else{PRODUCTS.unshift({id:'p'+(Date.now()%100000),store:s.id,name:nm,cat:$('#mp-cat').value,price:pr,off,stock:st,pts,sold:0,rt:0,rc:0,imgs:[MIMG||PICS('منتج-'+pr)],desc:$('#mp-ds').value.trim()||nm,specs,specsFallback:{},ratings:[]});
+toast('أُضيف المنتج لمتجرك ✓'+(pts?` — خُصمت ${money(cost)} تمويل ${ar(pts)} نقطة`:''),'ok')}
+MPID=null;closeModal();render();
 }
-function mOfferSet(pid,off){P(pid).off=off;toast(off?'فُعّل خصم '+ar(off)+'٪ على «'+P(pid).name+'»':'أُلغي العرض');render()}
+/* ===== العروض بنسبة حرة ===== */
+let OFFPID=null;
+const offVal=()=>Math.min(90,Math.max(0,Math.round(+((($('#mp-off2')||{value:0}).value)||0))));
+function mOfferForm(pid){
+const p=P(pid);OFFPID=pid;
+openModal(`<div class="mhead"><b>🏷️ عرض «${esc(p.name)}»</b><button class="x" onclick="closeModal()">✕</button></div>
+<div class="mbody">
+<div class="demo mb"><b style="font-size:12.5px">ضع خصماً على كيفك</b>
+<p class="hint" style="margin-top:2px">اختر نسبة جاهزة أو اكتب أي نسبة تريدها من ١ إلى ٩٠٪ — يُحدّث السعر للعملاء فوراً.</p></div>
+<div class="chiprow">${[5,10,15,20,25,30,40,50,60].map(v=>`<button class="chip" style="--acc:${ST(p.store).color}" onclick="$('#mp-off2').value=${v};offPrev()">${ar(v)}٪</button>`).join('')}<button class="chip" style="--acc:var(--red)" onclick="$('#mp-off2').value=0;offPrev()">إلغاء العرض</button></div>
+<div class="fld mt"><label>نسبة الخصم (٪) — ٠ يعني بلا عرض</label><input class="inp" id="mp-off2" type="number" min="0" max="90" value="${p.off||0}" oninput="offPrev()"></div>
+<div class="acard" style="padding:12px" id="offprev"></div>
+<div class="spread mt"><button class="btn gray" onclick="closeModal()">تراجع</button>
+<button class="btn" onclick="mOfferSet2()">حفظ العرض</button></div>
+</div>`);
+offPrev();
+}
+function offPrev(){
+const el=$('#offprev');if(!el)return;
+const p=P(OFFPID);const v=offVal();const e=r2(p.price*(1-v/100));
+el.innerHTML=`<div class="spread"><span class="hint">السعر الحالي</span><b>${money(p.off?r2(p.price*(1-p.off/100)):p.price)}</b></div>
+<div class="spread" style="margin-top:5px"><span class="hint">${v?'السعر بعد الخصم الجديد':'بلا خصم — السعر الأصلي'}</span><b class="fx" style="font-size:16px;color:${v?'var(--grn)':'var(--ink)'}">${money(e)}</b></div>
+${v?`<div class="hint" style="margin-top:5px">العميل يوفّر <b style="color:var(--red)">${money(r2(p.price-e))}</b> (${ar(v)}٪)</div>`:''}`;
+}
+function mOfferSet2(){
+const p=P(OFFPID);const v=offVal();p.off=v;
+closeModal();toast(v?'فُعّل خصم '+ar(v)+'٪ على «'+p.name+'» — السعر الجديد '+money(eff(p)):'أُلغي العرض على «'+p.name+'»','ok');render();
+}
+/* ===== تقييمات وتعليقات العملاء على المنتج ===== */
+function mProdRevs(pid){
+const p=P(pid);
+const dist=[5,4,3,2,1].map(n=>p.ratings.filter(r=>r.stars===n).length);
+const mx=Math.max(1,...dist);
+openModal(`<div class="mhead"><b>⭐ تقييمات «${esc(p.name)}»</b><button class="x" onclick="closeModal()">✕</button></div>
+<div class="mbody">
+<div class="acard" style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+<div style="text-align:center;min-width:92px"><b class="fx" style="font-size:31px;color:var(--amb2)">${ard(p.rt)}</b><div>${STARS(p.rt)}</div><div class="hint">${ar(p.rc)} تقييم · ${ar(p.sold)} عملية بيع</div></div>
+<div style="flex:1;min-width:170px">${dist.map((n,i)=>{const st=5-i;return `<div style="display:flex;align-items:center;gap:7px;font-size:10.5px;margin:3px 0"><span style="width:26px">${ar(st)}★</span><div style="flex:1;height:7px;background:#EFE9DA;border-radius:8px;overflow:hidden"><i style="display:block;height:100%;width:${n/mx*100}%;background:var(--amb)"></i></div><span class="mut" style="width:20px">${ar(n)}</span></div>`}).join('')}</div>
+</div>
+${p.ratings.length?[...p.ratings].reverse().map(r=>`<div class="mprev"><div class="spread" style="flex-wrap:wrap"><div style="display:flex;gap:8px;align-items:center"><div class="avat" style="width:30px;height:30px;border-radius:10px;font-size:12px">${esc((r.name||'ع')[0])}</div><b style="font-size:12px">${esc(r.name||'عميل')}</b>${STARS(r.stars)}</div><span class="hint">${ago(r.at)}</span></div><p>${esc(r.txt)||'<i class="mut">قيّم بالنجوم دون تعليق نصي</i>'}</p></div>`).join(''):`<div class="empty" style="padding:26px"><div class="em">💬</div><b>لا تعليقات بعد</b><span>سيظهر هنا كل تعليق وتقييم يكتبه عملاؤك عن هذا المنتج</span></div>`}
+</div>`,'lg');
+}
 function mDelProd(pid){
 openModal(`<div class="mhead"><b>حذف منتج</b><button class="x" onclick="closeModal()">✕</button></div><div class="mbody">
 <p style="font-size:13.5px">هل تريد حذف «${esc(P(pid).name)}» من متجرك؟ لا يمكن التراجع.</p>
@@ -1649,8 +1774,34 @@ openModal(`<div class="mhead"><b>حذف منتج</b><button class="x" onclick="c
 <button class="btn red" onclick="PRODUCTS=PRODUCTS.filter(p=>p.pid!=='${pid}'&&p.id!=='${pid}');closeModal();toast('حُذف المنتج');render()">تأكيد الحذف</button></div></div>`)}
 function pgMOrders(){
 const gs=myGroups();
+const NR=['pending','preparing','shipped'],RC=['received','released'];
+const stat=x=>x.g.status;
+const C={all:gs.length,
+nr:gs.filter(x=>NR.includes(stat(x))).length,
+rcv:gs.filter(x=>RC.includes(stat(x))).length,
+pnd:gs.filter(x=>stat(x)==='pending').length,
+prep:gs.filter(x=>stat(x)==='preparing').length,
+ship:gs.filter(x=>stat(x)==='shipped').length,
+recv:gs.filter(x=>stat(x)==='received').length,
+rel:gs.filter(x=>stat(x)==='released').length,
+bad:gs.filter(x=>['disputed','refunded'].includes(stat(x))).length};
+const relVal=r2(gs.filter(x=>stat(x)==='released').reduce((a,x)=>a+x.g.sub,0));
+const f=VIEW.mof||'all';
+const PRED={all:()=>true,pnd:x=>stat(x)==='pending',prep:x=>stat(x)==='preparing',ship:x=>stat(x)==='shipped',recv:x=>stat(x)==='received',rel:x=>stat(x)==='released',bad:x=>['disputed','refunded'].includes(stat(x)),nr:x=>NR.includes(stat(x)),rcv:x=>RC.includes(stat(x))};
+const FILTS=[['all','📦 الكل'],['nr','⏳ لم تُستلم بعد'],['rcv','📥 تم استلامها'],['pnd','بانتظار القبول'],['prep','قيد التحضير'],['ship','تم شحنها'],['recv','قيد الفحص'],['rel','🔓 محررة'],['bad','⚖️ نزاعات واسترجاعات']];
+const list=gs.filter(PRED[f]);
 return `<div class="pghead"><h1>📦 طلبات متجري (${ar(gs.length)})</h1></div>
-${gs.map(({o,g,gi})=>{
+<div class="kpis mb">
+<div class="kpi nvy"><i>📦</i><b>${ar(C.all)}</b><span>إجمالي الطلبات</span></div>
+<div class="kpi amb"><i>⏳</i><b>${ar(C.nr)}</b><span>لم تُستلم بعد</span></div>
+<div class="kpi grn"><i>📥</i><b>${ar(C.rcv)}</b><span>استلمها العميل</span></div>
+<div class="kpi grn"><i>🔓</i><b>${ar(C.rel)}</b><span>محررة (مكتملة)</span></div>
+<div class="kpi red"><i>⚖️</i><b>${ar(C.bad)}</b><span>نزاعات واسترجاعات</span></div>
+<div class="kpi"><i>💰</i><b>${money(relVal)}</b><span>قيمة الشحنات المحررة</span></div>
+</div>
+<div class="chiprow">${FILTS.map(([k,l])=>`<button class="chip ${f===k?'on':''}" onclick="VIEW.mof='${k}';render()">${l} (${ar(C[k])})</button>`).join('')}</div>
+<div class="mt">
+${list.map(({o,g,gi})=>{
 const cust=USERS[o.customer];
 const dis=DB.disputes.find(d=>d.order===o.id&&d.store===SES.store);
 return `<div class="ocard">
@@ -1659,7 +1810,8 @@ return `<div class="ocard">
 <div class="hint">${cust?esc(cust.name.split(' ')[0]):'عميل'} ${cust&&cust.hidePhone?'· رقمه مخفي بطلبه':'· '+ar(o.customer)} · ${dt(o.at)}</div></div>
 <span class="tag ${g.status==='pending'?'amb':g.status==='released'?'grn':g.status==='disputed'?'red':'gry'}">${GLBL[g.status]}</span>
 </div>
-<div class="oitems">${g.items.map(it=>{const p=P(it.pid);return `<span class="oitag">${p?imgTag(p.imgs[0],'',''):''} ${ar(it.qty)}× ${p?esc(p.name):'—'}</span>`}).join('')}</div>
+${o.freeDl?'<span class="tag grn" style="margin-top:6px">🚚 توصيل مجاني — استبدلها العميل بالنقاط</span>':''}
+<div class="oitems">${g.items.map(it=>{const p=P(it.pid);return `<span class="oitag">${p?imgTag(p.imgs[0],'',''):''} ${ar(it.qty)}× ${p?esc(p.name):'—'}${p&&(p.pts||0)>0?` <span style="color:var(--amb2)">🌟${ar(p.pts*it.qty)}</span>`:''}</span>`}).join('')}</div>
 ${['disputed','refunded'].includes(g.status)?'':`<div class="osteps">${GSTEPS.map((l,i)=>`<div class="st ${i<gstep(g)?'on':i===gstep(g)?'on':''}"><i></i>${l}</div>`).join('')}</div>`}
 ${g.status==='received'?`<div class="hint">⏳ العميل يفحص الشحنة — يُحرر المبلغ تلقائياً بعد <b class="cd" style="border:0;background:none;padding:0" data-cd="${g.complaintUntil}">${clock(g.complaintUntil-Date.now())}</b></div>`:''}
 ${g.status==='pending'?`<button class="btn sm mt" onclick="mAccept(${o.id},${gi})">✅ اقبل الطلب وابدأ التحضير</button>`:''}
@@ -1667,7 +1819,8 @@ ${g.status==='preparing'?`<button class="btn amb sm mt" onclick="mShip(${o.id},$
 ${g.status==='disputed'&&dis?`<button class="btn red sm mt" onclick="openDispute('${dis.id}')">⚖️ متابعة النزاع والرد على العميل</button>`:''}
 ${g.status==='released'&&g.payout?`<div class="hint mt" style="background:#1D443208;border-radius:10px;padding:7px 11px">🔓 حُرر ${money(g.payout.net)} صافياً (عمولة ضمين ${money(g.payout.comm)})${g.rated?' · تقييم العميل '+STARS(g.rated.stars):''}</div>`:''}
 <div class="hint" style="margin-top:6px">قيمة الشحنة: <b>${money(g.sub)}</b> → صافيك بعد العمولة: <b style="color:var(--grn)">${money(r2(g.sub*0.975))}</b></div>
-</div>`}).join('')||'<div class="empty"><div class="em">📦</div><b>لا طلبات بعد</b><span>ستظهر طلبات عملائك هنا لحظة وصولها</span></div>'}`;
+</div>`}).join('')||`<div class="empty"><div class="em">📦</div><b>لا طلبات في هذا التصنيف</b><span>غيّر الفلتر أو تابع كل الطلبات</span></div>`}
+</div>`;
 }
 function mAccept(oid,gi){const o=DB.orders.find(x=>x.id===oid);const g=o.groups[gi];
 g.status='preparing';
@@ -1682,19 +1835,37 @@ const s=myStore();
 const tx=[];DB.orders.forEach(o=>o.groups.forEach(g=>{if(g.store===s.id&&g.payout&&g.payout.net>0)tx.push({o,g})}));
 tx.sort((a,b)=>b.g.releasedAt-a.g.releasedAt);
 const totalIn=tx.reduce((a,x)=>a+x.g.payout.net,0);
-return `<div class="pghead"><h1>💰 محفظة ${esc(s.name)}</h1></div>
+const totalComm=tx.reduce((a,x)=>a+x.g.payout.comm,0);
+const fund=DB.ptsFunding.filter(x=>x.store===s.id);
+const fundNet=r2(fund.reduce((a,x)=>a+x.amt,0));
+return `<div class="pghead"><h1>💰 محفظة ${esc(s.name)}</h1><button class="btn amb sm" onclick="toast('أُرسل طلب السحب — يُحوَّل خلال ٢٤ ساعة 🏦','ok')">🏦 طلب سحب الرصيد</button></div>
 <div class="kpis">
-<div class="kpi grn"><i>💵</i><b>${money(DB.storeWallets[s.id]||0)}</b><span>الرصيد المتاح للسحب</span></div>
+<div class="kpi grn"><i>💵</i><b>${money(DB.storeWallets[s.id]||0)}</b><span>رصيدك المتاح للسحب</span></div>
 <div class="kpi amb"><i>🔒</i><b>${money(heldFor(s.id))}</b><span>محجوز لحظة تحرير الطلبات</span></div>
-<div class="kpi nvy"><i>📈</i><b>${money(totalIn)}</b><span>إجمالي صافي التحريرات</span></div>
-<div class="kpi red"><i>🧾</i><b>${money(r2(totalIn*0.025/0.975))}</b><span>إجمالي عمولات ضمين المدفوعة</span></div>
+<div class="kpi nvy"><i>📈</i><b>${money(totalIn)}</b><span>صافي التحريرات (٩٧٫٥٪)</span></div>
+<div class="kpi red"><i>🧾</i><b>${money(totalComm)}</b><span>عمولات الإدارة (٢٫٥٪)</span></div>
 </div>
-<div class="acard mt"><h3>سجل التحريرات (صافي بعد خصم ٢٫٥٪)</h3>
-<div class="rows">${tx.map(({o,g})=>`<div class="row" style="cursor:pointer" onclick="go('m-orders')">
-<div style="flex:1"><b>طلب #${ar(o.id)} · ${USERS[o.customer]?esc(USERS[o.customer].name.split(' ')[0]):'عميل'}</b>
+<div class="acard mt"><h3>⚙️ كيف ينقسم كل مبلغ محرَّر؟</h3>
+<div class="splitbar"><i class="net"></i><i class="comm"></i></div>
+<div class="splitrow"><span><b style="color:var(--grn)">■</b> صافي المتجر ٩٧٫٥٪ ← محفظتك مباشرة</span><span><b style="color:var(--amb)">■</b> عمولة الإدارة ٢٫٥٪ ← محفظة الإدارة مباشرة</span></div>
+<p class="hint mt" style="line-height:1.9">عند تحرير أي شحنة يتحول مبلغها شطرين لحظياً: <b>صافي حقك</b> يدخل رصيدك المتاح، و<b>عمولة ضمين</b> تتحول مباشرة لمحفظة الإدارة — كل طرف يستلم حقه فوراً بلا انتظار ولا تسويات.</p></div>
+<div class="acard mt"><h3>🔓 سجل التحريرات (كل تحرير بشطره: صافيك + عمولة الإدارة)</h3>
+<div class="rows">${tx.map(({o,g})=>`<div class="row" style="cursor:pointer;flex-wrap:wrap" onclick="go('m-orders')">
+<div style="flex:1;min-width:150px"><b>طلب #${ar(o.id)} · ${USERS[o.customer]?esc(USERS[o.customer].name.split(' ')[0]):'عميل'}</b>
 <div class="hint">${dt(g.releasedAt)} · بواسطة ${esc(g.releasedBy||'—')}</div></div>
-<div style="text-align:left"><b class="fx" style="color:var(--grn)">+${money(g.payout.net)}</b><div class="hint">عمولة ${money(g.payout.comm)}</div></div></div>`).join('')||'<div class="hint">لا تحريرات بعد</div>'}</div></div>
-<button class="btn amb wide" onclick="toast('أُرسل طلب السحب — يُحوَّل خلال ٢٤ ساعة 🏦','ok')">🏦 طلب سحب الرصيد المتاح</button>`;
+<div style="text-align:left">
+<div class="hint">قيمة الشحنة ${money(g.payout.sub)}</div>
+<b class="fx" style="color:var(--grn)">+ ${money(g.payout.net)} صافيك</b>
+<div class="hint" style="color:var(--amb2)">− ${money(g.payout.comm)} عمولة الإدارة ← مباشرة</div>
+</div></div>`).join('')||'<div class="hint">لا تحريرات بعد — تُحرر الشحنات بعد استلام العميل</div>'}</div></div>
+${fund.length?`<div class="acard mt"><h3>🌟 تمويلات نقاط الولاء</h3>
+<p class="hint mb" style="line-height:1.8">كل نقطة تضيفها لمنتجاتك تُخصم من محفظتك فوراً وتُحوَّل لمحفظة الإدارة، ويستلمها العميل نقاط ولاء عند تحرير طلبه.</p>
+<div class="rows">${fund.map(f=>`<div class="row">
+<div style="flex:1"><b>${f.pts>0?'تمويل '+ar(f.pts)+' نقطة':'استرجاع '+ar(-f.pts)+' نقطة'} — ${esc(f.pname)}</b>
+<div class="hint">${dt(f.at)}</div></div>
+<b class="fx" style="color:${f.amt>=0?'var(--amb2)':'var(--grn)'}">${f.amt>=0?'−':'+'} ${money(Math.abs(f.amt))}</b></div>`).join('')}</div>
+<div class="hint mt">إجمالي تمويلك للنقاط: <b>${money(fundNet)}</b> — تجدها في محفظة الإدارة</div></div>`:''}
+<button class="btn amb wide mt" onclick="toast('أُرسل طلب السحب — يُحوَّل خلال ٢٤ ساعة 🏦','ok')">🏦 طلب سحب الرصيد المتاح</button>`;
 }
 function pgMDisputes(){
 const ds=DB.disputes.filter(d=>d.store===SES.store);
@@ -1710,9 +1881,41 @@ ${d.ruling?`<div class="verd ${d.ruling.act==='release'?'rel':'ref'}" style="mar
 }
 function pgMSet(){
 const s=myStore(),sec=SEC(s.sec);
+const own=USERS[s.owner];
+const ps=PRODUCTS.filter(p=>p.store===s.id);
+const myFund=DB.ptsFunding.filter(x=>x.store===s.id);
 return `<div class="pghead"><h1>⚙️ إعدادات المتجر</h1><span class="tag" style="background:${s.color}18;color:${s.color}">${sec.name}</span></div>
 <div class="grid2">
-<div class="acard"><h3>🏪 بيانات المتجر</h3>
+<div>
+<div class="acard"><h3>🏪 ملف المتجر الكامل</h3>
+<div class="setrow"><div class="ic">🏷️</div><div class="tx"><b>اسم المتجر</b><span>${esc(s.name)}</span></div><span class="tag grn">معروض للعملاء</span></div>
+<div class="setrow"><div class="ic">🗂️</div><div class="tx"><b>القسم</b><span>${sec.name} — نافذة حماية ${sec.win} بعد الاستلام</span></div><span class="tag" style="background:${s.color}18;color:${s.color}">ثابت</span></div>
+<div class="setrow"><div class="ic">👤</div><div class="tx"><b>المالك</b><span>${own?esc(own.name)+' · '+ar(s.owner):'—'}</span></div><span class="tag ${s.approved?'grn':'amb'}">${s.approved?'معتمد من الإدارة':'بانتظار الاعتماد'}</span></div>
+<div class="setrow"><div class="ic">🆔</div><div class="tx"><b>معرّف المتجر</b><span>${s.id.toUpperCase()} · عضوية المالك ${own?'منذ '+MONTHS[new Date(own.since).getMonth()]+' '+ar(new Date(own.since).getFullYear()):'—'}</span></div></div>
+<div class="setrow"><div class="ic">⭐</div><div class="tx"><b>تقييم المتجر</b><span>${ard(s.rt)} من ٥ — ${ar(s.sales)} عملية بيع مكتملة</span></div>${STARS(s.rt)}</div>
+<div class="setrow"><div class="ic">🧺</div><div class="tx"><b>المنتجات المعروضة</b><span>${ar(ps.length)} منتج · ${ar(ps.filter(p=>p.off>0).length)} عليه عرض · ${ar(ps.filter(p=>(p.pts||0)>0).length)} يمنح نقاطاً</span></div></div>
+<div class="setrow"><div class="ic">💰</div><div class="tx"><b>المحفظة</b><span>متاح ${money(DB.storeWallets[s.id]||0)} · محجوز ${money(heldFor(s.id))}</span></div><button class="btn soft xs" onclick="go('m-wallet')">عرض</button></div>
+</div>
+<div class="acard"><h3>🖼️ هوية المتجر — اللوقو والصورة</h3>
+<div class="storeid" style="--c:${s.color}">
+<div class="big">${s.logo?`<img src="${s.logo}">`:s.name[0]}</div>
+<b>${esc(s.name)}</b>
+<div class="hint">اللوقو يظهر مكان الحرف في بطاقة متجرك وصفحته لكل العملاء</div>
+<div class="cov">${s.cover?`<img src="${s.cover}">`:'صورة غلاف متجرك (بانر صفحة المتجر)'}</div>
+</div>
+<div class="spread mt" style="gap:8px;flex-wrap:wrap">
+<button class="btn soft sm" onclick="pickStoreImg('logo')">📷 رفع/تغيير اللوقو</button>
+${s.logo?`<button class="btn gray xs" onclick="rmStoreImg('logo')">إزالة اللوقو</button>`:''}
+</div>
+<div class="spread mt" style="gap:8px;flex-wrap:wrap">
+<button class="btn soft sm" onclick="pickStoreImg('cover')">🖼️ رفع/تغيير صورة الغلاف</button>
+${s.cover?`<button class="btn gray xs" onclick="rmStoreImg('cover')">إزالة الغلاف</button>`:''}
+</div>
+<p class="hint mt" style="line-height:1.8">تظهر هوية متجرك لكل عملاء ضمين: اللوقو في بطاقات المتجر والبحث والأقسام، والغلاف كبانر لصفحة متجرك.</p>
+</div>
+</div>
+<div>
+<div class="acard"><h3>✏️ بيانات قابلة للتعديل</h3>
 <div class="fld"><label>اسم المتجر</label><input class="inp" id="ms-nm" value="${esc(s.name)}"></div>
 <div class="fld mt"><label>وصف المتجر (يظهر لكل العملاء)</label><textarea class="inp" id="ms-ds" style="min-height:80px">${esc(s.desc)}</textarea></div>
 <button class="btn mt" onclick="mSaveStore()">حفظ البيانات</button>
@@ -1721,10 +1924,22 @@ return `<div class="pghead"><h1>⚙️ إعدادات المتجر</h1><span cla
 <div class="setrow"><div class="ic">${s.open?'🟢':'🔴'}</div><div class="tx"><b>استقبال الطلبات</b><span>${s.open?'متجرك مفتوح ويستقبل الطلبات':'مغلق مؤقتاً — منتجاتك تظهر دون زر شراء'}</span></div>
 <button class="sw ${s.open?'on':''}" onclick="myStore().open=!myStore().open;render()"></button></div>
 <div class="setrow"><div class="ic">🛡️</div><div class="tx"><b>نافذة حماية قسمك</b><span>${sec.name}: ${sec.win} بعد استلام العميل — ثابتة بسياسة ضمين</span></div><span class="tag grn">إلزامية</span></div>
-<div class="setrow"><div class="ic">🧾</div><div class="tx"><b>عمولة ضمين</b><span>٢٫٥٪ من كل شحنة — تُقتطع لحظة التحرير فقط</span></div><span class="tag amb">٢٫٥٪</span></div>
+<div class="setrow"><div class="ic">⛔</div><div class="tx"><b>حالة الاعتماد والإيقاف</b><span>${!s.approved?'لم يُعتمد متجرك بعد — بانتظار مراجعة الإدارة':s.susp?'متجرك موقوف مؤقتاً من الإدارة — راجع فريق الامتثال':'متجرك معتمد ويعمل بكامل صلاحياته'}</span></div><span class="tag ${!s.approved?'amb':s.susp?'red':'grn'}">${!s.approved?'معلق':s.susp?'موقوف':'سليم'}</span></div>
+</div>
+<div class="acard"><h3>🧾 العمولة ونظام النقاط</h3>
+<div class="setrow"><div class="ic">🧾</div><div class="tx"><b>عمولة ضمين</b><span>٢٫٥٪ من كل شحنة — تُقتطع لحظة التحرير فقط وتتحول مباشرة لمحفظة الإدارة</span></div><span class="tag amb">٢٫٥٪</span></div>
+<div class="setrow"><div class="ic">🌟</div><div class="tx"><b>قيمة النقطة (تحددها الإدارة)</b><span>${money(ptsVal())} للنقطة — تُخصم من محفظتك عند إضافة نقاط لأي منتج وتُحوَّل لمحفظة الإدارة</span></div><span class="tag amb">${money(ptsVal())}</span></div>
+<div class="setrow"><div class="ic">📊</div><div class="tx"><b>تمويلك للنقاط حتى الآن</b><span>${ar(myFund.reduce((a,x)=>a+x.pts,0))} نقطة تمّولها · ${money(r2(myFund.reduce((a,x)=>a+x.amt,0)))}</span></div><button class="btn soft xs" onclick="go('m-wallet')">السجل</button></div>
+</div>
 </div>
 </div>`;
 }
+function pickStoreImg(kind){
+$('#fup').onchange=e=>{const f=e.target.files[0];if(!f)return;
+const rd=new FileReader();rd.onload=()=>{myStore()[kind]=rd.result;$('#fup').value='';
+toast(kind==='logo'?'حُدّث لوقو متجرك — يظهر الآن لكل العملاء ✓':'حُدّثت صورة غلاف متجرك ✓','ok');render()};rd.readAsDataURL(f)};
+$('#fup').click();}
+function rmStoreImg(kind){delete myStore()[kind];toast(kind==='logo'?'أُزيل اللوقو وعاد الحرف الافتراضي':'أُزيلت صورة الغلاف وعاد اللون الافتراضي');render()}
 function mSaveStore(){const s=myStore();
 const nm=($('#ms-nm').value||'').trim();
 if(nm.length<2){toast('اسم المتجر قصير','err');return}
@@ -1817,9 +2032,19 @@ return `<div class="pghead"><h1>📈 إيرادات ضمين</h1><span class="ta
 <div class="kpi grn"><i>🧾</i><b>${money(DB.aRevenue)}</b><span>إجمالي العمولات حتى اليوم</span></div>
 <div class="kpi amb"><i>🔒</i><b>${money(vaultNow())}</b><span>محجوز في الخزنة الآن</span></div>
 <div class="kpi nvy"><i>🏪</i><b>${money(r2(Object.values(DB.storeWallets).reduce((a,b)=>a+b,0)))}</b><span>صافي أرصدة التجار</span></div>
+<div class="kpi amb"><i>🌟</i><b>${money(DB.aPtsWallet||0)}</b><span>محفظة الإدارة من تمويل النقاط</span></div>
 </div>
 <div class="acard"><h3>عمولات آخر ٥ أشهر (ألف ر.س)</h3>
 <div class="rvbars">${DB.revMonths.map(m=>`<div class="rv"><span>${ard(m.v)}</span><i style="height:${Math.max(8,m.v/mx*100)}%"></i><b>${m.m}</b></div>`).join('')}</div>
+</div>
+<div class="acard mt"><h3>🌟 إعدادات برنامج النقاط (صلاحية الإدارة)</h3>
+<div class="setrow"><div class="ic">⭐</div><div class="tx"><b>قيمة النقطة الواحدة</b><span>يموّلها التاجر من محفظته عند إضافة نقاط لمنتجاته — وتدخل محفظة الإدارة</span></div>
+<select class="inp" style="width:130px;flex-shrink:0" onchange="setPtsVal(this.value)">${[0.05,0.1,0.15,0.2].map(v=>`<option value="${v}" ${ptsVal()===v?'selected':''}>${ard(v)} ر.س</option>`).join('')}</select></div>
+<div class="setrow"><div class="ic">🚚</div><div class="tx"><b>نقاط التوصيل المجاني</b><span>عدد النقاط التي يستبدلها العميل مقابل توصيل مجاني لطلبه من السلة</span></div>
+<select class="inp" style="width:130px;flex-shrink:0" onchange="setFreeDlPts(this.value)">${[150,250,350].map(v=>`<option value="${v}" ${fdPts()===v?'selected':''}>${ar(v)} نقطة</option>`).join('')}</select></div>
+<div class="setrow"><div class="ic">🏦</div><div class="tx"><b>محفظة الإدارة من النقاط</b><span>رسوم تمويل النقاط المحصّلة من التجار — تُستخدم في مكافآت العملاء</span></div><b class="fx" style="color:var(--amb2)">${money(DB.aPtsWallet||0)}</b></div>
+${DB.ptsFunding.length?`<div class="hr"></div><b style="font-size:11.5px">آخر تمويلات التجار</b>
+<div class="rows">${DB.ptsFunding.slice(0,4).map(x=>`<div class="row"><div style="flex:1;min-width:0"><b>${esc(ST(x.store).name)} — ${esc(x.pname)}</b><div class="hint">${ago(x.at)}</div></div><span class="hint">${x.pts>0?'+':''}${ar(x.pts)} نقطة</span><b class="fx" style="color:var(--amb2)">${money(x.amt)}</b></div>`).join('')}</div>`:''}
 </div>
 <div class="acard mt"><h3>أرصدة تجار الضمان</h3>
 <div class="rows">${STORES.map(s=>`<div class="row">
@@ -1827,6 +2052,8 @@ return `<div class="pghead"><h1>📈 إيرادات ضمين</h1><span class="ta
 <div style="flex:1"><b>${esc(s.name)}</b><div class="hint">${SEC(s.sec).name} · محجوز لصالحه ${money(heldFor(s.id))}</div></div>
 <b class="fx" style="color:var(--grn)">${money(DB.storeWallets[s.id]||0)}</b></div>`).join('')}</div></div>`;
 }
+function setPtsVal(v){DB.ptsVal=+v;toast('صارت قيمة النقطة '+money(+v)+' — تسري على تمويلات التجار الجديدة','ok');render()}
+function setFreeDlPts(v){DB.freeDlPts=+v;toast('صار استبدال التوصيل المجاني بـ'+ar(+v)+' نقطة للعميل','ok');render()}
 /* ================= الإقلاع ================= */
 document.addEventListener('click',()=>document.querySelectorAll('.dd.open').forEach(d=>d.classList.remove('open')));
 render();
