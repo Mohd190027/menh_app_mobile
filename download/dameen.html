@@ -334,6 +334,16 @@ a{color:inherit;text-decoration:none}
 .splitbar i.comm{background:linear-gradient(90deg,var(--amb2),var(--amb));flex:2.5}
 .splitrow{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;font-size:10.5px;font-weight:700}
 
+/* ===== اللوجستيات والمحادثات ===== */
+.lgstrip{background:#2E3A460a;border:1px solid #2E3A4626;border-radius:12px;padding:9px 12px;margin-top:8px;font-size:11px;line-height:1.85}
+.lgev{font-size:10px;color:var(--mut);padding:3px 0 0;border-top:1px dashed #E2DDD0;margin-top:4px}
+.freeprog{width:100%;margin-top:7px}
+.freeprog .fp-hint{font-size:10.5px;font-weight:700;color:var(--amb2);margin-bottom:4px}
+.freeprog .pbar{height:7px;background:#E5DEC9}
+.freeprog .pbar i{background:linear-gradient(90deg,var(--amb),var(--amb2))}
+.bkcard{border:1.5px dashed #A45A3A66;background:#A45A3A0c;border-radius:14px;padding:11px 13px;margin-top:9px}
+.giftrow{display:flex;gap:9px;align-items:center;background:#B07E2B12;border:1px dashed #B07E2B66;border-radius:12px;padding:8px 12px;font-size:11.5px;font-weight:700;margin-top:7px}
+
 /* ===== KPIs / dashboards ===== */
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(163px,1fr));gap:12px}
 .kpi{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:13px 15px;position:relative;overflow:hidden}
@@ -425,21 +435,22 @@ const STARS=r=>{r=Math.round(r);return '<span class="stars">'+'★'.repeat(r)+'�
 
 /* ================= الأقسام ================= */
 const SECTIONS=[
-{id:'fashion',name:'الأزياء',icon:'👗',color:'#7A3B44',winMin:120,win:'ساعتان',desc:'عبايات وأزياء وحقائب بلمسات محلية'},
-{id:'family',name:'الأسرة المنتجة',icon:'🏡',color:'#556636',winMin:30,win:'٣٠ دقيقة',desc:'عسل وتمور ومنتجات بيتية طازجة'},
-{id:'deco',name:'الديكور والهدايا',icon:'🎁',color:'#A45A3A',winMin:1440,win:'٢٤ ساعة',desc:'لمسات ديكور وهدايا تليق بذوقك'}];
-const CATS={fashion:['عبايات','أزياء','حقائب وعطور'],family:['عسل وتمور','ألبان ومخبوزات','سدو وحرف'],deco:['ديكور','هدايا','قهوة وضيافة']};
+{id:'fashion',name:'عالم الأزياء والجمال',icon:'👗',color:'#7A3B44',winMin:120,win:'ساعتان',desc:'عبايات وأزياء وعطور وعناية بلمسة محلية'},
+{id:'family',name:'عالم المأكولات والضيافة',icon:'🏡',color:'#556636',winMin:30,win:'٣٠ دقيقة',desc:'عسل وتمور وأطباق مطابخ وحلويات طازجة'},
+{id:'deco',name:'عالم الهدايا والديكور والمناسبات',icon:'🎁',color:'#A45A3A',winMin:1440,win:'٢٤ ساعة',desc:'هدايا وديكور وتنسيق مناسبات ميداني'}];
+const CATS={fashion:['عبايات','أزياء','حقائب وعطور','العناية والجمال'],family:['عسل وتمور','ألبان ومخبوزات','حلويات وأطباق','سدو وحرف'],deco:['ديكور','هدايا','قهوة وضيافة','تنسيق مناسبات']};
 const SEC=id=>SECTIONS.find(s=>s.id===id);
 
 /* ================= المتاجر ================= */
 const STORES=[
-{id:'s1',name:'دَفى العبايات',sec:'fashion',owner:'0500000002',color:'#7A3B44',desc:'عبايات كتان وخامات فاخرة بخياطة سعودية متقنة',rt:4.8,sales:342,approved:true,susp:false,open:true},
-{id:'s2',name:'خيوط الغندورة',sec:'fashion',owner:'0500000004',color:'#96505E',desc:'طرق بيتية وأزياء مطرزة يدوياً بخيوط ملونة',rt:4.6,sales:198,approved:true,susp:false,open:true},
-{id:'s3',name:'مزرعة الواحة',sec:'family',owner:'0500000005',color:'#556636',desc:'عسل سدر وتمور خلاص من مزارعنا مباشرة',rt:4.9,sales:521,approved:true,susp:false,open:true},
-{id:'s4',name:'بيت السدو',sec:'family',owner:'0500000006',color:'#6B7A3F',desc:'منتجات سدو أصيلة منسوجة على النول التقليدي',rt:4.7,sales:87,approved:true,susp:false,open:true},
-{id:'s5',name:'لمسة ديكور',sec:'deco',owner:'0500000007',color:'#A45A3A',desc:'شموع ومباخر ومستلزمات منزل بأناقة هادئة',rt:4.5,sales:264,approved:true,susp:false,open:true},
-{id:'s6',name:'هدايا المعمور',sec:'deco',owner:'0500000008',color:'#B26640',desc:'بوكسات هدايا مغلفة بفخامة تناسب كل مناسبة',rt:4.8,sales:173,approved:true,susp:false,open:true},
-{id:'s7',name:'فخار الطائف',sec:'deco',owner:'0500000009',color:'#8F5B36',desc:'فخاريات مدوّرة يدوياً من طين الطائف',rt:4.4,sales:12,approved:false,susp:false,open:true}];
+{id:'s1',name:'دَفى العبايات',sec:'fashion',owner:'0500000002',color:'#7A3B44',desc:'عبايات كتان وخامات فاخرة بخياطة سعودية متقنة',rt:4.8,sales:342,approved:true,susp:false,open:true,city:'الرياض',dlMode:'customer',freeMin:300},
+{id:'s2',name:'خيوط الغندورة',sec:'fashion',owner:'0500000004',color:'#96505E',desc:'طرق بيتية وأزياء مطرزة يدوياً بخيوط ملونة',rt:4.6,sales:198,approved:true,susp:false,open:true,city:'جدة',dlMode:'customer',freeMin:350},
+{id:'s3',name:'مزرعة الواحة',sec:'family',owner:'0500000005',color:'#556636',desc:'عسل سدر وتمور خلاص من مزارعنا مباشرة',rt:4.9,sales:521,approved:true,susp:false,open:true,city:'الأحساء',dlMode:'half',freeMin:250},
+{id:'s4',name:'بيت السدو',sec:'family',owner:'0500000006',color:'#6B7A3F',desc:'منتجات سدو أصيلة منسوجة على النول التقليدي',rt:4.7,sales:87,approved:true,susp:false,open:true,city:'بريدة',dlMode:'customer',freeMin:0,qs:['هل لديك ملاحظة على درجة تمليح الجبن؟','التميس بالبر أم بالعسل الأسود؟']},
+{id:'s5',name:'لمسة ديكور',sec:'deco',owner:'0500000007',color:'#A45A3A',desc:'شموع ومباخر ومستلزمات منزل بأناقة هادئة',rt:4.5,sales:264,approved:true,susp:false,open:true,city:'الطائف',dlMode:'customer',freeMin:400},
+{id:'s6',name:'هدايا المعمور',sec:'deco',owner:'0500000008',color:'#B26640',desc:'بوكسات هدايا مغلفة بفخامة تناسب كل مناسبة',rt:4.8,sales:173,approved:true,susp:false,open:true,city:'الرياض',dlMode:'free',freeMin:0},
+{id:'s7',name:'فخار الطائف',sec:'deco',owner:'0500000009',color:'#8F5B36',desc:'فخاريات مدوّرة يدوياً من طين الطائف',rt:4.4,sales:12,approved:false,susp:false,open:true,city:'الطائف',dlMode:'customer',freeMin:0},
+{id:'s8',name:'مطبخ أم خالد',sec:'family',owner:'0500000010',color:'#7C5A3A',desc:'طبخ بيتي سعودي — كيك مناسبات وورق عنب على أصولها',rt:4.7,sales:156,approved:true,susp:false,open:true,city:'الرياض',dlMode:'customer',freeMin:150,qs:['هل لديك حساسية من أي مكسرات؟','الكريمة أم التمر على الكيكة؟','وقت التسليم المفضل لديك؟']}];
 const ST=id=>STORES.find(s=>s.id===id);
 const U='https://images.unsplash.com/photo-';
 const IM=(id,s)=>U+id+'?q=80&w=760&auto=format&fit=crop';
@@ -486,10 +497,10 @@ specs:{'الخامة':'صوف طبيعي','المقاس':'١٤٠ × ٩٠ سم','
 {id:'p13',store:'s4',name:'حزام سدو منسوج',cat:'سدو وحرف',price:150,off:0,stock:8,sold:73,rt:4.5,rc:17,imgs:[PICS('حزام-سدو')],
 desc:'حزام منسوج بخيوط السدو الملوّنة مع إبزيم نحاسي مصقول. قطعة تراثية عملية تلبس مع الثوب أو كإكسسوار عصري فوق المعطف.',
 specs:{'العرض':'٤ سم','الإبزيم':'نحاس'},ratings:[]},
-{id:'p14',store:'s4',name:'جبن قريش بلدي ٣٥٠ جم',cat:'ألبان ومخبوزات',price:25,off:0,stock:20,sold:96,rt:4.6,rc:31,imgs:[PICS('جبن-قريش')],
+{id:'p14',store:'s4',name:'جبن قريش بلدي ٣٥٠ جم',cat:'ألبان ومخبوزات',ptype:'chilled',price:25,off:0,stock:20,sold:96,rt:4.6,rc:31,imgs:[PICS('جبن-قريش')],
 desc:'جبن قريش بلدي يُحضّر صباح كل يوم من حليب المزرعة، قوامه طري وملحه خفيف. يُسلّم مبرداً في نفس يوم صناعته.',
 specs:{'الوزن':'٣٥٠ جم','الصلاحية':'٥ أيام مبردة'},ratings:[]},
-{id:'p15',store:'s4',name:'خبز تميس بيتي (٤ حبات)',cat:'ألبان ومخبوزات',price:12,off:0,stock:35,sold:640,rt:4.8,rc:203,imgs:[PICS('خبز-تميس')],
+{id:'p15',store:'s4',name:'خبز تميس بيتي (٤ حبات)',cat:'ألبان ومخبوزات',ptype:'instant',price:12,off:0,stock:35,sold:640,rt:4.8,rc:203,imgs:[PICS('خبز-تميس')],
 desc:'تميس بيتي يُخبز على التنور الحجري بعجين مخمّر ببطء. يخرج ساخناً مع الزبدة والعسل الأسود، ويُسلّم في أكياس حرارية تحفظ حرارته.',
 specs:{'الكمية':'٤ حبات','التسليم':'ساخن يومياً'},ratings:[]},
 {id:'p16',store:'s5',name:'شمعة ياسمين معطرة',cat:'ديكور',price:65,off:0,stock:28,sold:231,rt:4.5,rc:47,imgs:[PICS('شمعة-ياسمين')],
@@ -501,15 +512,24 @@ specs:{'الخامة':'نحاس مطروق','التشطيب':'نقش يدوي','
 {id:'p18',store:'s5',name:'طقم فناجيل قهوة مذهّب (٦)',cat:'قهوة وضيافة',price:195,off:0,stock:9,sold:129,rt:4.8,rc:26,imgs:[PICS('فناجيل-قهوة')],
 desc:'ستة فناجيل بورسلين بحافة مذهّبة مقاومة للاحتكاك، تصلح للقهوة والشاي. تصميم بقوارير رفيعة يليق بالمجالس، وتأتي في علبة مبطنة تصلح للإهداء.',
 specs:{'العدد':'٦ فناجيل','الخامة':'بورسلين','الطلاء':'ذهبي ٢٤ قيراط'},ratings:[]},
-{id:'p19',store:'s6',name:'بوكس هدايا «شكراً» مخمل',cat:'هدايا',price:240,off:0,stock:16,sold:174,rt:4.8,rc:31,imgs:[IM('1549465220-1a8b9238cd48'),PICS('بوكس-هدايا')],
+{id:'p19',store:'s6',name:'بوكس هدايا «شكراً» مخمل',cat:'هدايا',ptype:'ship',giftOk:true,price:240,off:0,stock:16,sold:174,rt:4.8,rc:31,imgs:[IM('1549465220-1a8b9238cd48'),PICS('بوكس-هدايا')],
 desc:'بوكس مخمل فارغ يضم ٤ علب داخلية و٣ بطاقات إهداء بألوان هادئة، يعاد تشكيله حسب المناسبة. التغليف يشمل شريط ساتان وبطاقة يدوية بخط جميل.',
 specs:{'المحتوى':'٤ علب + ٣ بطاقات','اللون':'أخضر زيتي / كحلي','التغليف':'ساتان + بطاقة'},ratings:[]},
-{id:'p20',store:'s6',name:'لوحة خط عربي مؤطرة «الفرج»',cat:'هدايا',price:160,off:0,stock:7,sold:88,rt:4.6,rc:18,imgs:[PICS('لوحة-خط')],
+{id:'p20',store:'s6',name:'لوحة خط عربي مؤطرة «الفرج»',cat:'هدايا',ptype:'ship',giftOk:true,price:160,off:0,stock:7,sold:88,rt:4.6,rc:18,imgs:[PICS('لوحة-خط')],
 desc:'لوحة خط ديواني بكلمة «الفرج» مرسومة يدوياً بالحبر الأسود على ورق مقوى عاجي، بإطار خشب طبيعي وزجاج عاكس. توقيع الخطاط على الزاوية.',
 specs:{'المقاس':'٤٠ × ٣٠ سم','الإطار':'خشب طبيعي','الخط':'ديواني حر'},ratings:[]},
 {id:'p21',store:'s7',name:'مزهرية فخار مزججة',cat:'ديكور',price:110,off:0,stock:6,sold:12,rt:4.4,rc:5,imgs:[PICS('مزهرية-فخار')],
 desc:'مزهرية فخارية مدوّرة على الدولاب ومزججة بطلاء لامع غير متكرر. كل قطعة فريدة بدرجة لونها، من طين الطائف الأحمر.',
-specs:{'الارتفاع':'٢٤ سم','الخامة':'فخار مزجج'},ratings:[]}
+specs:{'الارتفاع':'٢٤ سم','الخامة':'فخار مزجج'},ratings:[]},
+{id:'p22',store:'s8',name:'كيكة العيد بالكريمة (حساسة للحرارة)',cat:'حلويات وأطباق',ptype:'chilled',price:145,off:0,stock:6,sold:89,rt:4.8,rc:21,imgs:[PICS('كيكة-العيد')],
+desc:'كيكة إسفنجية بطبقات الكريمة المخفوقة، تُخبز يوم الطلب وتُسلّم مبردة في صندوق حافظ للحرارة. حساسة للحرارة — يُجدول لها النظام تلقائياً توصيلاً مبرداً مع أقرب شركة متعاقدة.',
+specs:{'الحجم':'٨ أشخاص','الحفظ':'مبردة حتى التسليم','التحضير':'يوم الطلب'},ratings:[]},
+{id:'p23',store:'s8',name:'صحن ورق عنب عائلي (طازج)',cat:'حلويات وأطباق',ptype:'instant',price:55,off:0,stock:15,sold:132,rt:4.7,rc:30,imgs:[PICS('ورق-عنب')],
+desc:'ورق عنب بلدي ملفوف يدوياً ومطبوخ على أصوله مع لحم مفروم وأرز بسمتي. يُحضّر يوم الطلب ويُرسل فور تأكيده مع مندوب فوري — وقت التسليم المتوقع ٤٥ دقيقة.',
+specs:{'الحجم':'صحن عائلي','التسليم':'فوري خلال ٤٥ دقيقة','التحضير':'يوم الطلب'},ratings:[]},
+{id:'p24',store:'s5',name:'تنسيق طاولة ضيافة كاملة (خدمة ميدانية)',cat:'تنسيق مناسبات',ptype:'field',price:850,off:0,stock:4,sold:23,rt:4.9,rc:9,imgs:[PICS('تنسيق-طاولة')],
+desc:'خدمة تنسيق ميداني لطاولة المناسبة: خلفية قماش، تنسيق ورد طبيعي، أدوات تقديم وإضاءة هادئة. فريق المتجر يركّب قبل المناسبة ويفكّ بعدها — بلا بوليصة شحن تجاري، ومع حجز موعد مسبق ومشاركة موقع المناسبة.',
+specs:{'الخدمة':'تركيب + فك','المدة':'حتى ٦ ساعات','الحجز':'موعد مسبق إلزامي'},ratings:[]}
 ];
 
 /* ================= الحسابات ================= */
@@ -526,7 +546,8 @@ notif:{ord:true,off:true,dis:true,rev:true},hidePhone:false,email:'noura@mail.co
 '0500000006':{name:'حصة الشمري',role:'merchant',pass:'1234',store:'s4',since:NOW-864e5*250},
 '0500000007':{name:'عبدالله الزهراني',role:'merchant',pass:'1234',store:'s5',since:NOW-864e5*180},
 '0500000008':{name:'منال الغامدي',role:'merchant',pass:'1234',store:'s6',since:NOW-864e5*150},
-'0500000009':{name:'تركي الثقفي',role:'merchant',pass:'1234',store:'s7',since:NOW-864e5*20}};
+'0500000009':{name:'تركي الثقفي',role:'merchant',pass:'1234',store:'s7',since:NOW-864e5*20},
+'0500000010':{name:'أم خالد السالم',role:'merchant',pass:'1234',store:'s8',since:NOW-864e5*90}};
 
 /* ================= قاعدة البيانات الحيّة ================= */
 const DB={
@@ -562,7 +583,7 @@ messages:[
 {r:'customer',t:'المفرش وصل بشد واضح عند أحد الأطراف مع خيط مقطوع، الضرر ظاهر من أول نظرة. مرفق صور الوضع عند الوصول.',at:NOW-864e5+36e5+3e5,img:PICS('دليل-سدو')},
 {r:'merchant',t:'وعليكم السلام، نعتذر جداً عما وصلك. راجعنا تقرير الجودة قبل الشحن وكان سليماً، ويحتمل أن يكون الضرر من النقل. نرجو احتساب صور زاوية آخر للتأكد.',at:NOW-864e5+36e5+7e5}]}],
 coupons:{DAMIN10:{type:'pct',v:10,max:50},SAVE20:{type:'pct',v:20,max:80}},
-ptsVal:0.1,freeDlPts:250,aPtsWallet:0,ptsFunding:[]};
+ptsVal:0.1,freeDlPts:250,aPtsWallet:0,ptsFunding:[],logiWallet:418.6,vat:527.4};
 const ptsVal=()=>DB.ptsVal||0.1;
 const fdPts=()=>DB.freeDlPts||250;
 const P=id=>PRODUCTS.find(p=>p.id===id);
@@ -570,6 +591,45 @@ const eff=p=>p.off?r2(p.price*(1-p.off/100)):p.price;
 const stOK=s=>s.approved&&!s.susp;
 const storeOwner=id=>{const s=ST(id);return s?USERS[s.owner]:null};
 const secOf=id=>{const s=ST(id);return s?SEC(s.sec):SECTIONS[0]};
+
+/* ================= محرك اللوجستيات وحماية الالتفاف ================= */
+const CITIES=['الرياض','جدة','مكة المكرمة','المدينة المنورة','الدمام','الخبر','الأحساء','الطائف','بريدة','أبها','تبوك'];
+const CITY_DL=(a,b)=>a===b?12:22;
+const PTI=p=>({chilled:'🧊 توصيل مبرد',instant:'🛵 توصيل فوري',field:'🎪 خدمة ميدانية'}[p.ptype]||'');
+const custCity=()=>{const u=me();if(u&&u.addrs&&u.addrs.length){let i=(CK.addr>=0&&u.addrs[CK.addr])?CK.addr:u.addrs.findIndex(a=>a.def);if(i<0)i=0;return(u.addrs[i].a.split('،')[0]||'').trim()||'الرياض'}return 'الرياض'};
+function shipQuote(items,st,city,fd){
+const ptypes=items.map(x=>x.p.ptype||'std');
+const gsub=r2(items.reduce((a,x)=>a+eff(x.p)*x.qty,0));
+let mode='std',cost=CITY_DL(st.city||'الرياض',city),label='شحن سريع عبر شركاء ضمين (OTO/Torod)';
+if(ptypes.every(t=>t==='field')){mode='field';cost=0;label='توصيل وتركيب فريق المتجر'}
+else if(ptypes.includes('chilled')){mode='chilled';cost=r2(cost+8);label='توصيل مبرد مجدول (حساس للحرارة)'}
+else if(ptypes.includes('instant')){mode='instant';cost=10;label='مندوب فوري — ٤٥ دقيقة تقريباً'}
+let charge=cost,subsidy=0,source='customer',why='';
+if(mode==='field'){charge=0;source='merchant';why='خدمة ميدانية بفريق المتجر'}
+else if(st.dlMode==='free'){charge=0;subsidy=cost;source='merchant';why='توصيل مجاني من المتجر'}
+else if((st.freeMin||0)>0&&gsub>=st.freeMin){charge=0;subsidy=cost;source='merchant';why='تخطيت سقف الشحن المجاني'}
+else if(st.dlMode==='half'){charge=r2(cost/2);subsidy=r2(cost/2);source='merchant';why='مناصفة مع المتجر'}
+if(fd&&mode!=='field'&&charge>0){charge=0;subsidy=cost;source='pts';why='استبدال نقاط الولاء'}
+return{mode,cost,charge,subsidy,source,why,label,gsub};
+}
+const COURIERS={std:['OTO Express','Torod Shipping','سمسا عبر OTO'],chilled:['OTO Fresh — سلسلة التبريد','Torod Cooler المتعاقدة'],instant:['Torod Now — مندوب فوري','مرسول فوري']};
+function mkLogi(mode,seed){
+const cs=COURIERS[mode]||COURIERS.std;
+const courier=cs[hash(String(seed))%cs.length];
+const wb='WB-'+(100000+hash('wb'+seed)%899999);
+return{wb,courier,mode,events:[{t:'أُصدرت بوليصة الشحن آلياً عبر الربط اللوجستي ('+courier+')',at:Date.now()},{t:'أُرسل طلب استلام (Pickup Request) للمندوب',at:Date.now()+1}]}
+}
+/* فلترة محادثات الطلبات — منع التواصل خارج التطبيق */
+const BYPASS_WORDS=['واتساب','واتس اب','واتس','جوال','تحويل','حساب خارجي','رقمي','رقمك','رقم الهاتف','هاتفي','سناب','سناب شات','انستقرام','انستغرام','تويتر','تيليجرام','تليجرام','ايميل','بريد إلكتروني','stc pay','stcpay','حوالة','كاش خارجي'];
+function chatGuard(txt){
+const t=String(txt||'');
+if(/(https?:\/\/|www\.|\S+\.(com|net|org|io|me|co)(\s|$|\/))/i.test(t))return{ok:false,why:'رابط خارجي'};
+const digits=t.replace(/[٠-٩]/g,d=>String('٠١٢٣٤٥٦٧٨٩'.indexOf(d))).replace(/[\s\-–—ـ.,_/]/g,'');
+if(/(05\d{8}|9665\d{8}|009665\d{8}|\d{9,})/.test(digits))return{ok:false,why:'رقم جوال'};
+const norm=t.replace(/[أإآ]/g,'ا').toLowerCase();
+for(const w of BYPASS_WORDS){if(norm.includes(w.replace(/[أإآ]/g,'ا').toLowerCase()))return{ok:false,why:'مصطلح تواصل خارجي'}}
+return{ok:true};
+}
 
 /* ================= الحالة ================= */
 let SES=null,VIEW={page:'home'},CART=[],GFav=[],CK={step:0,addr:0,pay:'mada'},CPN=null,PTS=0,RATE={stars:0},COMP={sub:'damaged'},EVP=[],FREE_DL=false;
@@ -765,7 +825,7 @@ return `
 <div class="hero">
 <h1>${u?'أهلاً بك يا '+esc(u.name.split(' ')[0])+' 👋':'تسوّق <em>بضمين</em>… مالك محجوز حتى ترضى'}</h1>
 <p>نحجز مبلغك في خزنة مستقلة، ولا يستلم التاجر إلا بعد استلامك وتقييمك — والعمولة ٢٫٥٪ تذهب مباشرة للإدارة.</p>
-<div class="trust"><span class="tchip"><i>🔒</i> خزنة ضمان مستقلة</span><span class="tchip"><i>⏱️</i> تحرير تلقائي بانتهاء نافذة الحماية</span><span class="tchip"><i>⚖️</i> تحكيم ثلاثي الأطراف</span></div>
+<div class="trust"><span class="tchip"><i>🔒</i> خزنة ضمان مستقلة</span><span class="tchip"><i>⏱️</i> تحرير تلقائي بانتهاء نافذة الحماية</span><span class="tchip"><i>⚖️</i> تحكيم ثلاثي الأطراف</span><span class="tchip"><i>🚚</i> شحن آلي عبر OTO وTorod</span><span class="tchip"><i>💳</i> مدى وApple Pay وتقسيط تابي وتمارا</span></div>
 </div>
 
 <div class="bubzone"><div class="lbl"><span class="dot"></span> يتحرك الآن بين المتاجر — انقر أي منتج${''} <span class="sw"><i class="on"></i><i></i><i></i></span></div>
@@ -810,7 +870,7 @@ function mstore(s){
 const n=PRODUCTS.filter(p=>p.store===s.id).length;
 return `<div class="mstore" style="--c:${s.color}" onclick="go('store','${s.id}')">
 <div class="lg">${s.logo?`<img src="${s.logo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`:s.name[0]}</div>
-<div><b>${esc(s.name)}</b><span class="mr">★ ${ard(s.rt)} · ${ar(n)} منتج${n>4?'':' جديد'}</span></div></div>`;
+<div><b>${esc(s.name)}</b><span class="mr">★ ${ard(s.rt)} · 📍 ${esc(s.city||'')} · ${ar(n)} منتج${n>4?'':' جديد'}</span></div></div>`;
 }
 
 /* ================= صفحة القسم ================= */
@@ -844,7 +904,7 @@ return `<div class="pghead"><button class="backb" onclick="go('section','${sec.i
 <div class="lg">${s.logo?`<img src="${s.logo}" style="width:100%;height:100%;object-fit:cover">`:s.name[0]}</div>
 <div style="flex:1"><h1>${esc(s.name)}</h1><p>${esc(s.desc)}</p>
 <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:7px;font-size:11.5px;opacity:.95">
-<span>★ ${ard(s.rt)} تقييم المتجر</span><span>·</span><span>${ars(s.sales)} طلباً مكتمل البيع</span><span>·</span><span>🛡️ نافذة حماية ${sec.win}</span></div></div>
+<span>📍 ${esc(s.city||'—')}</span><span>·</span><span>★ ${ard(s.rt)} تقييم المتجر</span><span>·</span><span>${ars(s.sales)} طلباً مكتمل البيع</span><span>·</span><span>🛡️ نافذة حماية ${sec.win}</span></div></div>
 ${s.open?'':'<span class="tag wht">مغلق مؤقتاً</span>'}
 </div>
 <div class="secthead"><h2>منتجات المتجر (${ars(ps.length)})</h2><div class="ln"></div></div>
@@ -852,6 +912,15 @@ ${ps.length?`<div class="pgrid">${ps.map(pcard).join('')}</div>`:`<div class="em
 }
 /* ================= صفحة المنتج ================= */
 let QTY=1;
+function dlBadge(p){
+const t=p.ptype||'std';
+const M={chilled:{ic:'🧊',l:'توصيل مبرد — حساس للحرارة',d:'يُجدول النظام تلقائياً توصيلاً مبرداً مع أقرب شركة متعاقدة بعد تأكيد الطلب.'},
+instant:{ic:'🛵',l:'توصيل فوري',d:'يبحث النظام عن مندوب فوري فور تأكيد الطلب — التسليم المتوقع خلال ٤٥ دقيقة.'},
+field:{ic:'🎪',l:'خدمة ديكور وتنسيق ميداني',d:'توصيل وتركيب وفك بفريق المتجر — مع حجز موعد مناسبتك ومشاركة موقعها (GPS) عند الطلب.'},
+ship:{ic:'📦',l:'قابل للشحن',d:'تُصدر له بوليصة آلية عبر شركاء ضمين اللوجستيين (OTO/Torod).'}};
+const m=M[t];if(!m)return '';
+return `<div style="display:flex;gap:10px;align-items:flex-start;background:var(--card2);border:1px dashed var(--line);border-radius:12px;padding:9px 12px;margin-bottom:9px"><span style="font-size:18px">${m.ic}</span><div><b style="font-size:12px">${m.l}</b><div class="hint">${m.d}</div>${p.giftOk?'<div class="hint" style="color:var(--amb2);font-weight:700">🎁 قابل للإهداء — أضف اسم المستلم وجواله عند إتمام الطلب</div>':''}</div></div>`;
+}
 function pgProduct(){
 const p=P(VIEW.pid);if(!p)return pgHome();
 if(VIEW._pid!==VIEW.pid){VIEW._pid=VIEW.pid;QTY=1;VIEW.tab='desc';RATE={stars:0}}
@@ -880,7 +949,8 @@ ${STARS(p.rt)} <b style="font-size:12.5px">${ard(p.rt)}</b><span class="hint">($
 ${p.off?`<s class="mut">${money(p.price)}</s><span class="tag red">وفّر ${ar(p.off)}٪</span>`:''}
 </div>
 ${p.pts?`<div class="hint" style="color:var(--amb2);font-weight:700;margin-bottom:10px">🌟 يمنح هذا المنتج ${ar(p.pts)} نقطة ولاء للعميل عند تحرير الطلب</div>`:'<div style="height:6px"></div>'}
-<div class="hint mb">يبيعه متجر <a style="color:${s.color};font-weight:700;cursor:pointer" onclick="go('store','${s.id}')">${esc(s.name)}</a> ★ ${ard(s.rt)} · شحنة ضمن ${sec.win} حماية</div>
+${dlBadge(p)}
+<div class="hint mb">يبيعه متجر <a style="color:${s.color};font-weight:700;cursor:pointer" onclick="go('store','${s.id}')">${esc(s.name)}</a> ★ ${ard(s.rt)} · شحنة ضمن ${sec.win} حماية · يشحن من 📍 ${esc(s.city||'—')}</div>
 <div class="spread" style="gap:10px;flex-wrap:wrap">
 <div class="qty"><button onclick="qStep(1)">＋</button><b id="qv">${ar(QTY)}</b><button onclick="qStep(-1)">−</button></div>
 <button class="btn" style="flex:1" ${p.stock?'':'disabled'} onclick="addToCart('${p.id}',QTY)">🛒 أضف إلى السلة</button>
@@ -943,18 +1013,21 @@ ${ps.length?`<div class="pgrid">${ps.map(pcard).join('')}</div>`:`<div class="em
 function cartCalc(){
 const items=CART.map(c=>({...c,p:P(c.pid)})).filter(c=>c.p);
 const groups={};items.forEach(c=>{(groups[c.p.store]=groups[c.p.store]||[]).push(c)});
+const city=custCity();
+const fd=FREE_DL&&SES&&(me().pts||0)>=fdPts();
+const quotes={};let dlCharge=0,dlCost=0;
+Object.entries(groups).forEach(([sid,its])=>{const q=shipQuote(its,ST(sid),city,fd);quotes[sid]=q;dlCharge+=q.charge;dlCost+=q.cost});
+dlCharge=r2(dlCharge);dlCost=r2(dlCost);
 const sub=r2(items.reduce((a,c)=>a+eff(c.p)*c.qty,0));
-const dlRaw=r2(Object.values(groups).reduce((a,g)=>a+(g.reduce((x,c)=>x+eff(c.p)*c.qty,0)>=200?0:12),0));
-const pv=ptsVal(),fn=fdPts();
-const fd=FREE_DL&&SES&&(me().pts||0)>=fn&&dlRaw>0;
-const dl=fd?0:dlRaw;
 let cpn=0;if(CPN&&DB.coupons[CPN]){const c=DB.coupons[CPN];cpn=r2(Math.min(c.type==='pct'?sub*c.v/100:c.v,c.max))}
-const avail=SES?Math.max(0,(me().pts||0)-(fd?fn:0)):0;
+const avail=SES?Math.max(0,(me().pts||0)-(fd?fdPts():0)):0;
 const ptsMax=SES?Math.floor(avail/100)*100:0;
-let ptsUse=Math.min(PTS,ptsMax,Math.floor(Math.max(sub-cpn,0)/(pv*100))*100);ptsUse=Math.max(0,Math.floor(ptsUse/100)*100);
-const ptsAmt=r2(ptsUse*pv);
-const total=r2(Math.max(0,sub+dl-cpn-ptsAmt));
-return{items,groups,sub,dlRaw,dl,fd,fdN:fn,cpn,ptsMax,ptsUse,ptsAmt,total};
+let ptsUse=Math.min(PTS,ptsMax,Math.floor(Math.max(sub-cpn,0)/(ptsVal()*100))*100);ptsUse=Math.max(0,Math.floor(ptsUse/100)*100);
+const ptsAmt=r2(ptsUse*ptsVal());
+const net=r2(Math.max(0,sub+dlCharge-cpn-ptsAmt));
+const tax=r2(net*0.15);
+const total=r2(net+tax);
+return{items,groups,sub,city,dlCharge,dlCost,quotes,fd,fdN:fdPts(),cpn,ptsMax,ptsUse,ptsAmt,net,tax,total};
 }
 function pgCart(){
 if(!CART.length)return `<div class="pghead"><h1>🛒 سلة التسوق</h1></div>
@@ -962,9 +1035,10 @@ if(!CART.length)return `<div class="pghead"><h1>🛒 سلة التسوق</h1></d
 <button class="btn mt" onclick="go('home')">ابدأ التصفح</button></div>`;
 const c=cartCalc();
 return `<div class="pghead"><h1>🛒 سلة التسوق</h1><span class="tag grn">${ar(cartCount())} منتج · ${ar(Object.keys(c.groups).length)} شحنة</span></div>
+<div class="hint mb">🚚 شحنة مستقلة لكل متجر مع بوليصة مستقلة — كلفة الشحن تُحسب ديناميكياً من مدينة كل متجر إلى مدينتك (${esc(c.city)}) · الضريبة ١٥٪ على إجمالي الفاتورة.</div>
 <div class="cartgrid"><div>
 ${Object.entries(c.groups).map(([sid,its])=>{
-const s=ST(sid),sec=SEC(s.sec),gsub=r2(its.reduce((a,x)=>a+eff(x.p)*x.qty,0));
+const s=ST(sid),sec=SEC(s.sec),gsub=r2(its.reduce((a,x)=>a+eff(x.p)*x.qty,0));const q=c.quotes[sid];
 return `<div class="cgroup">
 <div class="cghead" style="--c:${s.color}"><div class="lg">${s.name[0]}</div>
 <div style="flex:1"><b style="color:${s.color}">${esc(s.name)}</b><div class="hint">شحنة مستقلة · 🛡️ حماية ${sec.win} بعد الاستلام</div></div>
@@ -974,7 +1048,7 @@ return `<div class="citem" onclick="go('product','${p.id}')">
 <div class="im">${imgTag(p.imgs[0],'','')}</div>
 <div class="info">
 <b style="font-size:13px">${esc(p.name)}</b>
-<div class="hint">${esc(s.name)}${p.off?` · <span style="color:var(--red);font-weight:700">خصم ${ar(p.off)}٪</span>`:''}</div>
+<div class="hint">${esc(s.name)}${p.off?` · <span style="color:var(--red);font-weight:700">خصم ${ar(p.off)}٪</span>`:''}${PTI(p)?` · <span style="font-weight:700">${PTI(p)}</span>`:''}${p.giftOk?' · 🎁 قابل للإهداء':''}</div>
 <div style="display:flex;gap:9px;align-items:center;margin-top:5px">
 <div class="qty" onclick="event.stopPropagation()">
 <button onclick="cartQty('${p.id}',1)">＋</button><b>${ar(x.qty)}</b><button onclick="cartQty('${p.id}',-1)">−</button>
@@ -985,14 +1059,16 @@ return `<div class="citem" onclick="go('product','${p.id}')">
 </div>`}).join('')}
 <div class="cghead" style="border:0;border-top:1px solid var(--line);background:transparent">
 <span>إجمالي الشحنة</span><b class="fx" style="margin-inline-start:auto">${money(gsub)}</b>
-<span class="hint">+ شحن ${gsub>=200?'مجاني 🎉':money(12)}</span></div>
+<span class="hint">${q.mode==='field'?'🎪 توصيل وتركيب فريق المتجر':q.charge?`+ شحن ${money(q.charge)} · ${q.label}`:`+ شحن مجاني 🎉${q.why?' — '+q.why:''}`}</span>
+${(s.freeMin||0)>0&&s.dlMode!=='free'&&q.mode!=='field'&&gsub<s.freeMin?`<div class="freeprog"><div class="fp-hint">أضف ${money(r2(s.freeMin-gsub))} لهذه الشحنة واحصل على شحن مجاني من ${esc(s.name)}</div><div class="pbar"><i style="width:${Math.min(100,r2(gsub/s.freeMin*100))}%"></i></div></div>`:''}
+</div>
 </div>`}).join('')}
 </div>
 <div class="sumbox">
 <b class="fx" style="font-size:15px">ملخص الطلب</b>
 <div class="hint mb" style="margin-top:2px">🔒 يُحجز المبلغ في خزنة ضمين ولا يُحرَّر للتاجر إلا بعد رضاك</div>
 <div class="srow"><span>المجموع الفرعي (${ar(cartCount())} منتج)</span><b>${money(c.sub)}</b></div>
-<div class="srow"><span>الشحن (${ar(Object.keys(c.groups).length)} شحنة)</span><b>${c.dl?money(c.dl):'مجاني'}</b></div>
+<div class="srow"><span>الشحن (${ar(Object.keys(c.groups).length)} شحنة · إلى ${esc(c.city)})</span><b>${c.dlCharge?money(c.dlCharge):'مجاني 🎉'}</b></div>
 <div class="hr" style="margin:8px 0"></div>
 <div style="display:flex;gap:7px;margin-bottom:9px">
 <input class="inp" id="cpnin" placeholder="كود الخصم (جرّب DAMIN10)" value="${CPN||''}" style="font-size:12px">
@@ -1008,13 +1084,15 @@ ${c.ptsMax>=300?`<button class="btn soft xs" onclick="ptsSet(${Math.min(300,c.pt
 ${PTS?`<button class="btn gray xs" onclick="ptsSet(0)">إلغاء ${ar(PTS)}</button>`:''}
 </div></div>
 ${c.ptsUse?`<div class="srow disc"><span>خصم النقاط (${ar(c.ptsUse)} نقطة)</span><b>− ${money(c.ptsAmt)}</b></div>`:''}
-${c.dlRaw>0?`
+${c.dlCharge>0?`
 <div class="srow"><span>🚚 توصيل مجاني؟</span>
 ${(me().pts||0)>=c.fdN?`<button class="btn ${c.fd?'gray':'amb'} xs" onclick="FREE_DL=!FREE_DL;render()">${c.fd?'إلغاء الاستبدال':'استبدال '+ar(c.fdN)+' نقطة'}</button>`:`<span class="hint">تحتاج ${ar(c.fdN-(me().pts||0))} نقطة أخرى</span>`}</div>
-${c.fd?`<div class="srow disc"><span>توصيل مجاني بالنقاط (${ar(c.fdN)} نقطة)</span><b>− ${money(c.dlRaw)}</b></div>`:''}`
+${c.fd?`<div class="srow disc"><span>توصيل مجاني بالنقاط (${ar(c.fdN)} نقطة)</span><b>− ${money(c.dlCost)}</b></div>`:''}`
 :''}`
 :`<div class="hint mb">🌟 سجّل دخولك لاستبدال نقاط الولاء (كل ١٠٠ نقطة = ${money(100*ptsVal())} — أو توصيل مجاني بـ${ar(fdPts())} نقطة)</div>`}
-<div class="srow tot"><span>الإجمالي</span><b>${money(c.total)}</b></div>
+<div class="srow"><span>ضريبة القيمة المضافة ١٥٪</span><b>${money(c.tax)}</b></div>
+<div class="srow tot"><span>الإجمالي (شامل الضريبة)</span><b>${money(c.total)}</b></div>
+<div class="hint" style="text-align:center;margin-top:6px">💳 قسّمها على ٤ دفعات مع تابي (${money(r2(c.total/4))} للدفعة) أو ٣ دفعات مع تمارا (${money(r2(c.total/3))})</div>
 <button class="btn amb wide mt" onclick="startCheckout()">🔒 إتمام الطلب الآمن</button>
 <p class="hint" style="text-align:center;margin-top:8px">عمولة ضمين ٢٫٥٪ تُحسم من التاجر — لا تُضاف عليك</p>
 </div></div>`;
@@ -1035,7 +1113,7 @@ function ptsSet(n){PTS=n;render()}
 let OID=1025;
 function startCheckout(){
 if(!CART.length)return;
-CK={step:SES?1:0,addr:me()&&me().addrs&&me().addrs.length?(me().addrs.findIndex(a=>a.def)>=0?me().addrs.findIndex(a=>a.def):0):-1,pay:'mada',geo:null};
+CK={step:SES?1:0,addr:me()&&me().addrs&&me().addrs.length?(me().addrs.findIndex(a=>a.def)>=0?me().addrs.findIndex(a=>a.def):0):-1,pay:'mada',geo:null,book:{},gift:{},ans:{}};
 openModal(ckHTML(),'lg');}
 function ckHTML(){
 const steps=['الحساب','الموقع','الدفع'];
@@ -1064,6 +1142,7 @@ if(CK.step===0)return `
 if(CK.step===1){const u=me();
 return `
 <b style="font-size:13.5px" class="fx">📍 عنوان التسليم</b>
+<p class="hint" style="margin-top:3px">🚚 التوصيل عبر شركاء ضمين اللوجستيين (OTO / Torod) فقط — لا يوجد استلام شخصي «يد بيد»، ويُتابع الطلب بالحالات لحفظ حقوق الطرفين.</p>
 <div class="mt mb" style="display:flex;gap:8px;flex-wrap:wrap">
 <button class="btn soft sm" onclick="useGeo()">🛰️ تحديد موقعي تلقائياً</button>
 ${CK.geo?`<span class="tag grn">✓ تم تحديد الموقع (٢٤٫٧١٣٦، ٤٦٫٦٧٥٣)</span>`:''}
@@ -1079,6 +1158,7 @@ ${u.addrs&&u.addrs.length?u.addrs.map((a,i)=>`<div class="addrcard ${CK.addr===i
 <div class="fld mt"><label>العنوان التفصيلي</label><input class="inp" id="na-a" placeholder="الحي، الشارع، رقم المبنى…"></div>
 <button class="btn soft sm mt" onclick="ckSaveAddr()">حفظ العنوان</button>
 </div>
+${ckExtras()}
 <div class="spread mt">
 <button class="btn gray sm" onclick="ckBack()">→ رجوع</button>
 <button class="btn sm" onclick="ckNext()">متابعة للدفع ←</button>
@@ -1089,12 +1169,20 @@ return `
 <b style="font-size:13.5px" class="fx">💳 طريقة الدفع</b>
 <p class="hint mb">يُخصم المبلغ منك ويُحجز في خزنة ضمين المستقلة — لا يصل للتاجر مباشرة.</p>
 <div class="pays">
-${[['mada','💳','مدى'],['visa','🏦','بطاقة ائتمانية'],['apple','🍎','Apple Pay'],['bal','🌟','محفظة ضمين']].map(([k,i,n])=>`<button class="pay ${CK.pay===k?'on':''}" onclick="CK.pay='${k}';ckRefresh()"><i>${i}</i><b>${n}</b>${k==='bal'?`<span>رصيدك: ${ard(u.bal||0)} ر.س</span>`:''}</button>`).join('')}
+${[['mada','💳','مدى','بوابة Moyasar'],['visa','🏦','فيزا / ماستركارد','بوابة HyperPay'],['apple','🍎','Apple Pay','بوابة Moyasar'],['tabby','🅣','تابي','قسّمها على ٤ دفعات'],['tamara','🔵','تمارا','قسّمها على ٣ دفعات'],['bal','🌟','محفظة ضمين','رصيدك '+ard(u.bal||0)+' ر.س']].map(([k,i,n,s])=>`<button class="pay ${CK.pay===k?'on':''}" onclick="CK.pay='${k}';ckRefresh()"><i>${i}</i><b>${n}</b><span>${s}</span></button>`).join('')}
 </div>
+${(CK.pay==='tabby'||CK.pay==='tamara')?`<div class="acard mt" style="padding:12px;background:#1D44320a;border-color:#1D443233"><b class="fx" style="font-size:12.5px">${CK.pay==='tabby'?'🅣 تابي — ٤ دفعات شهرية بلا فوائد ولا رسوم':'🔵 تمارا — ٣ دفعات بلا فوائد'}</b>
+<div class="srow mt" style="padding:3px 0"><span>إجمالي الفاتورة (منتجات + شحن + ضريبة)</span><b>${money(c.total)}</b></div>
+<div class="srow disc"><span>دفعتك الأولى الآن</span><b>${money(r2(c.total/(CK.pay==='tabby'?4:3)))}</b></div>
+<div class="hint">يُقسّم كامل الفاتورة (المنتجات + الشحن + الضريبة) — والتحرير للتاجر يبقى بضمان ضمين.</div></div>`:''}
 ${CK.pay==='bal'&&u.bal<c.total?`<p class="hint" style="color:var(--red);margin-top:8px">⚠️ رصيد محفظتك لا يكفي — اختر طريقة أخرى.</p>`:''}
 ${CK.pay==='visa'?`<div class="acard mt" style="padding:12px"><div class="fgrid"><div class="fld"><label>رقم البطاقة</label><input class="inp" placeholder="٤٢٤٢ ٤٢٤٢ ٤٢٤٢ ٤٢٤٢"></div><div class="fld"><label>تاريخ الانتهاء / CVC</label><input class="inp" placeholder="١٢/٢٨ · ١٢٣"></div></div></div>`:''}
+<div class="demo" style="margin-top:10px"><b style="font-size:11.5px">🧮 كيف يتوزع مبلغك؟</b>
+<div class="hint" style="margin-top:3px;line-height:1.9">قيمة المنتجات: ٩٧٫٥٪ للتاجر و٢٫٥٪ عمولة ضمين · رسوم الشحن: تُحوّل لحساب الشريك اللوجستي · الضريبة ١٥٪: لصالح هيئة الزكاة والضريبة — والتحرير لا يتم إلا بعد استلامك ورضاك.</div></div>
 <div class="hr"></div>
-<div class="srow"><span>الإجمالي المحجوز</span><b>${money(c.total)}</b></div>
+<div class="srow"><span>المنتجات والشحن (بعد الخصومات)</span><b>${money(c.net)}</b></div>
+<div class="srow"><span>ضريبة القيمة المضافة ١٥٪</span><b>${money(c.tax)}</b></div>
+<div class="srow tot"><span>إجمالي الحجز في الخزنة</span><b>${money(c.total)}</b></div>
 <div class="srow"><span>التسليم إلى</span><span style="font-size:11.5px">${esc(CK.addrTxt||addrTxt())}</span></div>
 <div class="spread mt">
 <button class="btn gray sm" onclick="ckBack()">→ رجوع</button>
@@ -1104,7 +1192,7 @@ ${CK.pay==='visa'?`<div class="acard mt" style="padding:12px"><div class="fgrid"
 return `<div style="text-align:center;padding:8px 4px">
 <div class="bigok">✅</div>
 <b class="fx" style="font-size:17px">تم حجز مبلغك في خزنة ضمين!</b>
-<p class="hint mt" style="line-height:1.9">رقم طلبك <b style="color:var(--grn)">#${ar(CK.oid)}</b><br>أُرسلت طلباتك إلى ${ar(CK.gcount)} متجر — ستتابع كل شحنة على حدة.<br>💡 للعميل: يمكنك فتح نزاع خلال نافذة الحماية قبل التحرير التلقائي.</p>
+<p class="hint mt" style="line-height:1.9">رقم طلبك <b style="color:var(--grn)">#${ar(CK.oid)}</b><br>أُرسلت طلباتك إلى ${ar(CK.gcount)} متجر — كل شحنة ببوليصة مستقلة.<br>📄 أُصدرت ${ar(CK.wb||0)} بوليصة شحن آلية وأُرسلت طلبات الاستلام للمناديب · فُتحت محادثة الطلب مع كل متجر (بلا أرقام ولا روابط).<br>💡 للعميل: يمكنك فتح نزاع خلال نافذة الحماية قبل التحرير التلقائي.</p>
 <button class="btn wide mt" onclick="closeModal();go('orders')">📦 تتبع طلبي</button>
 <button class="btn gray wide mt" onclick="closeModal();go('home')">مواصلة التسوق</button></div>`;
 }
@@ -1127,20 +1215,83 @@ if(!t||!a){toast('اكتب الاسم المختصر والعنوان التفص
 const u=me();u.addrs=u.addrs||[];u.addrs.push({t,a:(c?c+'، ':'')+a});
 CK.addr=u.addrs.length-1;toast('حُفظ العنوان ✓','ok');ckRefresh();
 }
+/* ===== خيارات التسليم الخاصة لكل شحنة ===== */
+function ckSetAns(sid,i,v){(CK.ans[sid]=CK.ans[sid]||[])[i]=v}
+function ckSetBook(sid,k,v){(CK.book[sid]=CK.book[sid]||{});CK.book[sid][k]=v}
+function ckSetGift(sid,k,v){(CK.gift[sid]=CK.gift[sid]||{on:false,name:'',phone:''});CK.gift[sid][k]=v}
+function ckGiftTog(sid){const g=CK.gift[sid]||{on:false,name:'',phone:''};g.on=!g.on;CK.gift[sid]=g;ckRefresh()}
+function ckEventGeo(sid){
+if(!navigator.geolocation){toast('تحديد الموقع غير مدعوم — اكتب ملاحظة الموقع بدلاً منه','amb');return}
+toast('جارٍ تحديد موقع المناسبة…');
+navigator.geolocation.getCurrentPosition(
+p=>{(CK.book[sid]=CK.book[sid]||{});CK.book[sid].geo={lat:+p.coords.latitude.toFixed(4),lng:+p.coords.longitude.toFixed(4)};toast('وصل موقع المناسبة لفريق التنسيق ✓','ok');ckRefresh()},
+()=>toast('تعذر تحديد الموقع — جرّب مرة أخرى','amb'),{timeout:8000});
+}
+function ckExtras(){
+const c=cartCalc();let out='';
+Object.entries(c.groups).forEach(([sid,its])=>{
+const st=ST(sid),sec=SEC(st.sec),q=c.quotes[sid];const blocks=[];
+if(sec.id==='family'&&(st.qs||[]).length){
+blocks.push(`<b style="font-size:11.5px">❓ أسئلة «${esc(st.name)}» قبل إعداد طلبك</b>`+
+st.qs.map((qq,i)=>`<div class="fld" style="margin-top:7px"><label>${esc(qq)}</label><input class="inp" style="font-size:12px" value="${esc(((CK.ans[sid]||[])[i])||'')}" oninput="ckSetAns('${sid}',${i},this.value)"></div>`).join('')+`<p class="hint" style="margin-top:5px">تصلك إجاباتك مع الطلب مباشرة — أسئلة يحددها المتجر لقسم المأكولات والضيافة.</p>`);
+}
+if(q.mode==='chilled')blocks.push(`<div class="hint" style="line-height:1.8">🧊 هذه الشحنة تضم منتجات حساسة للحرارة — سيُجدول النظام تلقائياً توصيلاً مبرداً مع أقرب شركة توصيل مبرد متعاقدة بعد تأكيد الطلب.</div>`);
+if(q.mode==='instant')blocks.push(`<div class="hint" style="line-height:1.8">🛵 أطباق طازجة — سيبحث النظام عن مندوب فوري فور تأكيد طلبك، ووقت التوصيل المتوقع ٤٥ دقيقة.</div>`);
+if(sec.id==='deco'&&its.some(x=>x.p.giftOk)){
+const g=CK.gift[sid]||{on:false,name:'',phone:''};
+blocks.push(`<div class="spread"><b style="font-size:11.5px">🎁 إهداء لشخص آخر</b><button class="sw ${g.on?'on':''}" onclick="ckGiftTog('${sid}')"></button></div>
+${g.on?`<div class="fgrid" style="margin-top:7px"><div class="fld"><label>اسم المستلم</label><input class="inp" style="font-size:12px" value="${esc(g.name||'')}" oninput="ckSetGift('${sid}','name',this.value)"></div><div class="fld"><label>جوال المستلم (١٠ أرقام)</label><input class="inp" style="font-size:12px" value="${esc(g.phone||'')}" oninput="ckSetGift('${sid}','phone',this.value)"></div></div><p class="hint" style="margin-top:5px">تصدر البوليصة باسم المستلم فتوصله الهدية مباشرة — بياناته تُستخدم للشحن فقط.</p>`:'<p class="hint" style="margin-top:4px">فعّل الخيار لإرسال هديتك لشخص غيرك باسم ورقم مستلم.</p>'}`);
+}
+if(q.mode==='field'){
+const b=CK.book[sid]||{};
+blocks.push(`<b style="font-size:11.5px">🎪 حجز موعد المناسبة (إلزامي لخدمة التنسيق الميداني)</b>
+<div class="fgrid" style="margin-top:7px">
+<div class="fld"><label>تاريخ المناسبة</label><input type="date" class="inp" style="font-size:12px" value="${esc(b.date||'')}" onchange="ckSetBook('${sid}','date',this.value)"></div>
+<div class="fld"><label>وقت التركيب</label><input type="time" class="inp" style="font-size:12px" value="${esc(b.setup||'')}" onchange="ckSetBook('${sid}','setup',this.value)"></div>
+<div class="fld"><label>وقت الفك / الاسترجاع</label><input type="time" class="inp" style="font-size:12px" value="${esc(b.tear||'')}" onchange="ckSetBook('${sid}','tear',this.value)"></div>
+<div class="fld"><label>ملاحظة لفريق التنسيق</label><input class="inp" style="font-size:12px" placeholder="مثال: الدخول من البوابة الشمالية" value="${esc(b.note||'')}" oninput="ckSetBook('${sid}','note',this.value)"></div>
+</div>
+<div style="display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap">
+<button class="btn soft sm" onclick="ckEventGeo('${sid}')">📍 مشاركة موقع المناسبة (GPS)</button>
+${b.geo?`<span class="tag grn">✓ وصل الموقع لفريق التنسيق (${ard(b.geo.lat)}، ${ard(b.geo.lng)})</span>`:'<span class="hint">لتوجيه فريق التنسيق بدقة يوم المناسبة</span>'}
+</div>`);
+}
+if(blocks.length)out+=`<div class="acard" style="padding:12px;margin-top:10px;border-color:${st.color}55"><div class="spread" style="margin-bottom:5px"><b class="fx" style="font-size:12px">🚚 خيارات التسليم — ${esc(st.name)}</b><span class="tag" style="background:${st.color}18;color:${st.color}">${q.label}</span></div>${blocks.join('<div class="hr" style="margin:9px 0"></div>')}</div>`;
+});
+return out;
+}
 function placeOrder(){
 const u=me();const c=cartCalc();
 if(CK.addr<0||!u.addrs[CK.addr]){toast('حدد عنوان التسليم أولاً','err');CK.step=1;ckRefresh();return}
 if(CK.pay==='bal'&&u.bal<c.total){toast('رصيد المحفظة لا يكفي','err');return}
+for(const [sid,its] of Object.entries(c.groups)){
+const q=c.quotes[sid];
+if(q.mode==='field'){const b=CK.book[sid]||{};if(!b.date||!b.setup){toast('أكمل حجز موعد المناسبة (التاريخ ووقت التركيب) لشحنة '+ST(sid).name,'err');CK.step=1;ckRefresh();return}}
+const gft=CK.gift[sid];
+if(gft&&gft.on&&((gft.name||'').trim().length<2||!/^(05)?\d{9}$|^05\d{8}$/.test((gft.phone||'').replace(/\s/g,'')))){toast('أكمل بيانات المستلم للإهداء (الاسم وجوال ١٠ أرقام يبدأ بـ 05)','err');CK.step=1;ckRefresh();return}
+}
 CK.addrTxt=u.addrs[CK.addr].a;
-CK.step=3;CK.oid=OID;CK.gcount=Object.keys(c.groups).length;
-const o={id:OID++,customer:SES.phone,at:Date.now(),pay:CK.pay,addr:CK.addrTxt,
-coupon:{code:CPN,amt:c.cpn},ptsUsed:c.ptsUse,ptsAmt:c.ptsAmt,freeDl:c.fd,total:c.total,
-groups:Object.entries(c.groups).map(([sid,its])=>({store:sid,
+CK.step=3;CK.oid=OID;CK.gcount=Object.keys(c.groups).length;CK.wb=0;
+const o={id:OID++,customer:SES.phone,at:Date.now(),pay:CK.pay,addr:CK.addrTxt,city:c.city,
+coupon:{code:CPN,amt:c.cpn},ptsUsed:c.ptsUse,ptsAmt:c.ptsAmt,freeDl:c.fd,net:c.net,tax:c.tax,total:c.total,
+groups:Object.entries(c.groups).map(([sid,its])=>{const st=ST(sid),q=c.quotes[sid];
+const grp={store:sid,
 items:its.map(x=>({pid:x.pid,qty:x.qty,price:eff(x.p)})),
-sub:r2(its.reduce((a,x)=>a+eff(x.p)*x.qty,0)),
-dl:(c.fd||its.reduce((a,x)=>a+eff(x.p)*x.qty,0)>=200)?0:12,status:'pending'}))};
+sub:r2(its.reduce((a,x)=>a+eff(x.p)*x.qty,0)),dl:q.charge,status:'pending',
+ship:{mode:q.mode,cost:q.cost,charge:q.charge,subsidy:q.subsidy,source:q.source,why:q.why,label:q.label},
+logi:q.mode==='field'?{wb:null,courier:'توصيل وتركيب فريق المتجر',mode:'field',events:[{t:'خدمة ميدانية — بلا بوليصة آلية، الحجز بموعد المناسبة',at:Date.now()}]}:mkLogi(q.mode,sid+OID),
+chat:[{r:'sys',t:'فُتحت محادثة الطلب — للتفاصيل والطلبات الخاصة فقط. ممنوع تبادل الأرقام أو الروابط أو أي وسيلة تواصل خارج ضمين (الإدارة تُتابع تلقائياً وحجب المخالف فوري).',at:Date.now()}],
+viol:{customer:0,merchant:0}};
+if(q.mode==='field')grp.booking=CK.book[sid];
+if(CK.gift[sid]&&CK.gift[sid].on)grp.gift={name:(CK.gift[sid].name||'').trim(),phone:(CK.gift[sid].phone||'').trim()};
+if(st.qs&&st.qs.length)grp.ans=st.qs.map((qq,i)=>({q:qq,a:(((CK.ans[sid]||[])[i])||'').trim()})).filter(x=>x.a);
+if(q.mode!=='field')CK.wb++;
+return grp})};
 if(c.fd)o.freeDl=true;
 if(CK.pay==='bal'){u.bal=r2((u.bal||0)-c.total);o.paidBy='محفظة ضمين'}
+if(CK.pay==='tabby')o.inst={by:'تابي',n:4,each:r2(c.total/4)};
+if(CK.pay==='tamara')o.inst={by:'تمارا',n:3,each:r2(c.total/3)};
+DB.vat=r2((DB.vat||0)+c.tax);
 if(c.fd){u.pts=(u.pts||0)-c.fdN;u.ptsLog.unshift({t:'استبدال نقاط بتوصيل مجاني في الطلب #'+(OID-1),v:-c.fdN,at:Date.now()})}
 if(c.ptsUse){u.pts=(u.pts||0)-c.ptsUse;u.ptsLog.unshift({t:'استبدال نقاط في الطلب #'+(OID-1),v:-c.ptsUse,at:Date.now()})}
 DB.orders.unshift(o);
@@ -1161,10 +1312,11 @@ if(!os.length)return `<div class="pghead"><h1>🧾 طلباتي</h1></div><div c
 return `<div class="pghead"><h1>🧾 طلباتي</h1><span class="tag grn">${ar(os.length)} طلبات</span></div>`+
 os.map(o=>`<div class="ocard">
 <div class="spread" style="flex-wrap:wrap">
-<div><b class="fx" style="font-size:14px">طلب #${ar(o.id)}</b><div class="hint">${dt(o.at)} · ${({mada:'مدى',visa:'بطاقة',apple:'Apple Pay',bal:'محفظة ضمين'}[o.pay])||'دفع إلكتروني'}${o.paidBy?' ('+o.paidBy+')':''}</div></div>
+<div><b class="fx" style="font-size:14px">طلب #${ar(o.id)}</b><div class="hint">${dt(o.at)} · ${({mada:'مدى',visa:'فيزا/ماستركارد',apple:'Apple Pay',tabby:'تقسيط تابي',tamara:'تقسيط تمارا',bal:'محفظة ضمين'}[o.pay])||'دفع إلكتروني'}${o.paidBy?' ('+o.paidBy+')':''}${o.inst?' — '+ar(o.inst.n)+' دفعات × '+ard(o.inst.each)+' ر.س':''}</div></div>
 ${o.coupon&&o.coupon.amt?`<span class="tag amb">كوبون −${money(o.coupon.amt)}</span>`:''}
 ${o.ptsUsed?`<span class="tag amb">نقاط −${money(o.ptsAmt)}</span>`:''}
 ${o.freeDl?`<span class="tag grn">🚚 توصيل مجاني (نقاط)</span>`:''}
+${o.tax?`<span class="tag gry">ض.ق.م ١٥٪: ${money(o.tax)}</span>`:''}
 </div>
 <div class="hint">📍 ${esc(o.addr)}</div>
 ${o.groups.map((g,gi)=>ogroup(o,g,gi)).join('')}
@@ -1174,6 +1326,7 @@ function ogroup(o,g,gi){
 const s=ST(g.store),sec=SEC(s.sec);
 const st=g.status;
 const dis=DB.disputes.find(d=>d.order===o.id&&d.store===g.store);
+const archived=g.chat&&(g.chatArchived||['received','released','refunded','disputed'].includes(st));
 return `<div class="ogroup">
 <div class="spread" style="flex-wrap:wrap">
 <div style="display:flex;align-items:center;gap:9px">
@@ -1183,6 +1336,11 @@ return `<div class="ogroup">
 ${st==='disputed'?`<span class="tag red">⚖️ قيد التحكيم</span>`:st==='refunded'?`<span class="tag gry">💸 استُرجع المبلغ</span>`:`<span class="tag ${st==='released'?'grn':'amb'}">${GLBL[st]}</span>`}
 </div>
 <div class="oitems">${g.items.map(it=>{const p=P(it.pid);return `<span class="oitag" onclick="go('product','${it.pid}')">${p?imgTag(p.imgs[0],'',''):''} ${ar(it.qty)}× ${p?esc(p.name):'—'}</span>`}).join('')}</div>
+${g.logi?logiStrip(o,g):''}
+${g.booking?`<div class="hint" style="margin-top:7px;background:#A45A3A12;border:1px dashed #A45A3A55;border-radius:11px;padding:8px 11px;line-height:1.8">🎪 <b>حجز مناسبتك:</b> ${esc(g.booking.date)} · التركيب ${esc(g.booking.setup)}${g.booking.tear?' · الفك '+esc(g.booking.tear):''}${g.booking.geo?' · 📍 موقع المناسبة محدد لفريق التنسيق':''}${g.booking.note?' · '+esc(g.booking.note):''}</div>`:''}
+${g.gift?`<div class="giftrow">🎁 إهداء إلى: <b>${esc(g.gift.name)}</b> — صدرت البوليصة باسم المستلم فتوصله الهدية مباشرة</div>`:''}
+${g.ans&&g.ans.length?`<div class="hint" style="margin-top:6px">❓ إجاباتك للمتجر: ${g.ans.map(x=>esc(x.q)+' ← <b>'+esc(x.a)+'</b>').join(' · ')}</div>`:''}
+${g.chat?`<div class="mt" style="display:flex;gap:7px;flex-wrap:wrap;align-items:center"><button class="btn soft sm" onclick="openOChat(${o.id},${gi})">💬 محادثة الطلب${g.chatDeleted?' — محذوفة لمخالفة':(g.chatArchived||['received','released','refunded','disputed'].includes(st))?' — مؤرشفة':' ('+ar(g.chat.length)+' رسالة)'}</button>${g.viol&&(g.viol.customer+g.viol.merchant)?`<span class="tag red">${ar(g.viol.customer+g.viol.merchant)} رسالة محجوبة أمنياً</span>`:''}</div>`:''}
 ${st!=='disputed'&&st!=='refunded'?`<div class="osteps">${GSTEPS.map((l,i)=>`<div class="st ${i<gstep(g)?'on':i===gstep(g)?(st==='received'?'cur on':'on'):''}"><i></i>${l}</div>`).join('')}</div>`:''}
 ${st==='received'?`<div class="spread mt" style="flex-wrap:wrap">
 <span class="cd" data-cd="${g.complaintUntil}"><b>⏳ ${clock(g.complaintUntil-Date.now())}</b> متبقٍ من نافذة الحماية — بعدها يُحرر المبلغ تلقائياً</span></div>
@@ -1203,9 +1361,101 @@ ${st==='released'&&g.payout?`<div class="mt" style="background:#1D443208;border:
 function confirmReceive(oid,gi){
 const o=DB.orders.find(x=>x.id===oid);const g=o.groups[gi];
 g.status='received';g.complaintUntil=Date.now()+secOf(g.store).winMin*60e3;
+if(g.logi)g.logi.events.push({t:'أكّد العميل التسليم — تحديث حالة تلقائي عبر Webhook',at:Date.now()});
+if(g.chat&&!g.chatArchived&&!g.chatDeleted){g.chatArchived=true;g.chat.push({r:'sys',t:'🗄️ أُرشفت المحادثة فور تسليم الشحنة — للاعتراض على الشحنة افتح نزاعاً خلال نافذة الحماية.',at:Date.now()})}
 pushNotif(o.customer,'🛡️','بدأت نافذة الحماية','افحص طلبك #'+ar(oid)+' — لديك '+secOf(g.store).win,['orders']);
 const own=ST(g.store).owner;if(own)pushNotif(own,'📦','أكّد العميل الاستلام','بدأت نافذة حماية طلب #'+ar(oid)+' — يُحرر المبلغ تلقائياً بانتهائها',['m-orders']);
 toast('بدأت نافذة الفحص — '+secOf(g.store).win+' 🛡️','ok');render();
+}
+/* ===== شريط البوليصة والتتبع بالحالات ===== */
+function logiStrip(o,g){
+const l=g.logi,s=ST(g.store);
+const modeTxt=l.mode==='chilled'?'🧊 جارٍ جدولة توصيل مبرد مع أقرب شركة توصيل مبرد متعاقدة (موعد مسبق)':l.mode==='instant'?'🛵 جارٍ البحث عن مندوب فوري — وقت التوصيل المتوقع: ٤٥ دقيقة':'🚚 تتبع بالحالات فقط — بلا خريطة مباشرة حفاظاً على خصوصية الطرفين';
+return `<div class="lgstrip">
+<div class="spread" style="flex-wrap:wrap"><b>${l.wb?'📄 بوليصة '+ar(l.wb)+' · ':''}${esc(l.courier)}</b><span class="hint">من ${esc(s.city||'—')} إلى ${esc(o.city||'مدينتك')}</span></div>
+${modeTxt}
+${g.ship&&g.ship.charge?`<div class="hint">رسوم الشحن المدفوعة: ${money(g.ship.charge)} ← تُحوّل لحساب الشريك اللوجستي</div>`:(g.ship&&g.ship.source==='merchant'?'<div class="hint">الشحن على حساب المتجر 🎁 — وما يتحمله يُقتطع من صافيه ولا يمس العمولة</div>':'')}
+${l.events.slice(-3).map(e=>`<div class="lgev">⚡ ${esc(e.t)} · ${ago(e.at)}</div>`).join('')}
+</div>`;
+}
+/* ===== محادثة الطلب (عميل × تاجر) — مراقبة وفلترة أمنية ===== */
+let OCHAT=null;
+function openOChat(oid,gi){
+const o=DB.orders.find(x=>x.id===oid);if(!o)return;const g=o.groups[gi];if(!g.chat)return;
+OCHAT={oid,gi};openModal(ochatHTML(o,g),'lg');
+setTimeout(()=>{const l=$('#chatlog');if(l)l.scrollTop=l.scrollHeight},50);
+}
+function myORole(o,g){
+if(!SES)return null;
+if(SES.role==='admin')return 'admin';
+if(SES.role==='customer'&&o.customer===SES.phone)return 'customer';
+if(SES.role==='merchant'&&g.store===SES.store)return 'merchant';
+return null;
+}
+function ochatHTML(o,g){
+const s=ST(g.store),cust=USERS[o.customer];
+const r=myORole(o,g);
+const archived=g.chatArchived||['received','released','refunded','disputed'].includes(g.status);
+const canWrite=(r==='customer'||r==='merchant')&&!g.chatDeleted&&!archived;
+return `<div class="mhead"><b>💬 محادثة الطلب #${ar(o.id)} — ${esc(s.name)}</b>
+${g.chatDeleted?'<span class="tag red">محذوفة لمخالفة</span>':archived?'<span class="tag gry">🗄️ مؤرشفة</span>':'<span class="tag grn">نشطة</span>'}
+<button class="x" onclick="OCHAT=null;closeModal()">✕</button></div>
+<div class="parties">
+<span class="party" style="--pc:var(--grn)"><i></i> 👩 ${cust?esc(cust.name):'العميل'}</span>
+<span class="party" style="--pc:${s.color}"><i></i> 🏪 ${esc(s.name)}</span>
+<span class="party" style="--pc:var(--navy)"><i></i> 🛡️ الإدارة تُتابع تلقائياً</span>
+</div>
+<div class="cwrap">
+<div class="chatlog" id="chatlog">
+${g.chat.map(m=>omsgHTML(m,g)).join('')}
+</div>
+${canWrite?`<div class="composer">
+<textarea id="omsg" placeholder="اكتب تفاصيل طلبك أو استفسارك… (محادثة مراقبة: تُحجب الأرقام والروابط ووسائل التواصل الخارجية تلقائياً)"></textarea>
+<button class="btn" onclick="sendOMsg()">إرسال ➤</button>
+</div>`:`<div class="composer"><div class="hint" style="padding:8px;line-height:1.8">${g.chatDeleted?'🚫 حُذفت المحادثة نهائياً بعد رصد ٣ مخالفات لسياسة التواصل خارج التطبيق — للاعتراض راسل دعم ضمين.':archived?'🗄️ أُرشفت المحادثة فور تسليم الشحنة — للاعتراض افتح نزاعاً خلال نافذة الحماية.':r==='admin'?'🛡️ أنت بوضع المراقبة — الإدارة تطلع ولا تشارك':'🔒 سجّل دخولك كأحد طرفي الطلب للمشاركة'}</div></div>`}
+</div>`;
+}
+function omsgHTML(m,g){
+if(m.r==='sys')return `<div class="msg r-s">🔔 ${esc(m.t)}<div style="font-size:9px;margin-top:2px">${ago(m.at)}</div></div>`;
+const o=DB.orders.find(x=>x.id===OCHAT.oid);
+const who=m.r==='customer'?(USERS[o.customer]?USERS[o.customer].name.split(' ')[0]:'العميل'):ST(g.store).name;
+const mine=SES&&((m.r==='customer'&&SES.role==='customer'&&o.customer===SES.phone)||(m.r==='merchant'&&SES.role==='merchant'&&g.store===SES.store));
+return `<div class="msg ${mine?'me':'them'} ${m.r==='customer'?'r-c':'r-m'}" ${m.r==='merchant'?`style="--mc:${ST(g.store).color}"`:''}><span class="who">${m.r==='customer'?'👩 '+who:'🏪 '+who}</span>${esc(m.t)}<div style="font-size:9px;margin-top:3px;opacity:.7">${ago(m.at)}</div></div>`;
+}
+function ochatRefresh(){
+if(!OCHAT)return;
+const o=DB.orders.find(x=>x.id===OCHAT.oid);const g=o&&o.groups[OCHAT.gi];
+if(!g||!g.chat){OCHAT=null;return}
+$('.mcard').innerHTML=ochatHTML(o,g);
+const l=$('#chatlog');if(l)l.scrollTop=l.scrollHeight;
+}
+function sendOMsg(){
+const o=DB.orders.find(x=>x.id===OCHAT.oid);const g=o.groups[OCHAT.gi];
+const r=myORole(o,g);
+if(r!=='customer'&&r!=='merchant'){toast('الإدارة تتابع المحادثة ولا تشارك فيها','amb');return}
+const txt=($('#omsg').value||'').trim();
+if(!txt){toast('اكتب رسالتك أولاً','err');return}
+const v=chatGuard(txt);
+if(!v.ok){
+g.viol[r]=(g.viol[r]||0)+1;
+const n=g.viol[r];
+g.chat.push({r:'sys',t:'🚫 حُجبت رسالة ('+v.why+') — تحذير '+ar(n)+' من ٣: التواصل خارج ضمين ممنوع، وأي رقم أو رابط أو وسيلة تواصل تُحجب تلقائياً.',at:Date.now()});
+pushNotif('0500000003','🛡️','محاولة تواصل خارج التطبيق','رُصدت رسالة محجوبة ('+v.why+') في محادثة طلب #'+ar(o.id)+' — '+ST(g.store).name,['a-over']);
+const other=r==='customer'?ST(g.store).owner:o.customer;
+if(other)pushNotif(other,'🚫','تنبيه أمني','رُصدت محاولة مشاركة بيانات تواصل في محادثة طلب #'+ar(o.id)+' — يُمنع التواصل خارج ضمين حمايةً للطرفين',['orders']);
+$('#omsg').value='';
+if(n>=3){
+g.chatDeleted=true;
+g.chat=[{r:'sys',t:'حُذفت المحادثة نهائياً — رُصدت ٣ محاولات لمخالفة سياسة التواصل خارج التطبيق. للاعتراض راسل دعم ضمين.',at:Date.now()}];
+pushNotif('0500000003','⛔','حُذفت محادثة طلب','تجاوز أحد الطرفين ٣ مخالفات في طلب #'+ar(o.id)+' — '+ST(g.store).name,['a-over']);
+toast('حُذفت المحادثة بعد ٣ مخالفات ⛔','err');
+}else toast('حُجبت رسالتك ('+v.why+') — التواصل خارج ضمين ممنوع ⚠️','err');
+ochatRefresh();render();return;
+}
+g.chat.push({r,t:txt,at:Date.now()});
+const other=r==='customer'?ST(g.store).owner:o.customer;
+if(other)pushNotif(other,'💬','رسالة جديدة في طلب #'+ar(o.id),(r==='customer'?(USERS[o.customer]?USERS[o.customer].name.split(' ')[0]:'العميل'):ST(g.store).name)+' راسلك بخصوص طلبك',['orders']);
+$('#omsg').value='';ochatRefresh();
 }
 /* تقييم + تحرير فوري */
 let ORATE={stars:0,gi:0,oid:0};
@@ -1229,11 +1479,17 @@ closeModal();toast('شكراً! حُرر المبلغ للتاجر وكسبت ن
 function doRelease(o,g,by,bonus){
 if(g.status!=='received')return;
 g.status='released';g.releasedAt=Date.now();g.releasedBy=by;
-const comm=r2(g.sub*0.025),net=r2(g.sub-comm);
+const comm=r2(g.sub*0.025);
+const sh=g.ship||{mode:'std',cost:(g.dl||0),charge:(g.dl||0),subsidy:0,source:'customer'};
+const mShip=sh.source==='merchant'?r2(sh.subsidy||0):0;
+const ptsShip=sh.source==='pts'?r2(sh.cost||0):0;
+let net=r2(g.sub-comm-mShip);if(net<0)net=0;
 DB.aRevenue=r2(DB.aRevenue+comm);
 const rm=DB.revMonths[DB.revMonths.length-1];rm.v=r2(rm.v+comm);
+DB.logiWallet=r2((DB.logiWallet||0)+(sh.charge||0)+mShip+ptsShip);
+if(ptsShip)DB.aPtsWallet=r2((DB.aPtsWallet||0)-ptsShip);
 DB.storeWallets[g.store]=r2((DB.storeWallets[g.store]||0)+net);
-g.payout={sub:g.sub,comm,net};
+g.payout={sub:g.sub,comm,net,ship:{charge:sh.charge||0,merchant:mShip,pts:ptsShip}};
 const u=USERS[o.customer];
 const giftPts=g.items.reduce((a,it)=>{const pd=P(it.pid);return a+((pd&&pd.pts)||0)*it.qty},0);
 const pts=Math.floor(net/10)+(bonus?10:0);
@@ -1241,12 +1497,13 @@ if(u){u.pts=(u.pts||0)+pts+giftPts;
 u.ptsLog.unshift({t:'تحرير طلب #'+o.id+(bonus?' + مكافأة تقييم':''),v:pts,at:Date.now()});
 if(giftPts)u.ptsLog.unshift({t:'نقاط هدية على منتجات الطلب #'+o.id,v:giftPts,at:Date.now()})}
 pushNotif(o.customer,'🔓','تم تحرير مبلغ طلبك','صافي '+money(net)+' حُوِّل إلى '+ST(g.store).name+' — كسبت '+ar(pts)+' نقطة ولاء',['orders']);
-const own=ST(g.store).owner;if(own)pushNotif(own,'💰','تحرير دفعة جديدة','استلمت '+money(net)+' صافي الطلب #'+ar(o.id)+' (عمولة ضمين '+money(comm)+')',['m-wallet']);
+const own=ST(g.store).owner;if(own)pushNotif(own,'💰','تحرير دفعة جديدة','استلمت '+money(net)+' صافي الطلب #'+ar(o.id)+' (عمولة ضمين '+money(comm)+(mShip?' + دعمك للشحن '+money(mShip):'')+')',['m-wallet']);
 }
 function doRefund(o,g,by){
 g.status='refunded';g.refundedAt=Date.now();g.refundedBy=by;
-const u=USERS[o.customer];if(u){u.bal=r2((u.bal||0)+g.sub)}
-pushNotif(o.customer,'💸','استُرجع مبلغ طلبك','أُعيد '+money(g.sub)+' إلى محفظة ضمين الخاصة بك',['account']);
+const back=r2(g.sub+((g.ship&&g.ship.charge)||(g.dl||0)));
+const u=USERS[o.customer];if(u){u.bal=r2((u.bal||0)+back)}
+pushNotif(o.customer,'💸','استُرجع مبلغ طلبك','أُعيد '+money(back)+' إلى محفظة ضمين الخاصة بك (المنتجات + الشحن)',['account']);
 const own=ST(g.store).owner;if(own)pushNotif(own,'↩️','استرجاع مبلغ شحنة','حكم التحكيم لطلب #'+ar(o.id)+': استرجاع كامل المبلغ للعميل',['m-disputes']);
 }
 setInterval(()=>{
@@ -1592,7 +1849,12 @@ const F=[['متى يستلم التاجر المبلغ؟','عند استلامك
 ['ماذا لو كان المنتج تالفاً؟','افتح نزاعاً خلال نافذة الحماية — يبقى مبلغك معلقاً وتحكم الإدارة بعد دردشة ثلاثية مع الأدلة.'],
 ['كم عمولة ضمين؟','٢٫٥٪ فقط من قيمة الشحنة، تُحسم من التاجر ولا تُضاف على العميل أبداً.'],
 ['كيف أكسب النقاط؟',`نقطة عن كل ١٠ ريال عند تحرير أي شحنة + ١٠ نقاط مع كل تقييم + نقاط هدية على منتجات مختارة — وكل ١٠٠ نقطة تساوي ${money(100*ptsVal())} خصم، أو ${ar(fdPts())} نقطة مقابل توصيل مجاني.`],
-['هل يمكن الدفع من المحفظة؟','نعم — مبالغ الاسترجاع تضاف لمحفظة ضمين وتستخدمها كوسيلة دفع مباشرة.']];
+['هل يمكن الدفع من المحفظة؟','نعم — مبالغ الاسترجاع تضاف لمحفظة ضمين وتستخدمها كوسيلة دفع مباشرة.'],
+['كيف تُحسب رسوم الشحن؟','ديناميكياً من مدينة كل متجر إلى مدينتك عبر شركاء ضمين اللوجستيين (OTO/Torod) — ولكل متجر خياراته: توصيل على العميل أو مناصفة أو مجاني، مع سقف شحن مجاني لكل متجر يظهر كشريط تقدم في السلة.'],
+['هل يوجد استلام شخصي «يد بيد» من المتجر؟','لا — ملغي كلياً في ضمين: كل شحنة تُصدر لها بوليصة آلية ويُتابع الطلب بالحالات فقط (بلا خريطة مباشرة) حفاظاً على خصوصية الطرفين.'],
+['لماذا أرى مدينة المتجر فقط دون حيّه؟','حمايةً من التواصل خارج التطبيق: يظهر للمتاجر مدينة نشاطها فقط، والعنوان التفصيلي يبقى في السيرفر ويُرسل للشريك اللوجستي لإصدار البوليصة دون أن يظهر لك.'],
+['كيف أراسل المتجر؟','من صفحة طلباتي — محادثة مرتبطة بالطلب تخضع لفلترة أمنية: أي رقم جوال أو رابط أو وسيلة تواصل خارجية (واتساب/سناب/انستقرام…) تُحجب فوراً مع تنبيه الطرفين والإدارة، وتُحذف المحادثة بعد ٣ مخالفات.'],
+['ما طرق الدفع والتقسيط؟','مدى وApple Pay والفيزا/ماستركارد عبر بوابات معتمدة (Moyasar/HyperPay)، والتقسيط عبر تابي (٤ دفعات) وتمارا (٣ دفعات) على إجمالي الفاتورة: المنتجات + الشحن + الضريبة ١٥٪.']];
 openModal(`<div class="mhead"><b>❓ الأسئلة الشائعة</b><button class="x" onclick="closeModal()">✕</button></div><div class="mbody">
 ${F.map(([q,a])=>`<div style="border-bottom:1px dashed var(--line);padding:9px 2px"><b style="font-size:12.5px">${q}</b><p class="hint" style="margin-top:2px">${a}</p></div>`).join('')}</div>`)}
 /* ================= صفحات التاجر ================= */
@@ -1648,6 +1910,7 @@ ${ps.map(p=>{const e=eff(p);return `<div class="mpcard" style="--acc:${s.color}"
 <span class="mpstat">📦 مخزون ${ar(p.stock)}</span>
 <span class="mpstat">🛒 بيع ${ar(p.sold)}</span>
 <span class="mpstat" style="color:var(--amb2)">★ ${ard(p.rt)}</span>
+${p.ptype==='chilled'?'<span class="mpstat" style="color:#2E6B8A">🧊 مبرد</span>':p.ptype==='instant'?'<span class="mpstat" style="color:var(--amb2)">🛵 فوري</span>':p.ptype==='field'?'<span class="mpstat" style="color:#A45A3A">🎪 ميداني</span>':p.ptype==='ship'?'<span class="mpstat">📦 شحن</span>':''}${p.giftOk?'<span class="mpstat" style="color:var(--red)">🎁 إهداء</span>':''}
 </div>
 <div class="mpacts">
 <button class="btn soft xs" onclick="mOfferForm('${p.id}')">🏷️ عروض</button>
@@ -1672,6 +1935,18 @@ openModal(`<div class="mhead"><b>${p?'تعديل منتج':'منتج جديد'}<
 <div class="fld"><label>خصم ٪ (0 = بلا عرض)</label><input class="inp" id="mp-off" type="number" min="0" max="90" value="${p?p.off:0}"></div>
 <div class="fld"><label>المخزون</label><input class="inp" id="mp-st" type="number" min="0" value="${p?p.stock:10}"></div>
 </div>
+${sec.id==='family'?`<div class="fld mt"><label>🚚 طريقة التوصيل — تحدد سلوك الشحن تلقائياً</label>
+<select class="inp" id="mp-ptype">
+<option value="std" ${!p||!p.ptype||p.ptype==='std'?'selected':''}>شحن عادي عبر شركاء ضمين (OTO/Torod)</option>
+<option value="chilled" ${p&&p.ptype==='chilled'?'selected':''}>🧊 حساس للحرارة — توصيل مبرد مجدول (كيك، ألبان، كريمات)</option>
+<option value="instant" ${p&&p.ptype==='instant'?'selected':''}>🛵 طازج — توصيل فوري بمناديب خلال ٤٥ دقيقة (أطباق مطبخ)</option>
+</select></div>`:''}
+${sec.id==='deco'?`<div class="fld mt"><label>🚚 نوع المنتج — يحدد مسار التسليم</label>
+<select class="inp" id="mp-ptype">
+<option value="ship" ${!p||!p.ptype||p.ptype==='ship'?'selected':''}>منتج قابل للشحن — بوليصة آلية (هدايا، شوكولاتة، ورد)</option>
+<option value="field" ${p&&p.ptype==='field'?'selected':''}>خدمة ديكور وتنسيق ميداني — توصيل وتركيب فريقك + حجز مواعيد المناسبات</option>
+</select>
+<div class="mt"><label style="display:flex;gap:8px;align-items:center;font-size:11.5px;font-weight:700;cursor:pointer"><input type="checkbox" id="mp-gift" ${p&&p.giftOk?'checked':''} style="width:17px;height:17px"> 🎁 تفعيل «إهداء لشخص آخر» — يدخل العميل اسم المستلم وجواله عند الطلب</label></div></div>`:''}
 <div class="fld mt"><label>🌟 نقاط ولاء يمنحها المنتج للعميل (اختياري)</label>
 <input class="inp" id="mp-pts" type="number" min="0" max="500" step="5" value="${p?(p.pts||0):0}" oninput="ptsCostPrev()" placeholder="مثال: 50">
 <div class="hint" id="ptscost" style="margin-top:7px;background:#B07E2B12;border:1px dashed #B07E2B66;border-radius:11px;padding:8px 12px"></div>
@@ -1718,10 +1993,10 @@ if(cost>0&&(DB.storeWallets[s.id]||0)<cost){toast('محفظتك لا تكفي ل
 if(dPts!==0){DB.storeWallets[s.id]=r2((DB.storeWallets[s.id]||0)-cost);
 DB.aPtsWallet=r2((DB.aPtsWallet||0)+cost);
 DB.ptsFunding.unshift({store:s.id,amt:cost,pts:dPts,pname:nm,at:Date.now()})}
-if(pid){const p=P(pid);Object.assign(p,{name:nm,cat:$('#mp-cat').value,price:pr,off,stock:st,desc:$('#mp-ds').value.trim(),specs,pts});
+if(pid){const p=P(pid);Object.assign(p,{name:nm,cat:$('#mp-cat').value,price:pr,off,stock:st,desc:$('#mp-ds').value.trim(),specs,pts,ptype:($('#mp-ptype')?$('#mp-ptype').value:(p.ptype||'std')),giftOk:$('#mp-gift')?$('#mp-gift').checked:!!p.giftOk});
 if(MIMG)p.imgs=[MIMG,...p.imgs.slice(1)];
 toast('حُفظ تعديل المنتج ✓'+(dPts?` — ${dPts>0?'خُصمت':'استُرجعت'} ${money(Math.abs(cost))} تمويل نقاط`:''),'ok')}
-else{PRODUCTS.unshift({id:'p'+(Date.now()%100000),store:s.id,name:nm,cat:$('#mp-cat').value,price:pr,off,stock:st,pts,sold:0,rt:0,rc:0,imgs:[MIMG||PICS('منتج-'+pr)],desc:$('#mp-ds').value.trim()||nm,specs,specsFallback:{},ratings:[]});
+else{PRODUCTS.unshift({id:'p'+(Date.now()%100000),store:s.id,name:nm,cat:$('#mp-cat').value,price:pr,off,stock:st,pts,ptype:($('#mp-ptype')?$('#mp-ptype').value:'std'),giftOk:$('#mp-gift')?$('#mp-gift').checked:false,sold:0,rt:0,rc:0,imgs:[MIMG||PICS('منتج-'+pr)],desc:$('#mp-ds').value.trim()||nm,specs,specsFallback:{},ratings:[]});
 toast('أُضيف المنتج لمتجرك ✓'+(pts?` — خُصمت ${money(cost)} تمويل ${ar(pts)} نقطة`:''),'ok')}
 MPID=null;closeModal();render();
 }
@@ -1812,22 +2087,31 @@ return `<div class="ocard">
 </div>
 ${o.freeDl?'<span class="tag grn" style="margin-top:6px">🚚 توصيل مجاني — استبدلها العميل بالنقاط</span>':''}
 <div class="oitems">${g.items.map(it=>{const p=P(it.pid);return `<span class="oitag">${p?imgTag(p.imgs[0],'',''):''} ${ar(it.qty)}× ${p?esc(p.name):'—'}${p&&(p.pts||0)>0?` <span style="color:var(--amb2)">🌟${ar(p.pts*it.qty)}</span>`:''}</span>`}).join('')}</div>
+${g.logi?`<div class="hint" style="margin-top:6px">📄 ${g.logi.wb?'بوليصة '+ar(g.logi.wb)+' · ':''}${esc(g.logi.courier)}${g.logi.wb?` · <a style="color:var(--grn);font-weight:700;cursor:pointer" onclick="toast('أُرسلت البوليصة للطباعة 🖨️','ok')">طباعة البوليصة 🖨️</a>`:' — بلا بوليصة (خدمة ميدانية)'} · من ${esc(ST(g.store).city||'—')} إلى ${esc(o.city||'—')}</div>`:''}
+${g.booking?`<div class="bkcard"><b style="font-size:11.5px">🎪 مناسبة العميل — حجز مؤكد</b>
+<div class="hint" style="line-height:1.8;margin-top:4px">📅 ${esc(g.booking.date)} · التركيب ${esc(g.booking.setup)}${g.booking.tear?' · الفك '+esc(g.booking.tear):''}${g.booking.geo?' · 📍 موقع محدد ('+ard(g.booking.geo.lat)+'، '+ard(g.booking.geo.lng)+')':''}${g.booking.note?' · '+esc(g.booking.note):''}</div></div>`:''}
+${g.gift?`<div class="giftrow">🎁 إهداء — المستلم: <b>${esc(g.gift.name)}</b> · ${ar(g.gift.phone)} (يُطبع على البوليصة كمتسلم)</div>`:''}
+${g.ans&&g.ans.length?`<div class="hint" style="margin-top:6px">❓ إجابات العميل على أسئلتك: ${g.ans.map(x=>esc(x.q)+' ← <b>'+esc(x.a)+'</b>').join(' · ')}</div>`:''}
+${g.chat?`<button class="btn soft xs" style="margin-top:7px" onclick="openOChat(${o.id},${gi})">💬 محادثة الطلب${g.chatDeleted?' — محذوفة لمخالفة':(g.chatArchived||['received','released','refunded','disputed'].includes(g.status))?' — مؤرشفة':''}</button>`:''}
 ${['disputed','refunded'].includes(g.status)?'':`<div class="osteps">${GSTEPS.map((l,i)=>`<div class="st ${i<gstep(g)?'on':i===gstep(g)?'on':''}"><i></i>${l}</div>`).join('')}</div>`}
 ${g.status==='received'?`<div class="hint">⏳ العميل يفحص الشحنة — يُحرر المبلغ تلقائياً بعد <b class="cd" style="border:0;background:none;padding:0" data-cd="${g.complaintUntil}">${clock(g.complaintUntil-Date.now())}</b></div>`:''}
 ${g.status==='pending'?`<button class="btn sm mt" onclick="mAccept(${o.id},${gi})">✅ اقبل الطلب وابدأ التحضير</button>`:''}
-${g.status==='preparing'?`<button class="btn amb sm mt" onclick="mShip(${o.id},${gi})">🚚 تم الشحن مع المندوب</button>`:''}
+${g.status==='preparing'?`<button class="btn amb sm mt" onclick="mShip(${o.id},${gi})">${g.logi&&g.logi.wb?'🚚 سلّم الشحنة للمندوب — بوليصة '+ar(g.logi.wb):'🚚 تم التركيب — انطلق الفريق'}</button>`:''}
 ${g.status==='disputed'&&dis?`<button class="btn red sm mt" onclick="openDispute('${dis.id}')">⚖️ متابعة النزاع والرد على العميل</button>`:''}
 ${g.status==='released'&&g.payout?`<div class="hint mt" style="background:#1D443208;border-radius:10px;padding:7px 11px">🔓 حُرر ${money(g.payout.net)} صافياً (عمولة ضمين ${money(g.payout.comm)})${g.rated?' · تقييم العميل '+STARS(g.rated.stars):''}</div>`:''}
-<div class="hint" style="margin-top:6px">قيمة الشحنة: <b>${money(g.sub)}</b> → صافيك بعد العمولة: <b style="color:var(--grn)">${money(r2(g.sub*0.975))}</b></div>
+<div class="hint" style="margin-top:6px">قيمة الشحنة: <b>${money(g.sub)}</b> → صافيك عند التحرير: <b style="color:var(--grn)">${money(r2(g.sub*0.975-((g.ship&&g.ship.source==='merchant')?g.ship.subsidy:0)))}</b>${g.ship&&g.ship.source==='merchant'?` <span class="tag amb" style="font-size:9px">شمل ${money(g.ship.subsidy)} دعمك للشحن — لا يمس العمولة</span>`:''}</div>
 </div>`}).join('')||`<div class="empty"><div class="em">📦</div><b>لا طلبات في هذا التصنيف</b><span>غيّر الفلتر أو تابع كل الطلبات</span></div>`}
 </div>`;
 }
 function mAccept(oid,gi){const o=DB.orders.find(x=>x.id===oid);const g=o.groups[gi];
 g.status='preparing';
+if(g.logi)g.logi.events.push({t:'قَبِل المتجر الطلب وبدأ التحضير — تحديث Webhook',at:Date.now()});
 pushNotif(o.customer,'🧵','متجرك بدأ التحضير',ST(g.store).name+' قبلت طلبك #'+ar(oid)+' وقيد التحضير الآن',['orders']);
 toast('قُبل الطلب — بدأ التحضير ✅','ok');render()}
 function mShip(oid,gi){const o=DB.orders.find(x=>x.id===oid);const g=o.groups[gi];
 g.status='shipped';
+if(g.logi&&g.logi.wb)g.logi.events.push({t:'استلم المندوب الشحنة من المتجر (Pickup مؤكد) — تحديث Webhook',at:Date.now()});
+else if(g.logi)g.logi.events.push({t:'انطلق فريق المتجر للتركيب في موعد المناسبة',at:Date.now()});
 pushNotif(o.customer,'🚚','طلبك في الطريق إليك',ST(g.store).name+' شحنت طلبك #'+ar(oid)+' — أكّد الاستلام عند وصوله',['orders']);
 toast('سُجل الشحن 🚚','ok');render()}
 function pgMWallet(){
@@ -1836,6 +2120,7 @@ const tx=[];DB.orders.forEach(o=>o.groups.forEach(g=>{if(g.store===s.id&&g.payou
 tx.sort((a,b)=>b.g.releasedAt-a.g.releasedAt);
 const totalIn=tx.reduce((a,x)=>a+x.g.payout.net,0);
 const totalComm=tx.reduce((a,x)=>a+x.g.payout.comm,0);
+const myLogi=r2(DB.orders.reduce((a,o)=>a+o.groups.filter(g=>g.store===s.id&&g.payout).reduce((x,g)=>x+((g.ship&&g.ship.charge)||0)+((g.payout.ship&&g.payout.ship.merchant)||0),0),0));
 const fund=DB.ptsFunding.filter(x=>x.store===s.id);
 const fundNet=r2(fund.reduce((a,x)=>a+x.amt,0));
 return `<div class="pghead"><h1>💰 محفظة ${esc(s.name)}</h1><button class="btn amb sm" onclick="toast('أُرسل طلب السحب — يُحوَّل خلال ٢٤ ساعة 🏦','ok')">🏦 طلب سحب الرصيد</button></div>
@@ -1844,12 +2129,13 @@ return `<div class="pghead"><h1>💰 محفظة ${esc(s.name)}</h1><button class
 <div class="kpi amb"><i>🔒</i><b>${money(heldFor(s.id))}</b><span>محجوز لحظة تحرير الطلبات</span></div>
 <div class="kpi nvy"><i>📈</i><b>${money(totalIn)}</b><span>صافي التحريرات (٩٧٫٥٪)</span></div>
 <div class="kpi red"><i>🧾</i><b>${money(totalComm)}</b><span>عمولات الإدارة (٢٫٥٪)</span></div>
+<div class="kpi nvy"><i>🚚</i><b>${money(myLogi)}</b><span>حُوّل للشريك اللوجستي (OTO/Torod)</span></div>
 </div>
-<div class="acard mt"><h3>⚙️ كيف ينقسم كل مبلغ محرَّر؟</h3>
+<div class="acard mt"><h3>⚙️ كيف يتوزع كل مبلغ محرَّر؟ (توزيع ثلاثي لحظي)</h3>
 <div class="splitbar"><i class="net"></i><i class="comm"></i></div>
-<div class="splitrow"><span><b style="color:var(--grn)">■</b> صافي المتجر ٩٧٫٥٪ ← محفظتك مباشرة</span><span><b style="color:var(--amb)">■</b> عمولة الإدارة ٢٫٥٪ ← محفظة الإدارة مباشرة</span></div>
-<p class="hint mt" style="line-height:1.9">عند تحرير أي شحنة يتحول مبلغها شطرين لحظياً: <b>صافي حقك</b> يدخل رصيدك المتاح، و<b>عمولة ضمين</b> تتحول مباشرة لمحفظة الإدارة — كل طرف يستلم حقه فوراً بلا انتظار ولا تسويات.</p></div>
-<div class="acard mt"><h3>🔓 سجل التحريرات (كل تحرير بشطره: صافيك + عمولة الإدارة)</h3>
+<div class="splitrow"><span><b style="color:var(--grn)">■</b> صافي المتجر ٩٧٫٥٪ ← محفظتك مباشرة</span><span><b style="color:var(--amb)">■</b> عمولة الإدارة ٢٫٥٪ ← حساب التطبيق</span><span><b style="color:var(--navy)">■</b> رسوم الشحن ← حساب الشريك اللوجستي</span></div>
+<p class="hint mt" style="line-height:1.9">عند تحرير أي شحنة يتوزع المبلغ ثلاثياً لحظياً: <b>صافي حقك</b> يدخل رصيدك المتاح، و<b>عمولة ضمين ٢٫٥٪</b> تتحول لحساب التطبيق، و<b>رسوم الشحن</b> (ما دفعه العميل + ما تدعمه أنت من توصيل مجاني أو مناصفة أو سقف مجاني) تتحول لحساب الشريك اللوجستي (OTO/Torod) — ودعمك للشحن يُقتطع من صافيك فقط ولا يمس العمولة أبداً.</p></div>
+<div class="acard mt"><h3>🔓 سجل التحريرات (كل تحرير بتوزيعه: صافيك + العمولة + الشحن)</h3>
 <div class="rows">${tx.map(({o,g})=>`<div class="row" style="cursor:pointer;flex-wrap:wrap" onclick="go('m-orders')">
 <div style="flex:1;min-width:150px"><b>طلب #${ar(o.id)} · ${USERS[o.customer]?esc(USERS[o.customer].name.split(' ')[0]):'عميل'}</b>
 <div class="hint">${dt(g.releasedAt)} · بواسطة ${esc(g.releasedBy||'—')}</div></div>
@@ -1857,6 +2143,7 @@ return `<div class="pghead"><h1>💰 محفظة ${esc(s.name)}</h1><button class
 <div class="hint">قيمة الشحنة ${money(g.payout.sub)}</div>
 <b class="fx" style="color:var(--grn)">+ ${money(g.payout.net)} صافيك</b>
 <div class="hint" style="color:var(--amb2)">− ${money(g.payout.comm)} عمولة الإدارة ← مباشرة</div>
+${g.payout.ship&&(g.payout.ship.charge||g.payout.ship.merchant)?`<div class="hint" style="color:var(--navy)">🚚 شحن: ${money(g.payout.ship.charge||0)} من العميل${g.payout.ship.merchant?' + '+money(g.payout.ship.merchant)+' دعمك':''} ← اللوجستي</div>`:''}
 </div></div>`).join('')||'<div class="hint">لا تحريرات بعد — تُحرر الشحنات بعد استلام العميل</div>'}</div></div>
 ${fund.length?`<div class="acard mt"><h3>🌟 تمويلات نقاط الولاء</h3>
 <p class="hint mb" style="line-height:1.8">كل نقطة تضيفها لمنتجاتك تُخصم من محفظتك فوراً وتُحوَّل لمحفظة الإدارة، ويستلمها العميل نقاط ولاء عند تحرير طلبه.</p>
@@ -1931,7 +2218,30 @@ ${s.cover?`<button class="btn gray xs" onclick="rmStoreImg('cover')">إزالة 
 <div class="setrow"><div class="ic">🌟</div><div class="tx"><b>قيمة النقطة (تحددها الإدارة)</b><span>${money(ptsVal())} للنقطة — تُخصم من محفظتك عند إضافة نقاط لأي منتج وتُحوَّل لمحفظة الإدارة</span></div><span class="tag amb">${money(ptsVal())}</span></div>
 <div class="setrow"><div class="ic">📊</div><div class="tx"><b>تمويلك للنقاط حتى الآن</b><span>${ar(myFund.reduce((a,x)=>a+x.pts,0))} نقطة تمّولها · ${money(r2(myFund.reduce((a,x)=>a+x.amt,0)))}</span></div><button class="btn soft xs" onclick="go('m-wallet')">السجل</button></div>
 </div>
+<div class="acard"><h3>📍 موقع المتجر — حماية من الالتفاف</h3>
+<div class="fld"><label>مدينة النشاط (الوحيدة الظاهرة للعملاء)</label>
+<select class="inp" id="ms-city">${CITIES.map(c=>`<option ${s.city===c?'selected':''}>${c}</option>`).join('')}</select></div>
+<div class="fld mt"><label>الحي والشارع (محجوب دائماً عن العملاء)</label><input class="inp" id="ms-area" value="${esc(s.area||'')}" placeholder="مثال: حي الياسمين، شارع الأمير سلطان"></div>
+<p class="hint mt" style="line-height:1.8">🔒 ما يراه العميل: <b>📍 ${esc(s.city)}</b> فقط — العنوان التفصيلي يُنقل داخل السيرفر إلى شريك الشحن لإصدار البوليصة دون أن يظهر في أي واجهة، ولا يوجد استلام شخصي «يد بيد» في ضمين، والتتبع بالحالات فقط.</p>
+<button class="btn mt sm" onclick="mSaveLoc()">حفظ الموقع</button>
 </div>
+<div class="acard"><h3>🚚 خيارات التوصيل وسقف الشحن المجاني</h3>
+<div class="fld"><label>من يتحمل رسوم التوصيل؟</label>
+<select class="inp" id="ms-dlm">
+<option value="customer" ${s.dlMode==='customer'?'selected':''}>توصيل على العميل (١٠٠٪)</option>
+<option value="half" ${s.dlMode==='half'?'selected':''}>توصيل مناصفة (٥٠٪ عليك / ٥٠٪ على العميل)</option>
+<option value="free" ${s.dlMode==='free'?'selected':''}>توصيل مجاني (١٠٠٪ عليك)</option>
+</select></div>
+<div class="fld mt"><label>سقف الشحن المجاني — أدنى قيمة طلب (ر.س، 0 = معطَّل)</label><input class="inp" id="ms-fmin" type="number" min="0" value="${s.freeMin||0}"></div>
+<p class="hint mt" style="line-height:1.8">⚖️ ما تتحمله من رسوم الشحن يُقتطع من <b>صافيك فقط</b> لحظة التحرير — ولا يمس عمولة المنصة (٢٫٥٪) أبداً، ويُحوَّل كاملاً لحساب الشريك اللوجستي. ويرى العميل شريط تقدم في سلة التسوق يشجعه على بلوغ سقفك.</p>
+<button class="btn mt sm" onclick="mSaveShip()">حفظ خيارات التوصيل</button>
+</div>
+${sec.id==='family'?`<div class="acard"><h3>❓ أسئلة متجري عند الطلب</h3>
+<p class="hint mb" style="line-height:1.8">أضف أسئلة تناسب مطبخك — تظهر للعميل عند إتمام الطلب وتصلك إجاباته مع الشحنة (متاحة لقسم المأكولات والضيافة).</p>
+${(s.qs||[]).map((q,i)=>`<div class="setrow"><div class="ic">❓</div><div class="tx"><b>${esc(q)}</b><span>سؤال رقم ${ar(i+1)} — يظهر للعميل عند الطلب</span></div><button class="btn gray xs" onclick="mDelQ(${i})">حذف</button></div>`).join('')||'<div class="hint mb">لا أسئلة بعد</div>'}
+<div class="fld mt"><label>سؤال جديد</label><input class="inp" id="ms-q" placeholder="مثال: هل تريد الكيكة بالكريمة أم بالتمر؟"></div>
+<button class="btn soft sm mt" onclick="mAddQ()">＋ إضافة السؤال</button>
+</div>`:''}</div>
 </div>`;
 }
 function pickStoreImg(kind){
@@ -1945,10 +2255,18 @@ const nm=($('#ms-nm').value||'').trim();
 if(nm.length<2){toast('اسم المتجر قصير','err');return}
 s.name=nm;s.desc=($('#ms-ds').value||'').trim();
 toast('حُفظت بيانات متجرك ✓','ok');render()}
+
+function mSaveLoc(){const s=myStore();s.city=$('#ms-city').value;s.area=($('#ms-area').value||'').trim();toast('حُفظ الموقع — يظهر للعملاء مدينة النشاط فقط ✓','ok');render()}
+function mSaveShip(){const s=myStore();s.dlMode=$('#ms-dlm').value;s.freeMin=Math.max(0,Math.round(+($('#ms-fmin').value||0)));toast('حُفظت خيارات التوصيل ✓','ok');render()}
+function mAddQ(){const v=($('#ms-q').value||'').trim();if(v.length<3){toast('اكتب سؤالاً أوضح','err');return}const s=myStore();s.qs=s.qs||[];s.qs.push(v);toast('أُضيف السؤال — سيظهر للعملاء عند الطلب ✓','ok');render()}
+function mDelQ(i){const s=myStore();s.qs.splice(i,1);toast('حُذف السؤال');render()}
 /* ================= صفحات الإدارة ================= */
-const vaultNow=()=>r2(DB.orders.reduce((a,o)=>a+o.groups.filter(g=>['pending','preparing','shipped','received','disputed'].includes(g.status)).reduce((x,g)=>x+g.sub+g.dl,0),0));
+const vaultNow=()=>r2(DB.orders.reduce((a,o)=>a+o.groups.filter(g=>['pending','preparing','shipped','received','disputed'].includes(g.status)).reduce((x,g)=>x+g.sub+((g.ship&&g.ship.charge)||(g.dl||0)),0),0));
 function pgAOver(){
 const open=DB.disputes.filter(d=>d.status==='open');
+const chats=[];DB.orders.forEach(o=>o.groups.forEach((g,gi)=>{if(g.chat&&g.chat.length)chats.push({o,g,gi})}));
+chats.sort((a,b)=>(((b.g.chat||[]).slice(-1)[0]||{}).at||0)-(((a.g.chat||[]).slice(-1)[0]||{}).at||0));
+const vTot=DB.orders.reduce((a,o)=>a+o.groups.reduce((x,g)=>x+(g.viol?g.viol.customer+g.viol.merchant:0),0),0);
 const releasedTotal=DB.orders.reduce((a,o)=>a+o.groups.reduce((x,g)=>x+(g.payout?g.payout.sub:0),0),0);
 return `<div class="pghead"><h1>🛡️ مركز إدارة ضمين</h1><span class="tag nvy">المشرف العام</span></div>
 <div class="kpis">
@@ -1969,7 +2287,14 @@ ${open.length?open.map(d=>`<div class="row" style="cursor:pointer" onclick="open
 ${STORES.filter(s=>!s.approved).map(s=>`<div class="row">
 <div class="mstore" style="--c:${s.color};pointer-events:none"><div class="lg">${s.name[0]}</div><div><b>${esc(s.name)}</b><span class="mr">${SEC(s.sec).name} · ${USERS[s.owner]?esc(USERS[s.owner].name):''}</span></div></div>
 <button class="btn sm" onclick="aApprove('${s.id}')">✓ اعتماد</button></div>`).join('')||'<div class="hint">لا متاجر معلقة</div>'}
-</div></div>`;
+</div></div>
+<div class="acard mt"><h3>💬 مراقبة محادثات الطلبات ${vTot?`<span class="tag red">${ar(vTot)} مخالفة محجوبة</span>`:'<span class="tag grn">بلا مخالفات</span>'}</h3>
+<p class="hint mb">محادثات العميل × التاجر مرتبطة بالطلب — تُحجب الأرقام والروابط ووسائل التواصل الخارجية تلقائياً، وتُحذف المحادثة بعد ٣ مخالفات مع تنبيه فوري للإدارة.</p>
+<div class="rows">${chats.slice(0,5).map(({o,g,gi})=>{const last=[...(g.chat||[])].reverse().find(m=>m.r!=='sys');
+return `<div class="row" style="cursor:pointer" onclick="openOChat(${o.id},${gi})">
+<div style="flex:1;min-width:0"><b>طلب #${ar(o.id)} · ${ST(g.store).name} × ${USERS[o.customer]?esc(USERS[o.customer].name.split(' ')[0]):'عميل'}</b>
+<div class="hint">${last?esc(last.t.slice(0,60))+(last.t.length>60?'…':''):'—'} · ${ar((g.chat||[]).length)} رسالة${g.chatDeleted?' · ⛔ محذوفة لمخالفة':g.chatArchived?' · 🗄️ مؤرشفة':''}</div></div>
+${(g.viol&&(g.viol.customer+g.viol.merchant))?`<span class="tag red">${ar(g.viol.customer+g.viol.merchant)} 🚫</span>`:'<span class="tag grn">سليمة</span>'}</div>`}).join('')||'<div class="hint">لا محادثات طلبات بعد</div>'}</div></div>`;
 }
 function pgADisputes(){
 const open=DB.disputes.filter(d=>d.status==='open');
@@ -2033,6 +2358,8 @@ return `<div class="pghead"><h1>📈 إيرادات ضمين</h1><span class="ta
 <div class="kpi amb"><i>🔒</i><b>${money(vaultNow())}</b><span>محجوز في الخزنة الآن</span></div>
 <div class="kpi nvy"><i>🏪</i><b>${money(r2(Object.values(DB.storeWallets).reduce((a,b)=>a+b,0)))}</b><span>صافي أرصدة التجار</span></div>
 <div class="kpi amb"><i>🌟</i><b>${money(DB.aPtsWallet||0)}</b><span>محفظة الإدارة من تمويل النقاط</span></div>
+<div class="kpi nvy"><i>🚚</i><b>${money(DB.logiWallet||0)}</b><span>حساب الشريك اللوجستي (OTO/Torod)</span></div>
+<div class="kpi"><i>🧾</i><b>${money(DB.vat||0)}</b><span>ضريبة القيمة المضافة المحصلة (١٥٪)</span></div>
 </div>
 <div class="acard"><h3>عمولات آخر ٥ أشهر (ألف ر.س)</h3>
 <div class="rvbars">${DB.revMonths.map(m=>`<div class="rv"><span>${ard(m.v)}</span><i style="height:${Math.max(8,m.v/mx*100)}%"></i><b>${m.m}</b></div>`).join('')}</div>

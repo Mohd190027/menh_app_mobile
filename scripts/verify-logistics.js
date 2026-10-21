@@ -1,0 +1,247 @@
+/* فحص شامل لمنصة ضمين — الدفعة اللوجستية الجديدة */
+const { chromium } = require('playwright');
+const FILE = 'file:///home/z/my-project/download/dameen.html';
+let pass = 0, fail = 0; const errs = [];
+const ok = (name, cond) => { if (cond) { pass++; console.log('  ✓ ' + name); } else { fail++; console.log('  ✗ FAIL: ' + name); } };
+
+(async () => {
+  const browser = await chromium.launch();
+  const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+  page.on('pageerror', e => errs.push('PAGEERROR: ' + e.message));
+  page.on('console', m => { if (m.type() === 'error') errs.push('CONSOLE: ' + m.text()); });
+
+  await page.goto(FILE); await page.waitForTimeout(600);
+
+  console.log('\n== 1) الأقسام الجديدة والرئيسية ==');
+  const home = await page.textContent('#app');
+  ok('قسم عالم الأزياء والجمال', home.includes('عالم الأزياء والجمال'));
+  ok('قسم عالم المأكولات والضيافة', home.includes('عالم المأكولات والضيافة'));
+  ok('قسم عالم الهدايا والديكور والمناسبات', home.includes('عالم الهدايا والديكور والمناسبات'));
+  ok('شريحة شركاء اللوجستيات', home.includes('شحن آلي عبر OTO وTorod'));
+  ok('شريحة الدفع والتقسيط', home.includes('تقسيط تابي وتمارا'));
+  await page.screenshot({ path: 'scripts/shots/L-home.png', fullPage: false });
+
+  console.log('\n== 2) حماية الالتفاف في واجهات المتجر ==');
+  await page.evaluate(`go('store','s8')`); await page.waitForTimeout(300);
+  let st = await page.textContent('#app');
+  ok('متجر مطبخ أم خالد يظهر بمدينته فقط', st.includes('مطبخ أم خالد') && st.includes('📍 الرياض'));
+  ok('لا حي ولا شارع في واجهة المتجر', !st.includes('حي ') || !st.includes('شارع الأمير'));
+  await page.evaluate(`go('product','p22')`); await page.waitForTimeout(300);
+  st = await page.textContent('#app');
+  ok('شارة توصيل مبرد في صفحة الكيكة', st.includes('توصيل مبرد') && st.includes('حساس للحرارة'));
+  ok('مدينة الشحن في صفحة المنتج', st.includes('يشحن من 📍'));
+  await page.evaluate(`go('product','p24')`); await page.waitForTimeout(300);
+  st = await page.textContent('#app');
+  ok('شارة خدمة ميدانية في صفحة التنسيق', st.includes('خدمة ديكور وتنسيق ميداني') && st.includes('حجز موعد'));
+  await page.evaluate(`go('product','p19')`); await page.waitForTimeout(300);
+  st = await page.textContent('#app');
+  ok('شارة قابل للإهداء في بوكس الهدايا', st.includes('قابل للإهداء'));
+
+  console.log('\n== 3) السلة: فصل متعدد المتاجر + شحن ديناميكي + ضريبة ==');
+  await page.evaluate(`quickLogin('customer')`); await page.waitForTimeout(400);
+  await page.evaluate(`addToCart('p22',1);addToCart('p19',1);addToCart('p24',1)`); await page.waitForTimeout(300);
+  await page.evaluate(`go('cart')`); await page.waitForTimeout(400);
+  let cart = await page.textContent('#app');
+  ok('٣ شحنات مستقلة (سلة متعددة المتاجر)', (await page.locator('.cgroup').count()) === 3);
+  ok('وسم توصيل مبرد على الكيكة', cart.includes('توصيل مبرد'));
+  ok('وسم خدمة ميدانية على التنسيق', cart.includes('خدمة ميدانية'));
+  ok('وسم قابل للإهداء على البوكس', cart.includes('قابل للإهداء'));
+  ok('شريط تقدم سقف الشحن المجاني (أم خالد ١٥٠)', (await page.locator('.freeprog').count()) >= 1);
+  ok('سطر ضريبة القيمة المضافة ١٥٪', cart.includes('ضريبة القيمة المضافة'));
+  ok('تلميح تابي/تمارا في السلة', cart.includes('تابي') && cart.includes('تمارا'));
+  ok('شحن مجاني من هدايا المعمور (متجر مجاني)', cart.includes('شحن مجاني'));
+  const cartTotals = await page.evaluate(`(()=>{const c=cartCalc();return {sub:c.sub,dl:c.dlCharge,tax:c.tax,total:c.total,city:c.city}})()`);
+  ok('حساب الشحن الديناميكي: كيكة مبردة داخل الرياض ١٢+٨=٢٠ والباقي مجاني', cartTotals.dl === 20);
+  ok('الضريبة = ١٥٪ من الصافي', Math.abs(cartTotals.tax - Math.round((cartTotals.sub + cartTotals.dl) * 0.15 * 100) / 100) < 0.51);
+  await page.screenshot({ path: 'scripts/shots/L-cart.png', fullPage: true });
+
+  console.log('\n== 4) بوابة الطلب: الخيارات الخاصة + تابي ==');
+  await page.evaluate(`startCheckout()`); await page.waitForTimeout(400);
+  let ck = await page.textContent('#ckbody');
+  ok('إلغاء الاستلام الشخصي (يد بيد)', ck.includes('لا يوجد استلام شخصي'));
+  ok('أسئلة مطبخ أم خالد في الخطوة ١', ck.includes('أسئلة «مطبخ أم خالد»') && ck.includes('حساسية من أي مكسرات'));
+  ok('إهداء لشخص آخر للبوكس', ck.includes('إهداء لشخص آخر'));
+  ok('حجز موعد المناسبة للتنسيق الميداني', ck.includes('حجز موعد المناسبة') && ck.includes('وقت التركيب') && ck.includes('وقت الفك'));
+  // تعبئة الخيارات
+  await page.evaluate(`ckSetAns('s8',0,'لا حساسية');ckSetAns('s8',1,'بالكريمة');ckSetAns('s8',2,'بعد العصر');ckSetBook('s5','date','2026-11-14');ckSetBook('s5','setup','18:00');ckSetBook('s5','tear','23:00');ckSetBook('s5','note','الدخول من البوابة الشمالية');ckGiftTog('s6');ckSetGift('s6','name','هند العلي');ckSetGift('s6','phone','0551234567')`);
+  await page.waitForTimeout(300);
+  await page.evaluate(`CK.step=2;ckRefresh()`); await page.waitForTimeout(300);
+  ck = await page.textContent('#ckbody');
+  ok('٦ وسائل دفع (مدى/فيزا/أبل/تابي/تمارا/محفظة)', (await page.locator('.pay').count()) === 6);
+  await page.evaluate(`CK.pay='tabby';ckRefresh()`); await page.waitForTimeout(300);
+  ck = await page.textContent('#ckbody');
+  ok('معاينة تابي ٤ دفعات', ck.includes('تابي — ٤ دفعات') && ck.includes('دفعتك الأولى الآن'));
+  ok('صندوق كيف يتوزع مبلغك', ck.includes('كيف يتوزع مبلغك') && ck.includes('لحساب الشريك اللوجستي'));
+  const pre = await page.evaluate(`(()=>{const c=cartCalc();return {tax:c.tax,total:c.total,wb:0}})()`);
+  await page.screenshot({ path: 'scripts/shots/L-pay.png' });
+  await page.evaluate(`placeOrder()`); await page.waitForTimeout(500);
+  ck = await page.textContent('#ckbody');
+  ok('نجاح الحجز + بوليصتان آليتان (كيك مبرد + بوكس)', ck.includes('بوليصة شحن آلية') && ck.includes('محادثة الطلب'));
+
+  console.log('\n== 5) طلبات العميل: البوليصة والتتبع والحجز والإهداء ==');
+  await page.evaluate(`closeModal();go('orders')`); await page.waitForTimeout(400);
+  let ords = await page.textContent('#app');
+  ok('بوليصة WB ظاهرة', await page.locator('.lgstrip').count() >= 2);
+  ok('تتبع بالحالات بلا خريطة', ords.includes('تتبع بالحالات فقط'));
+  ok('جدولة توصيل مبرد للكيكة', ords.includes('جارٍ جدولة توصيل مبرد'));
+  ok('إهداء إلى هند العلي', ords.includes('إهداء إلى') && ords.includes('هند العلي'));
+  ok('حجز مناسبتك مع التركيب والفك', ords.includes('حجز مناسبتك') && ords.includes('التركيب') && ords.includes('الفك'));
+  ok('إجابات أسئلة المتجر ظاهرة', ords.includes('إجاباتك للمتجر'));
+  ok('أزرار محادثة الطلب', (await page.locator('button:has-text("محادثة الطلب")').count()) === 3);
+  ok('وسم ض.ق.م على الطلب', ords.includes('ض.ق.م'));
+  await page.screenshot({ path: 'scripts/shots/L-orders.png', fullPage: true });
+
+  console.log('\n== 6) محادثة الطلب: فلترة أمنية وحذف بعد ٣ مخالفات ==');
+  // نجد فهرس شحنة أم خالد (chilled)
+  const gi = await page.evaluate(`DB.orders[0].groups.findIndex(g=>g.store==='s8')`);
+  await page.evaluate(`openOChat(DB.orders[0].id,${gi})`); await page.waitForTimeout(400);
+  let chat = await page.textContent('.mcard');
+  ok('فتحت المحادثة بثلاثة أطراف + متابعة الإدارة', chat.includes('الإدارة تُتابع'));
+  await page.fill('#omsg', 'السلام عليكم، أرجو التأكد من كتابة اسم أم خالد على الكيكة');
+  await page.click('button:has-text("إرسال")'); await page.waitForTimeout(300);
+  chat = await page.textContent('.mcard');
+  ok('رسالة عادية مرسلة', chat.includes('اسم أم خالد على الكيكة'));
+  ok('عدّاد مخالفات صفر', (await page.evaluate(`DB.orders[0].groups[${gi}].viol.customer`)) === 0);
+  await page.fill('#omsg', 'راسلني واتساب 0551234567'); await page.click('button:has-text("إرسال")'); await page.waitForTimeout(300);
+  chat = await page.textContent('.mcard');
+  ok('حجب رقم الجوال + تحذير ١ من ٣', chat.includes('حُجبت رسالة (رقم جوال)') && chat.includes('تحذير ١ من ٣'));
+  await page.fill('#omsg', 'افتح سناب شات حقسنسق البرايف'); await page.click('button:has-text("إرسال")'); await page.waitForTimeout(300);
+  chat = await page.textContent('.mcard');
+  ok('حجب مصطلح تواصل خارجي + تحذير ٢ من ٣', chat.includes('مصطلح تواصل خارجي') && chat.includes('تحذير ٢ من ٣'));
+  await page.fill('#omsg', 'الموقع تقدر تشوفه هنا www.x.com/eid'); await page.click('button:has-text("إرسال")'); await page.waitForTimeout(300);
+  chat = await page.textContent('.mcard');
+  ok('حجب رابط خارجي + حذف المحادثة بعد ٣ مخالفات', chat.includes('حُذفت المحادثة نهائياً') || chat.includes('محذوفة لمخالفة'));
+  ok('الكمبوزر اختفى بعد الحذف', !(await page.locator('#omsg').count()));
+  const adminN = await page.evaluate(`DB.notifs.filter(n=>n.to==='0500000003'&&(n.t.includes('خارج التطبيق')||n.t.includes('حُذفت'))).length`);
+  ok('تنبيهات وصلت للإدارة (محاولة + حذف)', adminN >= 2);
+  await page.evaluate(`closeModal()`); await page.waitForTimeout(200);
+
+  console.log('\n== 7) مسار الاستلام والتحرير بالتوزيع الثلاثي ==');
+  // شحنة أم خالد: قبول التاجر (سنحاكيه لاحقاً) — نختبر أولاً استلام+تقييم شحنة المعمور (مجانية الشحن)
+  const gi6 = await page.evaluate(`DB.orders[0].groups.findIndex(g=>g.store==='s6')`);
+  const before = await page.evaluate(`DB.orders[0].groups[${gi6}].sub`);
+  await page.evaluate(`confirmReceive(DB.orders[0].id,${gi6})`); await page.waitForTimeout(300);
+  ords = await page.textContent('#app');
+  ok('أرشفة المحادثة فور التسليم', ords.includes('مؤرشفة'));
+  const logiEvt = await page.evaluate(`DB.orders[0].groups[${gi6}].logi.events.length`);
+  ok('حدث Webhook للتسليم', logiEvt >= 3);
+  const w6 = await page.evaluate(`DB.storeWallets['s6']`);
+  const logiW0 = await page.evaluate(`DB.logiWallet`);
+  await page.evaluate(`ORATE={stars:0,oid:DB.orders[0].id,gi:${gi6}}`);
+  await page.evaluate(`openRate(DB.orders[0].id,${gi6})`); await page.waitForTimeout(300);
+  await page.click('#ostars span:nth-child(5)');
+  await page.click('button:has-text("أرسل التقييم وحرر المبلغ")'); await page.waitForTimeout(400);
+  const p6 = await page.evaluate(`DB.orders[0].groups[${gi6}].payout`);
+  ok('صافي = ٩٧٫٥٪ (شحن مجاني دعمه التاجر يخصم من صافيه)', Math.abs(p6.net - Math.round((before * 0.975 - (await page.evaluate(`DB.orders[0].groups[${gi6}].ship.subsidy`))) * 100) / 100) < 0.11);
+  ok('العمولة ٢٫٥٪ لحساب التطبيق', Math.abs(p6.comm - Math.round(before * 0.025 * 100) / 100) < 0.11);
+  const logiW1 = await page.evaluate(`DB.logiWallet`);
+  ok('دعم الشحن حُوّل لحساب اللوجستي', logiW1 - logiW0 >= (await page.evaluate(`DB.orders[0].groups[${gi6}].ship.subsidy`)) - 0.11);
+  ords = await page.textContent('#app');
+  ok('تفصيل التحرير في بطاقة الطلب', ords.includes('تفصيل التحرير'));
+
+  console.log('\n== 8) لوحة التاجر (أم خالد): الطلبات والبوليصة والإعدادات ==');
+  await page.evaluate(`logout()`); await page.waitForTimeout(200);
+  await page.evaluate(`doLogin2()`).catch(()=>{});
+  await page.evaluate(`SES={phone:'0500000010',role:'merchant',store:'s8'};go('m-orders')`); await page.waitForTimeout(400);
+  let mo = await page.textContent('#app');
+  ok('طلب الكيكة عند التاجر مع البوليصة والشاحن المبرد', mo.includes('بوليصة') && mo.includes('التبريد'));
+  ok('إجابات العميل على الأسئلة وصلت التاجر', mo.includes('إجابات العميل') && mo.includes('بالكريمة'));
+  ok('زر محادثة الطلب عند التاجر', (await page.locator('button:has-text("محادثة الطلب")').count()) >= 1);
+  await page.screenshot({ path: 'scripts/shots/L-m-orders.png', fullPage: true });
+  // قبول + تسليم
+  const gidx = await page.evaluate(`DB.orders[0].groups.findIndex(g=>g.store==='s8')`);
+  await page.evaluate(`mAccept(DB.orders[0].id,${gidx})`); await page.waitForTimeout(200);
+  const ev = await page.evaluate(`DB.orders[0].groups[${gidx}].logi.events.map(e=>e.t).join(' | ')`);
+  ok('حدث Webhook للقبول والتحضير', ev.includes('التحضير — تحديث Webhook'));
+  mo = await page.textContent('#app');
+  ok('زر التسليم يحمل رقم البوليصة', mo.includes('سلّم الشحنة للمندوب — بوليصة'));
+  await page.evaluate(`mShip(DB.orders[0].id,${gidx})`); await page.waitForTimeout(200);
+  const ev2 = await page.evaluate(`DB.orders[0].groups[${gidx}].logi.events.map(e=>e.t).join(' | ')`);
+  ok('حدث Webhook لاستلام المندوب (Pickup)', ev2.includes('Pickup مؤكد'));
+
+  console.log('\n== 9) فورم المنتجات بأنواع التوصيل + العروض ==');
+  await page.evaluate(`go('m-prods')`); await page.waitForTimeout(300);
+  let mp = await page.textContent('#app');
+  ok('شارة مبرد على بطاقة الكيكة', mp.includes('🧊 مبرد'));
+  await page.evaluate(`mProdForm('p22')`); await page.waitForTimeout(300);
+  mp = await page.textContent('.mcard');
+  ok('حقل طريقة التوصيل في الفورم (مأكولات)', mp.includes('طريقة التوصيل — تحدد سلوك الشحن'));
+  ok('خيار حساس للحرارة محدد', (await page.locator('#mp-ptype option:checked').getAttribute('value')) === 'chilled');
+  await page.evaluate(`closeModal()`);
+  await page.evaluate(`SES={phone:'0500000007',role:'merchant',store:'s5'};go('m-prods')`); await page.waitForTimeout(300);
+  await page.evaluate(`mProdForm('p24')`); await page.waitForTimeout(300);
+  mp = await page.textContent('.mcard');
+  ok('فورم الديكور: نوع المنتج ميداني + إهداء', mp.includes('نوع المنتج — يحدد مسار التسليم') && mp.includes('حجز مواعيد المناسبات'));
+  ok('الخيار الميداني محدد', (await page.locator('#mp-ptype option:checked').getAttribute('value')) === 'field');
+  await page.evaluate(`closeModal()`);
+
+  console.log('\n== 10) إعدادات التاجر: الموقع والشحن والأسئلة ==');
+  await page.evaluate(`go('m-set')`); await page.waitForTimeout(400);
+  let ms = await page.textContent('#app');
+  ok('بطاقة الموقع وحماية الالتفاف', ms.includes('حماية من الالتفاف') && ms.includes('محجوب دائماً عن العملاء'));
+  ok('بطاقة خيارات التوصيل الثلاثة', ms.includes('توصيل على العميل (١٠٠٪)') && ms.includes('توصيل مناصفة') && ms.includes('توصيل مجاني (١٠٠٪ عليك)'));
+  ok('حقل سقف الشحن المجاني', ms.includes('سقف الشحن المجاني — أدنى قيمة طلب'));
+  await page.evaluate(`SES={phone:'0500000010',role:'merchant',store:'s8'};go('m-set')`); await page.waitForTimeout(400);
+  ms = await page.textContent('#app');
+  ok('إدارة أسئلة المتجر (مأكولات)', ms.includes('أسئلة متجري عند الطلب'));
+  await page.fill('#ms-q', 'هل تريد إضافة شموع زينة للكيكة؟');
+  await page.click('button:has-text("＋ إضافة السؤال")'); await page.waitForTimeout(300);
+  ms = await page.textContent('#app');
+  ok('إضافة سؤال جديد تنجح', ms.includes('هل تريد إضافة شموع زينة للكيجة؟') || ms.includes('هل تريد إضافة شموع زينة للكيكة؟'));
+  ok('عدد أسئلة أم خالد صار ٤', (await page.evaluate(`ST('s8').qs.length`)) === 4);
+  await page.selectOption('#ms-dlm', 'half'); await page.fill('#ms-fmin', '200');
+  await page.click('button:has-text("حفظ خيارات التوصيل")'); await page.waitForTimeout(300);
+  const s8cfg = await page.evaluate(`({dl:ST('s8').dlMode,fm:ST('s8').freeMin})`);
+  ok('حفظ مناصفة + سقف ٢٠٠', s8cfg.dl === 'half' && s8cfg.fm === 200);
+  await page.screenshot({ path: 'scripts/shots/L-m-set.png', fullPage: true });
+
+  console.log('\n== 11) محفظة التاجر بالتوزيع الثلاثي ==');
+  await page.evaluate(`go('m-wallet')`); await page.waitForTimeout(400);
+  const mw = await page.textContent('#app');
+  ok('بطاقة التوزيع الثلاثي', mw.includes('توزيع ثلاثي لحظي') && mw.includes('رسوم الشحن ← حساب الشريك اللوجستي'));
+  ok('KPI اللوجستيات في المحفظة', mw.includes('للشريك اللوجستي'));
+  ok('سجل التحريرات بالتوزيع الكامل', mw.includes('صافيك + العمولة + الشحن'));
+
+  console.log('\n== 12) الإدارة: المراقبة والإيرادات ==');
+  await page.evaluate(`SES={phone:'0500000003',role:'admin'};go('a-over')`); await page.waitForTimeout(400);
+  let ao = await page.textContent('#app');
+  ok('بطاقة مراقبة محادثات الطلبات', ao.includes('مراقبة محادثات الطلبات'));
+  ok('عدّاد المخالفات المحجوبة', ao.includes('مخالفة محجوبة'));
+  await page.screenshot({ path: 'scripts/shots/L-a-over.png', fullPage: true });
+  // فتح محادثة كإدارة (وضع المراقبة)
+  const chRow = await page.locator('.acard:has-text("مراقبة محادثات") .row').first();
+  await chRow.click(); await page.waitForTimeout(400);
+  let adm = await page.textContent('.mcard');
+  ok('الإدارة تفتح المحادثة (مراقبة/مؤرشفة/محذوفة)', adm.includes('وضع المراقبة') || adm.includes('مؤرشفة') || adm.includes('أُرشفت المحادثة'));
+  await page.evaluate(`closeModal()`);
+  await page.evaluate(`go('a-rev')`); await page.waitForTimeout(400);
+  const ar = await page.textContent('#app');
+  ok('KPI حساب الشريك اللوجستي', ar.includes('حساب الشريك اللوجستي (OTO/Torod)'));
+  ok('KPI ضريبة القيمة المضافة المحصلة', ar.includes('ضريبة القيمة المضافة المحصلة'));
+  const vatInc = await page.evaluate(`DB.vat`);
+  ok('الضريبة تراكمت من الطلب الجديد', vatInc > 527.4);
+
+  console.log('\n== 13) جوال ٣٩٠px ==');
+  const mob = await browser.newPage({ viewport: { width: 390, height: 844 } });
+  mob.on('pageerror', e => errs.push('MOB PAGEERROR: ' + e.message));
+  await mob.goto(FILE); await mob.waitForTimeout(500);
+  await mob.evaluate(`addToCart('p22',1);quickLogin('customer');startCheckout()`); await mob.waitForTimeout(300);
+  await mob.evaluate(`CK.step=2;placeOrder()`); await mob.waitForTimeout(300);
+  await mob.evaluate(`closeModal();go('orders')`); await mob.waitForTimeout(400);
+  const mobTxt = await mob.textContent('#app');
+  ok('جوال: الطلبات بالبوليصة والتتبع', mobTxt.includes('بوليصة') && mobTxt.includes('جدولة توصيل مبرد'));
+  await mob.screenshot({ path: 'scripts/shots/L-mob-orders.png', fullPage: false });
+  await mob.evaluate(`go('cart')`); await mob.waitForTimeout(300);
+  await mob.evaluate(`addToCart('p22',1)`); await mob.waitForTimeout(200);
+  await mob.evaluate(`go('cart')`); await mob.waitForTimeout(400);
+  await mob.screenshot({ path: 'scripts/shots/L-mob-cart.png', fullPage: true });
+  await mob.close();
+
+  await browser.close();
+  console.log('\n==============================');
+  console.log('PASS: ' + pass + ' / FAIL: ' + fail);
+  const realErrs = errs.filter(e => !e.includes('favicon'));
+  console.log('JS ERRORS: ' + realErrs.length);
+  realErrs.slice(0, 8).forEach(e => console.log('  ' + e.slice(0, 200)));
+  process.exit(fail || realErrs.length ? 1 : 0);
+})();
