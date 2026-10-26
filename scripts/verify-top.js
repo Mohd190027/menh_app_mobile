@@ -34,7 +34,9 @@ const { chromium } = require('playwright');
   console.log('USER   => navLinks:', userNav, '| search:', userSearch, '| bell:', userBell, '| avatar:', userAvatar, '| roleDD:', userDD);
   console.log('USER nav items:', JSON.stringify(userNavTxt));
 
-  // ===== search works in BOTH states: test logged-in search =====
+  // ===== search works in BOTH states (contextual — داخل الأقسام منذ الدفعة ٨) =====
+  await page.evaluate(() => go('section', 'fashion'));
+  await page.waitForTimeout(500);
   await page.fill('#sq', 'عباية');
   await page.press('#sq', 'Enter');
   await page.waitForTimeout(900);
@@ -45,6 +47,8 @@ const { chromium } = require('playwright');
   await page.evaluate(() => logout());
   await page.waitForTimeout(900);
   const guestSearch2 = await page.locator('.topin .sbox input').count();
+  await page.evaluate(() => go('section', 'family'));
+  await page.waitForTimeout(500);
   await page.fill('#sq', 'عسل');
   await page.press('#sq', 'Enter');
   await page.waitForTimeout(900);

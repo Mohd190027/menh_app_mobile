@@ -63,7 +63,7 @@ const ok = (name, cond) => { if (cond) { pass++; console.log('  ✓ ' + name); }
   ok('إهداء لشخص آخر للبوكس', ck.includes('إهداء لشخص آخر'));
   ok('حجز موعد المناسبة للتنسيق الميداني', ck.includes('حجز موعد المناسبة') && ck.includes('وقت التركيب') && ck.includes('وقت الفك'));
   // تعبئة الخيارات
-  await page.evaluate(`ckSetAns('s8',0,'لا حساسية');ckSetAns('s8',1,'بالكريمة');ckSetAns('s8',2,'بعد العصر');ckSetBook('s5','date','2026-11-14');ckSetBook('s5','setup','18:00');ckSetBook('s5','tear','23:00');ckSetBook('s5','note','الدخول من البوابة الشمالية');ckGiftTog('s6');ckSetGift('s6','name','هند العلي');ckSetGift('s6','phone','0551234567')`);
+  await page.evaluate(`ckSetAns('s8',0,'لا حساسية');ckSetAns('s8',1,'بالكريمة');ckSetAns('s8',2,'بعد العصر');ckSetBook('s5','date','2026-11-14');ckSetBook('s5','setup','18:00');ckSetBook('s5','tear','23:00');ckSetBook('s5','note','الدخول من البوابة الشمالية');ckGiftTog('s6');ckSetGift('s6','name','هند العلي');ckSetGift('s6','phone','0551234567');ckSetGift('s6','city','الرياض')`);
   await page.waitForTimeout(300);
   await page.evaluate(`CK.step=2;ckRefresh()`); await page.waitForTimeout(300);
   ck = await page.textContent('#ckbody');
@@ -171,7 +171,7 @@ const ok = (name, cond) => { if (cond) { pass++; console.log('  ✓ ' + name); }
   await page.evaluate(`SES={phone:'0500000007',role:'merchant',store:'s5'};go('m-prods')`); await page.waitForTimeout(300);
   await page.evaluate(`mProdForm('p24')`); await page.waitForTimeout(300);
   mp = await page.textContent('.mcard');
-  ok('فورم الديكور: نوع المنتج ميداني + إهداء', mp.includes('نوع المنتج — يحدد مسار التسليم') && mp.includes('حجز مواعيد المناسبات'));
+  ok('فورم الديكور: طبيعة الشحن والاحتياجات الخاصة + إهداء', mp.includes('طبيعة الشحن والاحتياجات الخاصة') && mp.includes('حجز مواعيد المناسبات'));
   ok('الخيار الميداني محدد', (await page.locator('#mp-ptype option:checked').getAttribute('value')) === 'field');
   await page.evaluate(`closeModal()`);
 

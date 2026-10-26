@@ -80,7 +80,7 @@ const ok = (cond, name) => { if (cond) { pass++; console.log('  ✓ ' + name); }
   await page.waitForTimeout(200);
   body = await page.locator('.mcard').innerText();
   ok(['#st-nm', '#st-own', '#st-ph', '#st-em', '#st-cr', '#st-iban', '#st-pw', '#st-pw2', '#st-doc-btn'].every(async id => await page.locator(id).count() === 1), 'فورم المتجر: الاسم/المالك/الجوال/البريد/السجل/الآيبان/الوثيقة/كلمة المرور وتأكيدها');
-  ok(await page.locator('.secpick button').count() === 3, 'ثلاثة أزرار لاختيار عالم المتجر');
+  ok(await page.locator('.secpick button').count() === 4, 'أربعة أزرار لاختيار عالم المتجر');
   await page.screenshot({ path: SHOT + '/b7-auth-reg-store.png' });
 
   // تقديم طلب متجر (من العالم الثاني: المأكولات)

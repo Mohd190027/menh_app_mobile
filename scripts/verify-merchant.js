@@ -117,9 +117,9 @@ const ok = (cond, name) => { if (cond) { pass++; console.log('  ✓ ' + name); }
   await page.evaluate(() => go('m-wallet'));
   await page.waitForTimeout(300);
   const wHTML = await page.locator('#app').innerHTML();
-  ok(wHTML.includes('كيف ينقسم كل مبلغ'), 'بطاقة شرح الانقسام');
+  ok(wHTML.includes('كيف يتوزع كل مبلغ محرَّر'), 'بطاقة شرح الانقسام');
   ok(await page.locator('.splitbar').count() === 1, 'شريط الانقسام المرئي ٩٧٫٥/٢٫٥');
-  ok(wHTML.includes('صافي المتجر ٩٧٫٥٪') && wHTML.includes('عمولة الإدارة ٢٫٥٪'), 'التسميتان على الشريط');
+  ok(wHTML.includes('صافي المتجر (بعد عمولة تصنيفاته)') && wHTML.includes('عمولة الإدارة ← حساب التطبيق'), 'التسميتان على الشريط');
   ok(wHTML.includes('+ ' + '٣٦٣') || wHTML.includes('٣٦٣٫٣٣'), 'صافي تحرير الطلب #١٠٢١ (٣٦٣٫٣٣) يظهر');
   ok(wHTML.includes('عمولة الإدارة ← مباشرة'), 'كل سطر تحرير يُظهر شطرَيه: صافيك + عمولة الإدارة');
   ok(wHTML.includes('تمويلات نقاط الولاء'), 'قسم تمويلات النقاط في المحفظة');
@@ -201,12 +201,12 @@ const ok = (cond, name) => { if (cond) { pass++; console.log('  ✓ ' + name); }
   await page.waitForTimeout(300);
   const cartHTML = await page.locator('#app').innerHTML();
   ok(cartHTML.includes('توصيل مجاني؟'), 'زر استبدال التوصيل المجاني ظاهر في السلة');
-  const totalBefore = await page.evaluate(() => cartCalc().total);
+  const totalBefore = await page.evaluate(() => cartCalc().total); const dlBefore = await page.evaluate(() => cartCalc().dlCharge);
   await page.evaluate(() => { FREE_DL = true; render(); });
   await page.waitForTimeout(250);
   const cAfter = await page.evaluate(() => cartCalc());
-  ok(cAfter.dl === 0 && cAfter.fd === true, 'الشحن صار مجانياً بعد الاستبدال');
-  ok(Math.abs((totalBefore - cAfter.total) - 12) < 0.01, 'الإجمالي انخفض بمقدار الشحن ١٢ ر.س');
+  ok(cAfter.dlCharge === 0 && cAfter.fd === true, 'الشحن صار مجانياً بعد الاستبدال');
+  ok(Math.abs((totalBefore - cAfter.total) - dlBefore * 1.15) < 0.01, 'الإجمالي انخفض بمقدار الشحن + ضريبته');
   await page.screenshot({ path: SHOT + '/cart-freedl.png' });
 
   // إتمام الطلب: خزنة → عنوان → دفع
