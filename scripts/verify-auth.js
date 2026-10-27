@@ -145,7 +145,7 @@ const ok = (cond, name) => { if (cond) { pass++; console.log('  ✓ ' + name); }
   await page.evaluate(() => quickLogin('admin'));
   await page.waitForTimeout(300);
   const navTxt = await page.locator('#top').innerText();
-  ok(navTxt.includes('📋 طلبات التسجيل') && navTxt.includes('🗂️ الأقسام'), 'القائمة الجديدة: طلبات التسجيل + الأقسام');
+  ok(navTxt.includes('📊 مركز الإدارة') && navTxt.includes('🗂️ الأقسام'), 'القائمة المدمجة: مركز الإدارة + الأقسام');
   ok(!navTxt.includes('المستخدمون'), 'صفحة المستخدمون حُذفت من القائمة');
   await page.evaluate(() => go('a-reqs'));
   await page.waitForTimeout(250);

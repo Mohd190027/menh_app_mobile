@@ -401,7 +401,7 @@ const chk = (name, cond, extra) => {
     upload: document.body.innerText.includes('رفع الملف بأمان'),
   }));
   chk('الرقمي: حقول الكود/الملف + رفع آمن + إقرار الملكية', digiForm.fields && digiForm.ip && digiForm.ipText && digiForm.upload, digiForm);
-  await pg.evaluate(() => { document.querySelector('#mp-nm').value = 'كود اختبار رقمي'; document.querySelector('#mp-pr').value = '30'; document.querySelector('#mp-dval').value = 'TST-CODE-1234'; mSaveProd(); });
+  await pg.evaluate(() => { document.querySelector('#mp-nm').value = 'كود اختبار رقمي'; document.querySelector('#mp-pr').value = '30'; document.querySelector('#mp-pts').value = '20'; document.querySelector('#mp-dval').value = 'TST-CODE-1234'; mSaveProd(); });
   await pg.waitForTimeout(300);
   const ipBlocked = await pg.evaluate(() => {
     const t = [...document.querySelectorAll('.toast')].map(x => x.textContent).join(' ');

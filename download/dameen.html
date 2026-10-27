@@ -103,6 +103,13 @@ img{-webkit-touch-callout:none}
 .ddmenu .hti:hover{background:var(--card2)}
 .ddmenu .hti b{font-size:12.5px;display:flex;align-items:center;gap:8px}
 .ddmenu .hti span{font-size:10px;color:var(--mut)}
+.ddmenu.secs{position:fixed;inset-inline-end:16px;display:none;min-width:268px;max-width:calc(100vw - 24px);z-index:130}
+.ddmenu.secs.open{display:block;animation:pop .18s}
+.ddmenu.secs .hti{padding:10px 12px}
+.ddmenu.secs .sechd{padding:8px 12px 4px;font-size:10.5px;color:var(--mut);font-weight:800}
+.pqwrap{background:var(--card2);border:1px dashed var(--line);border-radius:14px;padding:11px 13px;margin:11px 0}
+.pq{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:9px 12px;margin-top:8px}
+.pq label{font-size:12px;font-weight:800;display:block}
 
 /* ===== Hero + bubbles ===== */
 .hero{text-align:center;margin:10px 0 2px;position:relative}
@@ -135,7 +142,7 @@ img{-webkit-touch-callout:none}
 .secthead{display:flex;align-items:center;gap:10px;margin:28px 0 13px}
 .secthead h2{font-size:16.5px;font-weight:800;color:var(--grn)}
 .secthead .ln{flex:1;height:1px;background:var(--line)}
-.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:4px}
+.trio{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:4px;max-width:940px;margin-inline:auto}
 .tri{position:relative;height:252px;border-radius:22px;overflow:hidden;cursor:pointer;box-shadow:var(--sh);transition:.3s;background:#EDE7DA}
 .tri .bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:.65s}
 .tri:hover .bg{transform:scale(1.09)}
@@ -760,16 +767,21 @@ return{ok:true};
 
 /* ================= الحالة ================= */
 let SES=null,VIEW={page:'home'},CART=[],GFav=[],CK={step:0,addr:0,pay:'mada'},CPN=null,PTS=0,RATE={stars:0},COMP={sub:'damaged'},EVP=[],FREE_DL=false;
+let LASTSEC=null,AHUBT='over';
 const me=()=>SES?USERS[SES.phone]:null;
 const isFav=pid=>{if(!SES)return GFav.includes(pid);const u=me();return u&&u.favs&&u.favs.includes(pid)};
 const cartCount=()=>CART.reduce((a,c)=>a+c.qty,0);
 /* ================= التنقل ================= */
 function go(page,arg){
-if(page==='section'){VIEW={page:'section',sec:arg,cat:'الكل',q:''}}
+if(page==='section'){VIEW={page:'section',sec:arg,cat:'الكل',q:''};LASTSEC=arg}
 else if(page==='store')VIEW={page:'store',store:arg,q:''};
 else if(page==='product')VIEW={page:'product',pid:arg,gi:0,q:''};
 else if(page==='search')VIEW={page:'search',q:arg};
-else VIEW={page};
+else if(page==='a-hub')VIEW={page:'a-hub',atab:arg||AHUBT||'over'};
+else if(page==='a-over'){VIEW={page:'a-hub',atab:'over'};AHUBT='over'}
+else if(page==='a-reqs'){VIEW={page:'a-hub',atab:'reqs'};AHUBT='reqs'}
+else if(page==='a-stores'){VIEW={page:'a-hub',atab:'stores'};AHUBT='stores'}
+else{VIEW={page};if(page==='home')LASTSEC=null}
 if(VIEW.page.startsWith('m-')&&(!SES||SES.role!=='merchant')){toast('سجّل دخولك بحساب تاجر أولاً','err');openAuth('merchant');return}
 if(VIEW.page.startsWith('a-')&&(!SES||SES.role!=='admin')){toast('هذه الصفحة مخصصة للإدارة','err');openAuth('admin');return}
 closeModal();render();window.scrollTo({top:0,behavior:'smooth'});
@@ -778,7 +790,7 @@ function render(){
 const app=$('#app');
 const R={home:pgHome,search:pgSearch,section:pgSection,store:pgStore,product:pgProduct,cart:pgCart,orders:pgOrders,dlib:pgDLib,disputes:pgDisputes,account:pgAccount,favs:pgFavs,
 'm-dash':pgMDash,'m-prods':pgMProds,'m-orders':pgMOrders,'m-wallet':pgMWallet,'m-disputes':pgMDisputes,'m-set':pgMSet,
-'a-over':pgAOver,'a-disputes':pgADisputes,'a-stores':pgAStores,'a-reqs':pgAReqs,'a-cats':pgACats,'a-rev':pgARev};
+'a-hub':pgAHub,'a-disputes':pgADisputes,'a-cats':pgACats,'a-rev':pgARev};
 app.innerHTML=(R[VIEW.page]||pgHome)();
 renderTop();renderFab();appSave();
 }
@@ -788,6 +800,14 @@ f.style.display=show?'grid':'none';
 f.innerHTML='🛒'+(cartCount()?`<span class="bdg">${ar(cartCount())}</span>`:'');
 }
 function searchGo(){const q=($('#sq')||{}).value||'';if(q.trim())go('search',q.trim())}
+/* زر الرئيسية: داخل قسم (منتج/متجر/بحث سياقي) يعيدك بداية القسم نفسه — وإلا الصفحة الرئيسية */
+function homeGo(){
+const pg=VIEW.page;
+if(pg==='product'){const p=P(VIEW.pid);const st=p?ST(p.store):null;if(st&&st.sec){go('section',st.sec);return}}
+if(pg==='store'){const st=ST(VIEW.store);if(st&&st.sec){go('section',st.sec);return}}
+if(pg==='search'&&LASTSEC){go('section',LASTSEC);return}
+go('home');
+}
 
 /* ================= القائمة العلوية ================= */
 function renderTop(){
@@ -805,16 +825,14 @@ ${mnav('m-dash','📊 لوحة التحكم')}${mnav('m-prods','🧺 المنت�
 </nav>${bellBtn()}${roleDD()}</div>`;
 }else if(SES.role==='admin'){
 h=`<div class="topin">${brand}${sb}<nav class="nav">
-${mnav('a-over','📊 نظرة عامة')}${mnav('a-disputes','⚖️ التحكيم')}${mnav('a-stores','🏪 المتاجر')}${mnav('a-reqs','📋 طلبات التسجيل')}${mnav('a-cats','🗂️ الأقسام')}${mnav('a-rev','📈 الإيرادات')}
+${mnav('a-hub','📊 مركز الإدارة')}${mnav('a-disputes','⚖️ التحكيم')}${mnav('a-cats','🗂️ الأقسام')}${mnav('a-rev','📈 الإيرادات')}
 </nav>${bellBtn()}${roleDD()}</div>`;
 }else{ /* عميل مسجّل: القائمة الكاملة */
 const u=me();
 h=`<div class="topin">${brand}${sb}<nav class="nav">
-${mnav('home','الرئيسية')}
-<div class="dd" onclick="event.stopPropagation();this.classList.toggle('open')">
-<button class="nlink ${['section','store','product'].includes(VIEW.page)?'on':''}">🗂️ الأقسام ▾</button>
-<div class="ddmenu">${SECTIONS.map(s=>`<div class="hti" onclick="go('section','${s.id}')"><b><span style="color:${s.color}">●</span> ${s.name}</b><span>${s.desc}</span></div>`).join('')}</div>
-</div>
+<button class="nlink ${VIEW.page==='home'?'on':''}" onclick="homeGo()">الرئيسية</button>
+<button class="nlink ${['section','store','product'].includes(VIEW.page)?'on':''}" data-secb onclick="secDD(event,this)">🗂️ الأقسام ▾</button>
+<div class="ddmenu secs" id="secdrop"><div class="sechd">عوالم ضمين — اختر قسماً</div>${SECTIONS.map(s=>`<div class="hti" onclick="go('section','${s.id}')"><b><span style="color:${s.color}">●</span> ${s.name}</b><span>${s.desc}</span></div>`).join('')}</div>
 ${mnav('favs','❤️ المفضلة')}
 ${mnav('orders','🧾 طلباتي')}
 ${mnav('dlib','📚 مكتبتي')}
@@ -826,6 +844,20 @@ ${mnav('account','👤 حسابي')}
 t.innerHTML=h;
 }
 const mnav=(p,l)=>`<button class="nlink ${VIEW.page===p?'on':''}" onclick="go('${p}')">${l}</button>`;
+/* قائمة الأقسام المنسدلة — لوحة ثابتة (fixed) لا تُقص بحركة الشريط */
+function secDD(e,btn){
+e.stopPropagation();
+const el=$('#secdrop');if(!el)return;
+if(el.classList.contains('open')){el.classList.remove('open');return}
+const r=btn.getBoundingClientRect();
+el.style.top=(r.bottom+8)+'px';
+el.style.insetInlineEnd=Math.max(10,window.innerWidth-r.right)+'px';
+el.classList.add('open');
+}
+if(!window.__secInit){window.__secInit=1;
+document.addEventListener('click',e=>{const el=$('#secdrop');
+if(el&&el.classList.contains('open')&&!el.contains(e.target)&&!(e.target.closest&&e.target.closest('[data-secb]')))el.classList.remove('open')});
+window.addEventListener('scroll',()=>{const el=$('#secdrop');if(el)el.classList.remove('open')},true)}
 function bellBtn(){const n=DB.notifs.filter(x=>x.to===SES.phone&&!x.read).length;
 return `<button class="iconbtn" onclick="openBell()" title="الإشعارات">🔔${n?`<span class="bdg">${ar(n)}</span>`:''}</button>`}
 function roleDD(){const u=me();const roleTxt={customer:'عميل',merchant:'تاجر',admin:'الإدارة'}[SES.role];
@@ -1182,7 +1214,7 @@ return `<div style="display:flex;gap:10px;align-items:flex-start;background:var(
 }
 function pgProduct(){
 const p=P(VIEW.pid);if(!p)return pgHome();
-if(VIEW._pid!==VIEW.pid){VIEW._pid=VIEW.pid;QTY=1;VIEW.tab='desc';RATE={stars:0}}
+if(VIEW._pid!==VIEW.pid){VIEW._pid=VIEW.pid;QTY=1;VIEW.tab='desc';RATE={stars:0};PANS={}}
 const s=ST(p.store),sec=SEC(s.sec),e=eff(p),fav=isFav(p.id);
 const similar=PRODUCTS.filter(x=>x.id!==p.id&&ST(x.store).sec===s.sec&&stOK(ST(x.store))).slice(0,4);
 const gal=p.imgs.length>1?p.imgs:[p.imgs[0],p.imgs[0]];
@@ -1209,6 +1241,7 @@ ${p.off?`<s class="mut">${money(p.price)}</s><span class="tag red">وفّر ${ar
 </div>
 ${p.pts?`<div class="hint" style="color:var(--amb2);font-weight:700;margin-bottom:10px">🌟 يمنح هذا المنتج ${ar(p.pts)} نقطة ولاء للعميل عند تحرير الطلب</div>`:'<div style="height:6px"></div>'}
 ${dlBadge(p)}
+${p.qs&&p.qs.length?`<div class="pqwrap"><b style="font-size:12.5px">❓ أسئلة من التاجر — أجب عنها قبل الإضافة للسلة</b>${p.qs.map((q,i)=>qBlock(q,i,sec.color)).join('')}</div>`:''}
 <div class="hint mb">يبيعه متجر <a style="color:${s.color};font-weight:700;cursor:pointer" onclick="go('store','${s.id}')">${esc(s.name)}</a> ★ ${ard(s.rt)} · شحنة ضمن ${sec.win} حماية · يشحن من 📍 ${esc(s.city||'—')}</div>
 <div class="spread" style="gap:10px;flex-wrap:wrap">
 <div class="qty"><button onclick="qStep(1)">＋</button><b id="qv">${ar(QTY)}</b><button onclick="qStep(-1)">−</button></div>
@@ -1249,10 +1282,22 @@ p.rc++;p.rt=r2((p.rt*(p.rc-1)+RATE.stars)/p.rc);
 toast('شكراً لتقييمك 💚','ok');render();
 }
 function qStep(d){const p=P(VIEW.pid);QTY=Math.min(Math.max(1,QTY+d),Math.max(1,p.stock||1));$('#qv').textContent=ar(QTY)}
+/* أسئلة التاجر المخصصة — الإجابة إجبارية قبل الإضافة للسلة */
+let PANS={};
+function qBlock(q,i,color){
+if(q.t==='opts')return `<div class="pq"><label>${esc(q.q)}</label><div class="chiprow" style="margin-top:7px">${q.o.map(o=>`<button class="chip ${(PANS[i]||'')===o?'on':''}" style="--acc:${color}" onclick="panChip(this,${i})" data-v="${esc(o)}">${esc(o)}</button>`).join('')}</div></div>`;
+return `<div class="pq"><label>${esc(q.q)}</label><input class="inp" style="font-size:12.5px;margin-top:7px" value="${esc(PANS[i]||'')}" oninput="PANS[${i}]=this.value" placeholder="اكتب جوابك هنا…"></div>`;
+}
+function panChip(el,i){PANS[i]=el.dataset.v;render()}
 function addToCart(pid,qty,buy){
 const p=P(pid);if(!p.stock){toast('نفدت الكمية حالياً','err');return}
+const qs=p.qs||[];
+if(qs.length){const miss=qs.findIndex((q,i)=>!String(PANS[i]||'').trim());
+if(miss>=0){toast('أجب عن سؤال التاجر «'+qs[miss].q+'» أولاً — يظهر فوق زر الشراء','err');const el=document.querySelector('.pqwrap');if(el)el.scrollIntoView({behavior:'smooth',block:'center'});return}}
+const ans=qs.length?qs.map((q,i)=>({q:q.q,a:String(PANS[i]||'').trim()})):[];
 const ex=CART.find(c=>c.pid===pid);
-if(ex)ex.qty=Math.min(ex.qty+qty,p.stock);else CART.push({pid,qty:Math.min(qty,p.stock)});
+if(ex){ex.qty=Math.min(ex.qty+qty,p.stock);if(ans.length)ex.ans=ans}
+else CART.push({pid,qty:Math.min(qty,p.stock),ans});
 toast('أُضيف «'+esc(p.name)+'» إلى السلة','ok');
 if(buy)go('cart');else{renderTop();renderFab()}
 }
@@ -1537,7 +1582,7 @@ return `<div class="citem" onclick="go('product','${p.id}')">
 <div class="im">${imgTag(p.imgs[0],'','')}</div>
 <div class="info">
 <b style="font-size:13px">${esc(p.name)}</b>
-<div class="hint">${esc(s.name)}${p.off?` · <span style="color:var(--red);font-weight:700">خصم ${ar(p.off)}٪</span>`:''}${PTI(p)?` · <span style="font-weight:700">${PTI(p)}</span>`:''}${p.giftOk?' · 🎁 قابل للإهداء':''}${p.fragile?' · <span style="color:#B3541E;font-weight:700">⚠️ قابل للكسر</span>':''}${p.customOk?' · ✏️ قابل للتعديل':''}</div>
+<div class="hint">${esc(s.name)}${p.off?` · <span style="color:var(--red);font-weight:700">خصم ${ar(p.off)}٪</span>`:''}${PTI(p)?` · <span style="font-weight:700">${PTI(p)}</span>`:''}${p.giftOk?' · 🎁 قابل للإهداء':''}${p.fragile?' · <span style="color:#B3541E;font-weight:700">⚠️ قابل للكسر</span>':''}${p.customOk?' · ✏️ قابل للتعديل':''}${x.ans&&x.ans.length?' · <span style="color:var(--grn);font-weight:800">❓ أسئلة مجابة</span>':''}</div>
 <div style="display:flex;gap:9px;align-items:center;margin-top:5px">
 <div class="qty" onclick="event.stopPropagation()">
 <button onclick="cartQty('${p.id}',1)">＋</button><b>${ar(x.qty)}</b><button onclick="cartQty('${p.id}',-1)">−</button>
@@ -1784,6 +1829,7 @@ const o={id:OID++,customer:SES.phone,at:Date.now(),pay:CK.pay,addr:CK.addrTxt,ci
 coupon:{code:CPN,amt:c.cpn},ptsUsed:c.ptsUse,ptsAmt:c.ptsAmt,freeDl:c.fd,net:c.net,tax:c.tax,total:c.total,
 groups:Object.entries(c.groups).map(([sid,its])=>{const st=ST(sid),q=c.quotes[sid];
 const bk=CK.book[sid]||{};
+const pans=[];its.forEach(x=>{if(x.ans&&x.ans.length)pans.push({pn:x.p.name,ans:x.ans.map(y=>({q:y.q,a:y.a}))})});
 const grp={store:sid,
 items:its.map(x=>({pid:x.pid,qty:x.qty,price:eff(x.p)})),
 sub:r2(its.reduce((a,x)=>a+eff(x.p)*x.qty,0)),dl:q.charge,status:'pending',
@@ -1803,6 +1849,7 @@ its.filter(x=>x.p.ptype==='digital'&&x.p.digi).forEach(x=>u.dlib.unshift({pid:x.
 if(its.some(x=>x.p.customOk)){grp.custom=true;grp.chat.push({r:'sys',t:'✏️ دردشة التعديلات مفتوحة — حدد طلبك بدقة، ويقدر التاجر يطلب مبلغاً إضافياً لأي تعديل يتفقان عليه (يُحجز بضمان ضمين حتى الاستلام).',at:Date.now()})}
 if(CK.gift[sid]&&CK.gift[sid].on)grp.gift={name:(CK.gift[sid].name||'').trim(),phone:(CK.gift[sid].phone||'').trim(),city:(CK.gift[sid].city||'').trim()};
 if(st.qs&&st.qs.length)grp.ans=st.qs.map((qq,i)=>({q:qq,a:(((CK.ans[sid]||[])[i])||'').trim()})).filter(x=>x.a);
+if(pans.length)grp.pans=pans;
 if(q.mode!=='field'&&q.mode!=='digital')CK.wb++;
 return grp})};
 if(c.fd)o.freeDl=true;
@@ -1869,6 +1916,7 @@ ${g.digi?`<div class="giftrow" style="background:#50489E12;border-color:#50489E6
 ${g.custom?`<div class="giftrow" style="background:#A45A3A12;border-color:#A45A3A66">✏️ طلب قابل للتعديل — راسل متجرك عبر محادثة الطلب بأي تعديل (أي مبلغ إضافي يُحجز بضمان ضمين حتى الاستلام)</div>`:''}
 ${g.extra?`<div class="giftrow" style="background:#1D44320d;border-color:#1D443255">💰 أُضيف للشحنة مبلغ تعديلات محجوز بالخزنة: <b>${money(g.extra)}</b></div>`:''}
 ${g.ans&&g.ans.length?`<div class="hint" style="margin-top:6px">❓ إجاباتك للمتجر: ${g.ans.map(x=>esc(x.q)+' ← <b>'+esc(x.a)+'</b>').join(' · ')}</div>`:''}
+${g.pans&&g.pans.length?`<div class="hint" style="margin-top:6px">❓ إجاباتك على أسئلة المنتجات: ${g.pans.map(x=>esc(x.pn)+' — '+x.ans.map(y=>esc(y.q)+' ← <b>'+esc(y.a)+'</b>').join(' · ')).join(' · ')}</div>`:''}
 ${g.chat?`<div class="mt" style="display:flex;gap:7px;flex-wrap:wrap;align-items:center"><button class="btn soft sm" onclick="openOChat(${o.id},${gi})">💬 محادثة الطلب${g.chatDeleted?' — محذوفة لمخالفة':(g.chatArchived||['received','released','refunded','disputed'].includes(st))?' — مؤرشفة':' ('+ar(g.chat.length)+' رسالة)'}</button>${g.viol&&(g.viol.customer+g.viol.merchant)?`<span class="tag red">${ar(g.viol.customer+g.viol.merchant)} رسالة محجوبة أمنياً</span>`:''}</div>`:''}
 ${st!=='disputed'&&st!=='refunded'?`<div class="osteps">${GSTEPS.map((l,i)=>`<div class="st ${i<gstep(g)?'on':i===gstep(g)?(st==='received'?'cur on':'on'):''}"><i></i>${l}</div>`).join('')}</div>`:''}
 ${st==='received'?`<div class="spread mt" style="flex-wrap:wrap">
@@ -2462,6 +2510,8 @@ function mProdForm(pid){
 MPID=pid||null;
 const s=myStore(),sec=SEC(s.sec);
 const p=pid?P(pid):null;
+MPQ=p&&p.qs?JSON.parse(JSON.stringify(p.qs)):[];
+MPQOPEN=false;
 openModal(`<div class="mhead"><b>${p?'تعديل منتج':'منتج جديد'}</b><button class="x" onclick="closeModal()">✕</button></div>
 <div class="mbody">
 <div class="fld"><label>اسم المنتج</label><input class="inp" id="mp-nm" value="${p?esc(p.name):''}" placeholder="مثال: عباية كتان مطرزة"></div>
@@ -2496,12 +2546,17 @@ ${sec.id==='gaming'?`<div class="fld mt"><label>🎮 طبيعة المنتج و�
 <option value="digital" ${p&&p.ptype==='digital'?'selected':''}>⚡ أصل رقمي (كود/ملف) — تسليم فوري بلا شحن إلى «مكتبة العميل الرقمية»</option>
 </select></div>
 <div id="mp-dextra"></div>`:''}
-<div class="fld mt"><label>🌟 نقاط ولاء يمنحها المنتج للعميل (اختياري)</label>
+<div class="fld mt"><label>🌟 نقاط ولاء يمنحها المنتج للعميل (إجبارية)</label>
 <input class="inp" id="mp-pts" type="number" min="0" max="500" step="5" value="${p?(p.pts||0):0}" oninput="ptsCostPrev()" placeholder="مثال: 50">
 <div class="hint" id="ptscost" style="margin-top:7px;background:#B07E2B12;border:1px dashed #B07E2B66;border-radius:11px;padding:8px 12px"></div>
 <p class="hint" style="margin-top:5px">الإدارة تحدد قيمة النقطة حالياً <b>${money(ptsVal())}</b> — تكلفة النقاط تُخصم من محفظة متجرك وتُحوَّل لمحفظة الإدارة، والعميل يستلمها عند تحرير طلبه.</p></div>
 <div class="fld mt"><label>الوصف</label><textarea class="inp" id="mp-ds" style="min-height:70px" placeholder="وصف تسويقي جاذب ب٣ أسطر…">${p?esc(p.desc):''}</textarea></div>
 <div class="fld mt"><label>المواصفات (كل سطر: المفتاح: القيمة)</label><textarea class="inp" id="mp-sp" style="min-height:60px" placeholder="الخامة: كتان&#10;اللون: كحلي">${p?esc(Object.entries(p.specs).map(([k,v])=>k+': '+v).join('\n')):''}</textarea></div>
+<div class="fld mt"><label>❓ أسئلة تظهر للعميل وقت تصفح المنتج (اختيارية)</label>
+<div class="hint" style="margin:2px 0 7px">سؤال باختيارات جاهزة أو سؤال يكتب العميل جوابه — الإجابة إجبارية قبل الإضافة للسلة وتصلك مع الطلب.</div>
+<div id="mpqbox">${mpqHTML()}</div>
+<button class="btn soft sm mt" onclick="mAddQ2()">＋ إضافة سؤال للمنتج</button>
+</div>
 <div class="mt" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
 <button class="btn soft sm" onclick="mPickImg()">📷 رفع صورة من جهازي</button>
 <button class="btn gray sm" onclick="mAutoImg()">🎲 صورة تلقائية</button>
@@ -2513,14 +2568,14 @@ MIMG=p?p.imgs[0]:'';
 ptsCostPrev();
 mPtypePrev();
 }
-let MPID=null;
+let MPID=null,MPQ=[],MPQOPEN=false;
 function ptsCostPrev(){
 const el=$('#ptscost');if(!el)return;
 const pv=ptsVal();
 const np=Math.max(0,Math.min(500,Math.round(+((($('#mp-pts')||{value:0}).value)||0))));
 const old=(MPID&&P(MPID))?(P(MPID).pts||0):0;
 const d=r2((np-old)*pv);
-if(!np&&!old){el.innerHTML='بلا نقاط — المنتج يبقى دون تمويل إضافي، ويمكنك إضافتها لاحقاً';return}
+if(!np&&!old){el.innerHTML='أدخل نقاطاً (١ فأكثر) — إجبارية لحفظ المنتج وتُمنح للعميل عند تحرير طلبه';return}
 if(d===0){el.innerHTML='لا تغيير على تمويل النقاط ('+ar(np)+' نقطة للعميل)';return}
 el.innerHTML=d>0?`تُخصم من محفظتك <b style="color:var(--amb2)">− ${money(d)}</b> وتُحوَّل لمحفظة الإدارة (${ar(np-old)} نقطة × ${money(pv)})`:`يُسترجع لمحفظتك <b style="color:var(--grn)">+ ${money(-d)}</b> (${ar(old-np)} نقطة × ${money(pv)})`;
 }
@@ -2531,6 +2586,34 @@ const rd=new FileReader();rd.onload=()=>{MIMG=rd.result;$('#fup').value='';
 const pv=$('#mp-prev');pv.src=MIMG;pv.style.display='block';toast('جهزت الصورة ✓','ok')};rd.readAsDataURL(f)};
 $('#fup').click();}
 function mAutoImg(){MIMG=ZPOOL[Math.floor(Math.random()*ZPOOL.length)];const pv=$('#mp-prev');pv.src=MIMG;pv.style.display='block';toast('اختيرت صورة تلقائية','ok')}
+/* منشئ أسئلة المنتج — اختيارات أو كتابة حرة */
+function mpqHTML(){
+let h='';
+if(MPQ.length)h=`<div class="rows" style="margin-bottom:${MPQOPEN?'8px':'0'}">${MPQ.map((q,i)=>`<div class="row" style="flex-wrap:wrap;gap:8px"><div style="flex:1;min-width:150px"><b style="font-size:12px">${esc(q.q)}</b><div class="hint">${q.t==='opts'?'اختيارات: '+q.o.map(x=>esc(x)).join(' · '):'العميل يكتب جوابه'}</div></div><button class="btn gray xs" onclick="mpqDel(${i})">🗑 حذف</button></div>`).join('')}</div>`;
+if(MPQOPEN){h+=`<div class="acard" style="padding:12px;margin-top:8px;background:#1D443208">
+<div class="fld"><label>نوع السؤال</label><select class="inp" id="mqq-t" style="font-size:12px" onchange="mpqType()"><option value="opts">اختيارات — العميل يختار جواباً جاهزاً</option><option value="txt">كتابة — العميل يكتب جوابه بنفسه</option></select></div>
+<div class="fld mt"><label>نص السؤال</label><input class="inp" id="mqq-q" style="font-size:12px" placeholder="مثال: ما اللون المطلوب للتطريز؟"></div>
+<div id="mqq-opts">${mpqOpts()}</div>
+<div class="spread mt"><button class="btn gray xs" onclick="MPQOPEN=false;mpqRefresh()">إلغاء</button><button class="btn sm" onclick="mpqPush()">＋ إضافة السؤال ✓</button></div></div>`}
+if(!MPQ.length&&!MPQOPEN)h=`<div class="hint" style="padding:2px 0 4px">لا أسئلة بعد — أضف سؤالاً (لون، مقاس، اسم تطريز، ملاحظة تغليف…).</div>`;
+return h}
+function mpqOpts(){const t=($('#mqq-t')||{value:'opts'}).value;
+if(t!=='opts')return `<div class="hint" style="margin-top:4px">سيظهر للعميل حقل كتابة حرّة يجيب فيه بنفسه.</div>`;
+return `<div class="fgrid mt"><div class="fld"><label>الخيار ١ (إلزامي)</label><input class="inp" id="mqq-o0" style="font-size:12px" placeholder="أسود"></div><div class="fld"><label>الخيار ٢ (إلزامي)</label><input class="inp" id="mqq-o1" style="font-size:12px" placeholder="بيج"></div></div>
+<div class="fgrid mt"><div class="fld"><label>الخيار ٣ (اختياري)</label><input class="inp" id="mqq-o2" style="font-size:12px"></div><div class="fld"><label>الخيار ٤ (اختياري)</label><input class="inp" id="mqq-o3" style="font-size:12px"></div></div>`}
+function mpqType(){const el=$('#mqq-opts');if(el)el.innerHTML=mpqOpts()}
+function mAddQ2(){MPQOPEN=true;mpqRefresh()}
+function mpqRefresh(){const el=$('#mpqbox');if(el)el.innerHTML=mpqHTML()}
+function mpqDel(i){MPQ.splice(i,1);mpqRefresh()}
+function mpqPush(){
+const t=($('#mqq-t')||{value:'opts'}).value;
+const q=($('#mqq-q').value||'').trim();
+if(q.length<3){toast('اكتب نص السؤال (٣ أحرف فأكثر)','err');return}
+let o=[];
+if(t==='opts'){o=[0,1,2,3].map(i=>(($('#mqq-o'+i)||{}).value||'').trim()).filter(Boolean);
+if(o.length<2){toast('للأسئلة الاختيارية أدخل خيارين على الأقل','err');return}
+if(new Set(o).size!==o.length){toast('لا تكرر نفس الخيار','err');return}}
+MPQ.push({q,t,o});MPQOPEN=false;mpqRefresh();toast('أُضيف السؤال — سيظهر للعميل في صفحة المنتج ✓','ok')}
 function mSaveProd(pid){
 const s=myStore(),sec=SEC(s.sec);
 const nm=($('#mp-nm').value||'').trim(),pr=+($('#mp-pr').value||0),st=+($('#mp-st').value||0);
@@ -2538,6 +2621,7 @@ if(!nm||pr<1){toast('أكمل الاسم والسعر','err');return}
 const specs={};($('#mp-sp').value||'').split('\n').forEach(l=>{const i=l.indexOf(':');if(i>0)specs[l.slice(0,i).trim()]=l.slice(i+1).trim()});
 const off=Math.min(90,Math.max(0,+($('#mp-off').value||0)));
 const pts=Math.max(0,Math.min(500,Math.round(+($('#mp-pts').value||0)||0)));
+if(!(pts>=1)){toast('🌟 نقاط الولاء إجبارية — حدد نقاطاً (١ فأكثر) يمنحها المنتج للعميل عند التحرير','err');$('#mp-pts').focus();return}
 const pv=ptsVal();const old=pid?(P(pid).pts||0):0;const dPts=pts-old;const cost=r2(dPts*pv);
 if(cost>0&&(DB.storeWallets[s.id]||0)<cost){toast('محفظتك لا تكفي لتمويل '+ar(pts)+' نقطة ('+money(cost)+') — قلّل النقاط أو راجع محفظتك','err');return}
 let ptypeVal=(($('#mp-ptype')||{}).value)||'';
@@ -2561,11 +2645,11 @@ if(!['chilled','instant'].includes(ptypeVal))ptypeVal='std';
 if(dPts!==0){DB.storeWallets[s.id]=r2((DB.storeWallets[s.id]||0)-cost);
 DB.aPtsWallet=r2((DB.aPtsWallet||0)+cost);
 DB.ptsFunding.unshift({store:s.id,amt:cost,pts:dPts,pname:nm,at:Date.now()})}
-if(pid){const p=P(pid);Object.assign(p,{name:nm,cat:$('#mp-cat').value,price:pr,off,stock:st,desc:$('#mp-ds').value.trim(),specs,pts,ptype:ptypeVal||p.ptype||'std',giftOk:$('#mp-gift')?$('#mp-gift').checked:!!p.giftOk,fragile,customOk});
+if(pid){const p=P(pid);Object.assign(p,{name:nm,cat:$('#mp-cat').value,price:pr,off,stock:st,desc:$('#mp-ds').value.trim(),specs,pts,ptype:ptypeVal||p.ptype||'std',giftOk:$('#mp-gift')?$('#mp-gift').checked:!!p.giftOk,fragile,customOk,qs:MPQ.map(x=>({...x}))});
 if(digi)p.digi=digi;if(ipOK)p.ipOK=true;
 if(MIMG)p.imgs=[MIMG,...p.imgs.slice(1)];
 toast('حُفظ تعديل المنتج ✓'+(dPts?` — ${dPts>0?'خُصمت':'استُرجعت'} ${money(Math.abs(cost))} تمويل نقاط`:''),'ok')}
-else{PRODUCTS.unshift({id:'p'+(Date.now()%100000),store:s.id,name:nm,cat:$('#mp-cat').value,price:pr,off,stock:st,pts,ptype:ptypeVal||'std',giftOk:$('#mp-gift')?$('#mp-gift').checked:false,fragile,customOk,digi,ipOK,sold:0,rt:0,rc:0,imgs:[MIMG||ZPOOL[Math.floor(Math.random()*ZPOOL.length)]],desc:$('#mp-ds').value.trim()||nm,specs,specsFallback:{},ratings:[]});
+else{PRODUCTS.unshift({id:'p'+(Date.now()%100000),store:s.id,name:nm,cat:$('#mp-cat').value,price:pr,off,stock:st,pts,ptype:ptypeVal||'std',giftOk:$('#mp-gift')?$('#mp-gift').checked:false,fragile,customOk,digi,ipOK,sold:0,rt:0,rc:0,imgs:[MIMG||ZPOOL[Math.floor(Math.random()*ZPOOL.length)]],desc:$('#mp-ds').value.trim()||nm,specs,specsFallback:{},ratings:[],qs:MPQ.map(x=>({...x}))});
 toast('أُضيف المنتج لمتجرك ✓'+(pts?` — خُصمت ${money(cost)} تمويل ${ar(pts)} نقطة`:''),'ok')}
 MPID=null;closeModal();render();
 }
@@ -2664,6 +2748,7 @@ ${g.digi?`<div class="giftrow" style="background:#50489E12;border-color:#50489E6
 ${g.ship&&g.ship.fragile?`<div class="giftrow" style="background:#8A4B080f;border-color:#8A4B0866">⚠️ شحنة قابلة للكسر — نُقلت العلامة لشركة الشحن آلياً: تغليف خاص إلزامي + رسوم حماية ١٥ ر.س ضمن الشحن</div>`:''}
 ${g.gift?`<div class="giftrow">🎁 إهداء — المستلم: <b>${esc(g.gift.name)}</b> · ${ar(g.gift.phone)} (يُطبع على البوليصة كمتسلم)</div>`:''}
 ${g.ans&&g.ans.length?`<div class="hint" style="margin-top:6px">❓ إجابات العميل على أسئلتك: ${g.ans.map(x=>esc(x.q)+' ← <b>'+esc(x.a)+'</b>').join(' · ')}</div>`:''}
+${g.pans&&g.pans.length?`<div class="hint" style="margin-top:6px">❓ إجابات العميل على أسئلة المنتجات: ${g.pans.map(x=>esc(x.pn)+' — '+x.ans.map(y=>esc(y.q)+' ← <b>'+esc(y.a)+'</b>').join(' · ')).join(' · ')}</div>`:''}
 ${g.chat?`<button class="btn soft xs" style="margin-top:7px" onclick="openOChat(${o.id},${gi})">💬 محادثة الطلب${g.chatDeleted?' — محذوفة لمخالفة':(g.chatArchived||['received','released','refunded','disputed'].includes(g.status))?' — مؤرشفة':''}</button>`:''}
 ${['disputed','refunded'].includes(g.status)?'':`<div class="osteps">${GSTEPS.map((l,i)=>`<div class="st ${i<gstep(g)?'on':i===gstep(g)?'on':''}"><i></i>${l}</div>`).join('')}</div>`}
 ${g.status==='received'?`<div class="hint">⏳ العميل يفحص الشحنة — يُحرر المبلغ تلقائياً بعد <b class="cd" style="border:0;background:none;padding:0" data-cd="${g.complaintUntil}">${clock(g.complaintUntil-Date.now())}</b></div>`:''}
@@ -2842,6 +2927,16 @@ function mSaveShip(){const s=myStore();s.dlMode=$('#ms-dlm').value;s.freeMin=Mat
 function mAddQ(){const v=($('#ms-q').value||'').trim();if(v.length<3){toast('اكتب سؤالاً أوضح','err');return}const s=myStore();s.qs=s.qs||[];s.qs.push(v);toast('أُضيف السؤال — سيظهر للعملاء عند الطلب ✓','ok');render()}
 function mDelQ(i){const s=myStore();s.qs.splice(i,1);toast('حُذف السؤال');render()}
 /* ================= صفحات الإدارة ================= */
+/* مركز الإدارة: نظرة عامة + طلبات التسجيل + المتاجر في صفحة واحدة بتبويبات */
+function pgAHub(){
+const t=['over','reqs','stores'].includes(VIEW.atab)?VIEW.atab:'over';AHUBT=t;
+const pends=DB.reqs.filter(r=>r.status==='pending').length;
+const tab=(k,l,n)=>`<button class="${t===k?'on':''}" onclick="ahubTab('${k}')">${l}${n?` (${ar(n)})`:''}</button>`;
+return `<div class="pghead"><h1>🛡️ مركز إدارة ضمين</h1><span class="tag nvy">المشرف العام</span></div>
+<div class="tabs" style="margin-top:8px">${tab('over','📊 نظرة عامة')}${tab('reqs','📋 طلبات التسجيل',pends)}${tab('stores','🏪 المتاجر',STORES.length)}</div>
+${t==='over'?pgAOver():t==='reqs'?pgAReqs():pgAStores()}`;
+}
+function ahubTab(t){VIEW.atab=t;render()}
 const vaultNow=()=>r2(DB.orders.reduce((a,o)=>a+o.groups.filter(g=>['pending','preparing','shipped','received','disputed'].includes(g.status)).reduce((x,g)=>x+g.sub+((g.ship&&g.ship.charge)||(g.dl||0)),0),0));
 function pgAOver(){
 const open=DB.disputes.filter(d=>d.status==='open');
@@ -2850,8 +2945,7 @@ chats.sort((a,b)=>(((b.g.chat||[]).slice(-1)[0]||{}).at||0)-(((a.g.chat||[]).sli
 const vTot=DB.orders.reduce((a,o)=>a+o.groups.reduce((x,g)=>x+(g.viol?g.viol.customer+g.viol.merchant:0),0),0);
 const releasedTotal=DB.orders.reduce((a,o)=>a+o.groups.reduce((x,g)=>x+(g.payout?g.payout.sub:0),0),0);
 const pends=DB.reqs.filter(r=>r.status==='pending');
-return `<div class="pghead"><h1>🛡️ مركز إدارة ضمين</h1><span class="tag nvy">المشرف العام</span></div>
-<div class="kpis">
+return `<div class="kpis">
 <div class="kpi grn"><i>🧾</i><b>${money(DB.aRevenue)}</b><span>إجمالي عمولات ضمين (حسب التصنيف)</span></div>
 <div class="kpi amb"><i>🔒</i><b>${money(vaultNow())}</b><span>مبالغ محجوزة حالياً</span></div>
 <div class="kpi nvy"><i>🔓</i><b>${money(releasedTotal)}</b><span>إجمالي الشحنات المحررة</span></div>
@@ -2905,7 +2999,7 @@ ${done.map(d=>`<div class="ocard" style="border-inline-start:4px solid var(--grn
 <div class="verd ${d.ruling.act==='release'?'rel':'ref'}" style="margin:8px 0 0"><h4>التسبيب</h4><div class="why">${esc(d.ruling.text)}</div></div></div>`).join('')||'<div class="hint mt">لا أحكام سابقة</div>'}`;
 }
 function pgAStores(){
-return `<div class="pghead"><h1>🏪 إدارة المتاجر</h1></div>
+return `<div class="spread" style="margin:2px 0 12px"><b class="fx" style="font-size:14.5px">🏪 إدارة المتاجر</b><span class="tag gry">${ar(STORES.length)} متجر مسجل</span></div>
 <div class="acard"><div class="rows">
 ${STORES.map(s=>`<div class="row">
 <div style="width:44px;height:44px;border-radius:13px;background:${s.color};color:#fff;display:grid;place-items:center;font-family:Alexandria;font-weight:800;flex-shrink:0">${s.name[0]}</div>
@@ -2928,7 +3022,7 @@ toast(s.susp?'أُوقف المتجر مؤقتاً':'أُعيد تشغيل ال�
 function pgAReqs(){
 const pend=DB.reqs.filter(r=>r.status==='pending');
 const done=DB.reqs.filter(r=>r.status!=='pending');
-return `<div class="pghead"><h1>📋 طلبات التسجيل</h1><span class="tag ${pend.length?'amb':'grn'}">${ar(pend.length)} بانتظار البت · ${ar(done.length)} منتهي</span></div>
+return `<div class="spread" style="margin:2px 0 12px"><b class="fx" style="font-size:14.5px">📋 طلبات التسجيل</b><span class="tag ${pend.length?'amb':'grn'}">${ar(pend.length)} بانتظار البت · ${ar(done.length)} منتهي</span></div>
 <p class="hint mb" style="line-height:1.8">كل من يسجّل متجراً جديداً أو يطلب الانضمام لفريق الإدارة تظهر بياناته كاملة هنا — توافق فتفتح حسابه فوراً ويُبلَّغ، أو ترفض بسببٍ يظهر لصاحب الطلب. تسجيل الدخول موحّد للجميع (جوال أو بريد + كلمة مرور).</p>
 ${pend.length?pend.map(r=>reqCard(r)).join(''):'<div class="empty"><div class="em">📭</div><b>لا طلبات معلقة</b><span>ستظهر هنا طلبات فتح المتاجر والانضمام للإدارة فور ورودها</span></div>'}
 ${done.length?`<div class="hr" style="margin:20px 0 10px"></div><b class="fx" style="font-size:13.5px">📁 الطلبات المنتهية</b>
@@ -2995,10 +3089,10 @@ closeModal();toast('رُفض الطلب وأُبلغ صاحبه بالسبب','o
 }
 function pgACats(){
 return `<div class="pghead"><h1>🗂️ الأقسام والتصنيفات</h1><span class="tag grn">عمولة ضمين تُحدَّد لكل تصنيف</span></div>
-<p class="hint mb" style="line-height:1.8">أضف وعدّل واحذف تصنيفات العوالم الأربعة، وحدد عمولة كل تصنيف بنفسك — تُطبَّق العمولة لحظة تحرير أي شحنة على منتجات ذلك التصنيف، وتُحسم من التاجر فقط ولا تُضاف على العميل أبداً.</p>
+<p class="hint mb" style="line-height:1.8">أضف وعدّل واحذف تصنيفات العوالم الأربعة، وغيّر اسم أي قسم بزر ✏️، وحدد عمولة كل تصنيف بنفسك — تُطبَّق العمولة لحظة تحرير أي شحنة على منتجات ذلك التصنيف، وتُحسم من التاجر فقط ولا تُضاف على العميل أبداً.</p>
 <div class="grid2">
 ${SECTIONS.map(sec=>`<div class="acard" style="border-top:3px solid ${sec.color}">
-<div class="spread"><h3 style="color:${sec.color}">${sec.icon} ${sec.name}</h3><span class="tag" style="background:${sec.color}18;color:${sec.color}">${ar(CATS[sec.id].length)} تصنيف</span></div>
+<div class="spread"><h3 style="color:${sec.color}">${sec.icon} ${sec.name}</h3><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span class="tag" style="background:${sec.color}18;color:${sec.color}">${ar(CATS[sec.id].length)} تصنيف</span><button class="btn gray xs" onclick="secRename('${sec.id}')">✏️ تغيير الاسم</button></div></div>
 <div class="rows mt">
 ${CATS[sec.id].map((c,i)=>{const pc=PRODUCTS.filter(p=>{const s=ST(p.store);return s&&s.sec===sec.id&&p.cat===c.n}).length;
 return `<div class="row" style="flex-wrap:wrap;gap:6px">
@@ -3044,6 +3138,25 @@ if(!(cm>=0&&cm<=20)){toast('العمولة يجب أن تكون بين ٠ و ٢�
 if(CATS[sec].some(x=>x.n===nm)){toast('التصنيف موجود مسبقاً في هذا العالم','err');return}
 CATS[sec].push({n:nm,comm:+cm.toFixed(2)});
 toast('أُضيف التصنيف «'+nm+'» بعمولة '+ard(cm)+'٪ ✓','ok');render();
+}
+/* تغيير اسم القسم (العالم) — يُطبَّق فوراً في كل ضمين */
+function secRename(sid){
+const sec=SEC(sid);
+openModal(`<div class="mhead"><b>✏️ تغيير اسم القسم</b><button class="x" onclick="closeModal()">✕</button></div>
+<div class="mbody">
+<div class="demo mb"><b style="font-size:12px">الاسم الجديد يُطبَّق فوراً في كل ضمين</b>
+<p class="hint" style="margin-top:3px">القائمة العلوية، بطاقات الرئيسية، صفحات القسم، اختيار عالم التاجر الجديد، وبطاقات الطلبات — كلها تقرأ الاسم من هنا.</p></div>
+<div class="fld"><label>اسم القسم</label><input class="inp" id="sn-nm" value="${esc(sec.name)}"></div>
+<div class="fld mt"><label>الوصف المختصر (يظهر تحت الاسم)</label><input class="inp" id="sn-ds" value="${esc(sec.desc)}"></div>
+<div class="spread mt"><button class="btn gray sm" onclick="closeModal()">تراجع</button><button class="btn" onclick="secSaveName('${sid}')">حفظ الاسم</button></div></div>`);
+}
+function secSaveName(sid){
+const sec=SEC(sid);
+const nm=($('#sn-nm').value||'').trim(),ds=($('#sn-ds').value||'').trim();
+if(nm.length<4){toast('اسم القسم قصير جداً (٤ أحرف فأكثر)','err');return}
+const old=sec.name;
+sec.name=nm;if(ds)sec.desc=ds;
+closeModal();toast('حُفظ اسم القسم: «'+old+'» ← «'+nm+'» ✓','ok');render();
 }
 function pgARev(){
 const mx=Math.max(...DB.revMonths.map(m=>m.v));
