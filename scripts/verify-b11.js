@@ -227,10 +227,10 @@ const chk = (name, cond, extra) => {
   chk('المركز: العنوان «مركز إدارة ضمين»', hub.h1.includes('مركز إدارة ضمين'), hub.h1);
   chk('المركز: ٣ تبويبات (نظرة عامة/طلبات/متاجر)', hub.tabs.length === 3 && hub.tabs[0].includes('نظرة عامة') && hub.tabs[1].includes('طلبات التسجيل') && hub.tabs[2].includes('المتاجر'), hub.tabs);
   chk('المركز: النظرة العامة تعرض KPIs', hub.over >= 5, hub.over);
-  // القائمة العلوية: ٤ بنود بلا المتاجر/طلبات منفصلة
+  // القائمة العلوية: ٤ بناد + زر «المتاجر ▾» بقائمة منسدلة (بلا اعتماد)
   const anav = await pg.evaluate(() => [...document.querySelectorAll('#top .nav .nlink')].map(x => x.textContent.trim()));
-  chk('قائمة الإدارة: ٤ بنود', anav.length === 4, anav);
-  chk('قائمة الإدارة: فيها مركز الإدارة وبلا «المتاجر»/«طلبات التسجيل» منفصلة', anav.some(x => x.includes('مركز الإدارة')) && !anav.some(x => x === '🏪 المتاجر') && !anav.some(x => x.includes('طلبات التسجيل')), anav);
+  chk('قائمة الإدارة: ٥ بنود (٤ صفحات + زر المتاجر ▾)', anav.length === 5, anav);
+  chk('قائمة الإدارة: فيها مركز الإدارة وزر «المتاجر ▾» وبلا طلبات منفصلة', anav.some(x => x.includes('مركز الإدارة')) && anav.some(x => x.trim() === '🏪 المتاجر ▾') && !anav.some(x => x.includes('طلبات التسجيل')), anav);
   // تبويب الطلبات
   await pg.evaluate(() => ahubTab('reqs'));
   await pg.waitForTimeout(400);
@@ -252,8 +252,9 @@ const chk = (name, cond, extra) => {
   const storT = await pg.evaluate(() => ({
     rows: document.querySelectorAll('.acard .row').length,
     head: document.body.innerText.includes('🏪 إدارة المتاجر'),
+    approve: document.body.innerText.includes('اعتماد'),
   }));
-  chk('تبويب المتاجر: يعرض كل المتاجر', storT.head && storT.rows >= 8, storT);
+  chk('تبويب المتاجر: يعرض كل المتاجر بلا أي اعتماد', storT.head && storT.rows >= 8 && !storT.approve, storT);
 
   // ============ T9: تغيير اسم القسم ============
   console.log('== T9: تغيير اسم القسم من صفحة الأقسام ==');

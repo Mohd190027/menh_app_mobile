@@ -56,7 +56,7 @@ const ok = (cond, name) => { if (cond) { pass++; console.log('  ✓ ' + name); }
   await page.fill('#lg-pw', '1234');
   await page.evaluate(() => doLogin());
   await page.waitForTimeout(300);
-  ok(page.evaluate(() => SES && SES.role === 'admin' && VIEW.page === 'a-over'), 'دخول الإدارة فهد ببريده وتوجيهه للمركز');
+  ok(page.evaluate(() => SES && SES.role === 'admin' && VIEW.page === 'a-hub' && VIEW.atab === 'over'), 'دخول الإدارة فهد ببريده وتوجيهه للمركز');
   await page.evaluate(() => logout());
   await page.evaluate(() => openAuth());
   await page.fill('#lg-id', '0500000001');
@@ -161,9 +161,9 @@ const ok = (cond, name) => { if (cond) { pass++; console.log('  ✓ ' + name); }
   await page.waitForTimeout(300);
   const ap = await page.evaluate(() => {
     const s = STORES.find(x => x.name === 'تمور الواحة الذهبية');
-    return { s, u: USERS['0509876543'], pend: DB.reqs.filter(r => r.status === 'pending').length };
+    return { s, ok: s ? (!s.susp) : false, u: USERS['0509876543'], pend: DB.reqs.filter(r => r.status === 'pending').length };
   });
-  ok(ap.s && ap.s.approved === true && ap.s.sec === 'family' && ap.s.iban === 'SA4420000001234567891234', 'المتجر فُتح معتمداً بالعالم الصحيح وبآيبانه');
+  ok(ap.s && ap.s.sec === 'family' && ap.s.iban === 'SA4420000001234567891234' && ap.ok, 'المتجر فُتح بالعالم الصحيح وآيبانه وصالح فوراً (بلا اعتماد)');
   ok(ap.u.pend === null && ap.u.store === ap.s.id, 'حُجب التعليق عن صاحبه وربط متجره');
   ok(ap.pend === 3, 'بقيت الطلبات الأخرى معلقة (عطور تلال + خالد + عبدالرحمن)');
   await page.evaluate(() => logout());

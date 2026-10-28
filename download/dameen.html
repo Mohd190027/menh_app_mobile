@@ -540,16 +540,16 @@ const SEC=id=>SECTIONS.find(s=>s.id===id);
 
 /* ================= المتاجر ================= */
 const STORES=[
-{id:'s1',name:'دَفى العبايات',sec:'fashion',owner:'0500000002',color:'#7A3B44',cover:'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?q=80&w=760&auto=format&fit=crop',desc:'عبايات كتان وخامات فاخرة بخياطة سعودية متقنة',rt:4.8,sales:342,approved:true,susp:false,open:true,city:'الرياض',dlMode:'customer',freeMin:300},
-{id:'s2',name:'خيوط الغندورة',sec:'fashion',owner:'0500000004',color:'#96505E',cover:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/b79232a91370.jpg',desc:'طرق بيتية وأزياء مطرزة يدوياً بخيوط ملونة',rt:4.6,sales:198,approved:true,susp:false,open:true,city:'جدة',dlMode:'customer',freeMin:350},
-{id:'s3',name:'مزرعة الواحة',sec:'family',owner:'0500000005',color:'#556636',cover:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/c2626d093c49.jpg',desc:'عسل سدر وتمور خلاص من مزارعنا مباشرة',rt:4.9,sales:521,approved:true,susp:false,open:true,city:'الأحساء',dlMode:'half',freeMin:250},
-{id:'s4',name:'بيت السدو',sec:'family',owner:'0500000006',color:'#6B7A3F',cover:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/cfe35a802f4f.jpg',desc:'منتجات سدو أصيلة منسوجة على النول التقليدي',rt:4.7,sales:87,approved:true,susp:false,open:true,city:'بريدة',dlMode:'customer',freeMin:0,qs:['هل لديك ملاحظة على درجة تمليح الجبن؟','التميس بالبر أم بالعسل الأسود؟']},
-{id:'s5',name:'لمسة ديكور',sec:'deco',owner:'0500000007',color:'#A45A3A',cover:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/11c491ea9778.jpg',desc:'شموع ومباخر ومستلزمات منزل بأناقة هادئة',rt:4.5,sales:264,approved:true,susp:false,open:true,city:'الطائف',dlMode:'customer',freeMin:400},
-{id:'s6',name:'هدايا المعمور',sec:'deco',owner:'0500000008',color:'#B26640',cover:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/98a1ab5d2183.jpg',desc:'بوكسات هدايا مغلفة بفخامة تناسب كل مناسبة',rt:4.8,sales:173,approved:true,susp:false,open:true,city:'الرياض',dlMode:'free',freeMin:0},
-{id:'s7',name:'فخار الطائف',sec:'deco',owner:'0500000009',color:'#8F5B36',cover:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/9a3a0638140e.jpg',desc:'فخاريات مدوّرة يدوياً من طين الطائف',rt:4.4,sales:12,approved:false,susp:false,open:true,city:'الطائف',dlMode:'customer',freeMin:0},
-{id:'s8',name:'مطبخ أم خالد',sec:'family',owner:'0500000010',color:'#7C5A3A',cover:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/1c2383e2b42c.jpg',desc:'طبخ بيتي سعودي — كيك مناسبات وورق عنب على أصولها',rt:4.7,sales:156,approved:true,susp:false,open:true,city:'الرياض',dlMode:'customer',freeMin:150,qs:['هل لديك حساسية من أي مكسرات؟','الكريمة أم التمر على الكيكة؟','وقت التسليم المفضل لديك؟']},
-{id:'s9',name:'قيمز زون',sec:'gaming',owner:'0500000011',color:'#50489E',cover:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/28b3519cc57c.jpg',desc:'أجهزة ألعاب وملحقات تقنية أصلية بضمان الوكيل — تغليف حماية خاص للأجهزة القابلة للكسر',rt:4.7,sales:214,approved:true,susp:false,open:true,city:'الرياض',dlMode:'customer',freeMin:500},
-{id:'s10',name:'بايت كود',sec:'gaming',owner:'0500000012',color:'#3D7B8C',cover:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/8eac332529c2.png',desc:'أكواد ألعاب واشتراكات رقمية وكتب إلكترونية وثيمات — تسليم فوري لحظة الدفع بلا شحن',rt:4.8,sales:342,approved:true,susp:false,open:true,city:'جدة',dlMode:'free',freeMin:0}];
+{id:'s1',name:'دَفى العبايات',sec:'fashion',owner:'0500000002',color:'#7A3B44',cover:'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?q=80&w=760&auto=format&fit=crop',desc:'عبايات كتان وخامات فاخرة بخياطة سعودية متقنة',rt:4.8,sales:342,susp:false,open:true,city:'الرياض',dlMode:'customer',freeMin:300},
+{id:'s2',name:'خيوط الغندورة',sec:'fashion',owner:'0500000004',color:'#96505E',cover:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/b79232a91370.jpg',desc:'طرق بيتية وأزياء مطرزة يدوياً بخيوط ملونة',rt:4.6,sales:198,susp:false,open:true,city:'جدة',dlMode:'customer',freeMin:350},
+{id:'s3',name:'مزرعة الواحة',sec:'family',owner:'0500000005',color:'#556636',cover:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/c2626d093c49.jpg',desc:'عسل سدر وتمور خلاص من مزارعنا مباشرة',rt:4.9,sales:521,susp:false,open:true,city:'الأحساء',dlMode:'half',freeMin:250},
+{id:'s4',name:'بيت السدو',sec:'family',owner:'0500000006',color:'#6B7A3F',cover:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/cfe35a802f4f.jpg',desc:'منتجات سدو أصيلة منسوجة على النول التقليدي',rt:4.7,sales:87,susp:false,open:true,city:'بريدة',dlMode:'customer',freeMin:0,qs:['هل لديك ملاحظة على درجة تمليح الجبن؟','التميس بالبر أم بالعسل الأسود؟']},
+{id:'s5',name:'لمسة ديكور',sec:'deco',owner:'0500000007',color:'#A45A3A',cover:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/11c491ea9778.jpg',desc:'شموع ومباخر ومستلزمات منزل بأناقة هادئة',rt:4.5,sales:264,susp:false,open:true,city:'الطائف',dlMode:'customer',freeMin:400},
+{id:'s6',name:'هدايا المعمور',sec:'deco',owner:'0500000008',color:'#B26640',cover:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/98a1ab5d2183.jpg',desc:'بوكسات هدايا مغلفة بفخامة تناسب كل مناسبة',rt:4.8,sales:173,susp:false,open:true,city:'الرياض',dlMode:'free',freeMin:0},
+{id:'s7',name:'فخار الطائف',sec:'deco',owner:'0500000009',color:'#8F5B36',cover:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/9a3a0638140e.jpg',desc:'فخاريات مدوّرة يدوياً من طين الطائف',rt:4.4,sales:12,susp:false,open:true,city:'الطائف',dlMode:'customer',freeMin:0},
+{id:'s8',name:'مطبخ أم خالد',sec:'family',owner:'0500000010',color:'#7C5A3A',cover:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/1c2383e2b42c.jpg',desc:'طبخ بيتي سعودي — كيك مناسبات وورق عنب على أصولها',rt:4.7,sales:156,susp:false,open:true,city:'الرياض',dlMode:'customer',freeMin:150,qs:['هل لديك حساسية من أي مكسرات؟','الكريمة أم التمر على الكيكة؟','وقت التسليم المفضل لديك؟']},
+{id:'s9',name:'قيمز زون',sec:'gaming',owner:'0500000011',color:'#50489E',cover:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/28b3519cc57c.jpg',desc:'أجهزة ألعاب وملحقات تقنية أصلية بضمان الوكيل — تغليف حماية خاص للأجهزة القابلة للكسر',rt:4.7,sales:214,susp:false,open:true,city:'الرياض',dlMode:'customer',freeMin:500},
+{id:'s10',name:'بايت كود',sec:'gaming',owner:'0500000012',color:'#3D7B8C',cover:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/8eac332529c2.png',desc:'أكواد ألعاب واشتراكات رقمية وكتب إلكترونية وثيمات — تسليم فوري لحظة الدفع بلا شحن',rt:4.8,sales:342,susp:false,open:true,city:'جدة',dlMode:'free',freeMin:0}];
 const ST=id=>STORES.find(s=>s.id===id);
 const U='https://images.unsplash.com/photo-';
 const IM=(id,s)=>U+id+'?q=80&w=760&auto=format&fit=crop';
@@ -716,7 +716,7 @@ const ptsVal=()=>DB.ptsVal||0.1;
 const fdPts=()=>DB.freeDlPts||250;
 const P=id=>PRODUCTS.find(p=>p.id===id);
 const eff=p=>p.off?r2(p.price*(1-p.off/100)):p.price;
-const stOK=s=>s.approved&&!s.susp;
+const stOK=s=>!s.susp;
 const storeOwner=id=>{const s=ST(id);return s?USERS[s.owner]:null};
 const secOf=id=>{const s=ST(id);return s?SEC(s.sec):SECTIONS[0]};
 
@@ -826,6 +826,10 @@ ${mnav('m-dash','📊 لوحة التحكم')}${mnav('m-prods','🧺 المنت�
 }else if(SES.role==='admin'){
 h=`<div class="topin">${brand}${sb}<nav class="nav">
 ${mnav('a-hub','📊 مركز الإدارة')}${mnav('a-disputes','⚖️ التحكيم')}${mnav('a-cats','🗂️ الأقسام')}${mnav('a-rev','📈 الإيرادات')}
+<button class="nlink" data-storesb onclick="storesDD(event,this)">🏪 المتاجر ▾</button>
+<div class="ddmenu secs" id="storesdrop"><div class="sechd">إدارة ضمين — اختر وجهة</div>
+<div class="hti" onclick="storesDDGo('reqs')"><b>📋 طلبات التسجيل</b><span>مراجعة طلبات فتح المتاجر والانضمام للإدارة</span></div>
+<div class="hti" onclick="storesDDGo('stores')"><b>🏪 جميع المتاجر</b><span>الإيقاف والإلغاء ومراجعة المحافظ</span></div></div>
 </nav>${bellBtn()}${roleDD()}</div>`;
 }else{ /* عميل مسجّل: القائمة الكاملة */
 const u=me();
@@ -849,15 +853,30 @@ function secDD(e,btn){
 e.stopPropagation();
 const el=$('#secdrop');if(!el)return;
 if(el.classList.contains('open')){el.classList.remove('open');return}
-const r=btn.getBoundingClientRect();
-el.style.top=(r.bottom+8)+'px';
-el.style.insetInlineEnd=Math.max(10,window.innerWidth-r.right)+'px';
-el.classList.add('open');
+ddPlace(el,btn);
 }
 if(!window.__secInit){window.__secInit=1;
 document.addEventListener('click',e=>{const el=$('#secdrop');
-if(el&&el.classList.contains('open')&&!el.contains(e.target)&&!(e.target.closest&&e.target.closest('[data-secb]')))el.classList.remove('open')});
-window.addEventListener('scroll',()=>{const el=$('#secdrop');if(el)el.classList.remove('open')},true)}
+if(el&&el.classList.contains('open')&&!el.contains(e.target)&&!(e.target.closest&&e.target.closest('[data-secb]')))el.classList.remove('open');
+const el2=$('#storesdrop');
+if(el2&&el2.classList.contains('open')&&!el2.contains(e.target)&&!(e.target.closest&&e.target.closest('[data-storesb]')))el2.classList.remove('open')});
+window.addEventListener('scroll',()=>{const el=$('#secdrop');if(el)el.classList.remove('open');const el2=$('#storesdrop');if(el2)el2.classList.remove('open')},true)}
+function ddPlace(el,btn){
+const r=btn.getBoundingClientRect(),vw=window.innerWidth;
+el.style.top=(r.bottom+8)+'px';
+el.classList.add('open');
+const w=el.offsetWidth,margin=10,room=vw-2*margin;
+let end=Math.max(margin,Math.min(vw-r.right,vw-w-margin));
+if(w>room){el.style.insetInlineEnd='';el.style.width=room+'px';el.style.left=margin+'px'}
+else{el.style.width='';el.style.left='';el.style.insetInlineEnd=end+'px'}
+}
+function storesDD(e,btn){
+e.stopPropagation();
+const el=$('#storesdrop');if(!el)return;
+if(el.classList.contains('open')){el.classList.remove('open');return}
+ddPlace(el,btn);
+}
+function storesDDGo(t){const el=$('#storesdrop');if(el)el.classList.remove('open');go('a-hub',t)}
 function bellBtn(){const n=DB.notifs.filter(x=>x.to===SES.phone&&!x.read).length;
 return `<button class="iconbtn" onclick="openBell()" title="الإشعارات">🔔${n?`<span class="bdg">${ar(n)}</span>`:''}</button>`}
 function roleDD(){const u=me();const roleTxt={customer:'عميل',merchant:'تاجر',admin:'الإدارة'}[SES.role];
@@ -2838,7 +2857,7 @@ return `<div class="pghead"><h1>⚙️ إعدادات المتجر</h1><span cla
 <div class="acard"><h3>🏪 ملف المتجر الكامل</h3>
 <div class="setrow"><div class="ic">🏷️</div><div class="tx"><b>اسم المتجر</b><span>${esc(s.name)}</span></div><span class="tag grn">معروض للعملاء</span></div>
 <div class="setrow"><div class="ic">🗂️</div><div class="tx"><b>القسم</b><span>${sec.name} — نافذة حماية ${sec.win} بعد الاستلام</span></div><span class="tag" style="background:${s.color}18;color:${s.color}">ثابت</span></div>
-<div class="setrow"><div class="ic">👤</div><div class="tx"><b>المالك</b><span>${own?esc(own.name)+' · '+ar(s.owner):'—'}</span></div><span class="tag ${s.approved?'grn':'amb'}">${s.approved?'معتمد من الإدارة':'بانتظار الاعتماد'}</span></div>
+<div class="setrow"><div class="ic">👤</div><div class="tx"><b>المالك</b><span>${own?esc(own.name)+' · '+ar(s.owner):'—'}</span></div><span class="tag grn">عضو ضمين</span></div>
 <div class="setrow"><div class="ic">🆔</div><div class="tx"><b>معرّف المتجر</b><span>${s.id.toUpperCase()} · عضوية المالك ${own?'منذ '+MONTHS[new Date(own.since).getMonth()]+' '+ar(new Date(own.since).getFullYear()):'—'}</span></div></div>
 ${s.cr?`<div class="setrow"><div class="ic">🧾</div><div class="tx"><b>السجل التجاري / الوثيقة</b><span>${esc(s.cr)}${s.crDoc?` · مرفق: ${esc(s.crDoc)}`:''}</span></div><span class="tag grn">موثّق لدى الإدارة</span></div>`:''}
 ${s.iban?`<div class="setrow"><div class="ic">🏦</div><div class="tx"><b>الآيبان — تحويل أرباحك</b><span>يُحوَّل إليه صافي محفظتك عند طلب السحب خلال ٢٤ ساعة</span></div><span class="tag nvy" style="font-size:10px;letter-spacing:.5px">${esc(String(s.iban).slice(0,10))}••</span></div>`:''}
@@ -2875,7 +2894,7 @@ ${mcouponCard()}
 <div class="setrow"><div class="ic">${s.open?'🟢':'🔴'}</div><div class="tx"><b>استقبال الطلبات</b><span>${s.open?'متجرك مفتوح ويستقبل الطلبات':'مغلق مؤقتاً — منتجاتك تظهر دون زر شراء'}</span></div>
 <button class="sw ${s.open?'on':''}" onclick="myStore().open=!myStore().open;render()"></button></div>
 <div class="setrow"><div class="ic">🛡️</div><div class="tx"><b>نافذة حماية قسمك</b><span>${sec.name}: ${sec.win} بعد استلام العميل — ثابتة بسياسة ضمين</span></div><span class="tag grn">إلزامية</span></div>
-<div class="setrow"><div class="ic">⛔</div><div class="tx"><b>حالة الاعتماد والإيقاف</b><span>${!s.approved?'لم يُعتمد متجرك بعد — بانتظار مراجعة الإدارة':s.susp?'متجرك موقوف مؤقتاً من الإدارة — راجع فريق الامتثال':'متجرك معتمد ويعمل بكامل صلاحياته'}</span></div><span class="tag ${!s.approved?'amb':s.susp?'red':'grn'}">${!s.approved?'معلق':s.susp?'موقوف':'سليم'}</span></div>
+<div class="setrow"><div class="ic">⛔</div><div class="tx"><b>حالة المتجر</b><span>${s.susp?'متجرك موقوف مؤقتاً من الإدارة — راجع فريق الامتثال':'متجرك يعمل بكامل صلاحياته ومعروض للعملاء'}</span></div><span class="tag ${s.susp?'red':'grn'}">${s.susp?'موقوف':'سليم'}</span></div>
 </div>
 <div class="acard"><h3>🧾 العمولة ونظام النقاط</h3>
 <div class="setrow"><div class="ic">🧾</div><div class="tx"><b>عمولة ضمين على تصنيفاتك</b><span>${myCats.length?myCats.map(c=>esc(c.n)+' '+ard(c.c)+'٪').join(' · '):'لم تضف منتجات بعد'} — تحددها الإدارة لكل تصنيف، وتُقتطع لحظة التحرير فقط وتتحول مباشرة لمحفظة الإدارة ولا تُضاف على العميل</span></div><span class="tag amb">${ccTxt}</span></div>
@@ -2950,7 +2969,7 @@ return `<div class="kpis">
 <div class="kpi amb"><i>🔒</i><b>${money(vaultNow())}</b><span>مبالغ محجوزة حالياً</span></div>
 <div class="kpi nvy"><i>🔓</i><b>${money(releasedTotal)}</b><span>إجمالي الشحنات المحررة</span></div>
 <div class="kpi red"><i>⚖️</i><b>${ar(open.length)}</b><span>نزاعات بانتظار حكمك</span></div>
-<div class="kpi"><i>🏪</i><b>${ar(STORES.length)}</b><span>متجر (${ar(STORES.filter(s=>!s.approved).length)} معلق)</span></div>
+<div class="kpi"><i>🏪</i><b>${ar(STORES.length)}</b><span>متجر في ضمين</span></div>
 <div class="kpi"><i>👥</i><b>${ar(Object.keys(USERS).length)}</b><span>مستخدم مسجل</span></div>
 </div>
 <div class="grid2 mt">
@@ -2959,10 +2978,8 @@ ${open.length?open.map(d=>`<div class="row" style="cursor:pointer" onclick="open
 <div style="flex:1"><b>${esc(d.subject)}</b><div class="hint">${ST(d.store).name} · طلب #${ar(d.order)} · ${ago(d.openedAt)}</div></div>
 <span class="tag red">يحتاج حكماً</span></div>`).join(''):'<div class="hint mb">لا نزاعات معلقة — كل شيء تحت السيطرة 🕊️</div>'}
 <button class="btn soft wide" onclick="go('a-disputes')">كل النزاعات ←</button></div>
-<div class="acard"><h3>🚦 متاجر بانتظار الاعتماد</h3>
-${STORES.filter(s=>!s.approved).map(s=>`<div class="row">
-<div class="mstore" style="--c:${s.color};pointer-events:none"><div class="lg">${s.name[0]}</div><div><b>${esc(s.name)}</b><span class="mr">${SEC(s.sec).name} · ${USERS[s.owner]?esc(USERS[s.owner].name):''}</span></div></div>
-<button class="btn sm" onclick="aApprove('${s.id}')">✓ اعتماد</button></div>`).join('')||'<div class="hint">لا متاجر معلقة</div>'}
+<div class="acard"><h3>🚦 صحة المتاجر</h3>
+${STORES.filter(s=>s.susp).map(s=>`<div class="row"><div class="mstore" style="--c:${s.color};pointer-events:none"><div class="lg">${s.name[0]}</div><div><b>${esc(s.name)}</b><span class="mr">${SEC(s.sec).name} · ${USERS[s.owner]?esc(USERS[s.owner].name):''}</span></div></div><button class="btn gray xs" onclick="aSusp('${s.id}')">إلغاء الإيقاف</button></div>`).join('')||'<div class="hint">كل المتاجر تعمل بشكل سليم 🟢</div>'}
 </div></div>
 <div class="acard mt"><h3>📋 طلبات تسجيل جديدة ${pends.length?`<span class="tag amb">${ar(pends.length)} بانتظار البت</span>`:'<span class="tag grn">لا طلبات معلقة</span>'}</h3>
 ${pends.length?pends.slice(0,3).map(r=>`<div class="row"><div style="flex:1;min-width:0"><b>${r.kind==='store'?'🏪 '+esc(r.store):'🛡️ '+esc(r.own)}</b><div class="hint">${r.kind==='store'?esc(r.own)+' · '+SEC(r.sec).name:esc(r.role||'فريق الإدارة')} · ${ago(r.at)}</div></div><button class="btn sm" onclick="go('a-reqs')">مراجعة التفاصيل</button></div>`).join(''):'<p class="hint">طلبات فتح المتاجر والانضمام لفريق الإدارة تظهر هنا فور ورودها.</p>'}
@@ -3007,15 +3024,11 @@ ${STORES.map(s=>`<div class="row">
 <div class="hint">${SEC(s.sec).name} · ${USERS[s.owner]?esc(USERS[s.owner].name):'—'} · ★ ${ard(s.rt)} · ${ar(s.sales)} عملية</div></div>
 <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
 <span class="fx" style="font-size:12.5px;color:var(--grn)">${money(DB.storeWallets[s.id]||0)}</span>
-${!s.approved?`<span class="tag amb">معلق</span><button class="btn sm" onclick="aApprove('${s.id}')">✓ اعتماد</button>`
-:s.susp?`<span class="tag red">موقوف</span><button class="btn gray xs" onclick="aSusp('${s.id}')">إلغاء الإيقاف</button>`
-:`<span class="tag grn">معتمد</span><button class="btn red xs" onclick="aSusp('${s.id}')">إيقاف</button>`}
+${s.susp?`<span class="tag red">موقوف</span><button class="btn gray xs" onclick="aSusp('${s.id}')">إلغاء الإيقاف</button>`
+:`<span class="tag grn">يعمل</span><button class="btn red xs" onclick="aSusp('${s.id}')">إيقاف</button>`}
 </div></div>`).join('')}
 </div></div>`;
 }
-function aApprove(sid){const s=ST(sid);s.approved=true;
-pushNotif(s.owner,'🎉','تهانينا! اعتُمد متجرك','«'+s.name+'» صار ظاهراً للعملاء في قسم '+SEC(s.sec).name,['m-dash']);
-toast('اعتُمد متجر «'+s.name+'» ✓','ok');render()}
 function aSusp(sid){const s=ST(sid);s.susp=!s.susp;
 pushNotif(s.owner,s.susp?'⛔':'✅',s.susp?'أُوقف متجرك مؤقتاً':'أُلغي إيقاف متجرك',s.susp?'راجع فريق الامتثال في ضمين':'عاد متجرك للعمل بشكل طبيعي',['m-set']);
 toast(s.susp?'أُوقف المتجر مؤقتاً':'أُعيد تشغيل المتجر','ok');render()}
@@ -3058,7 +3071,7 @@ const r=DB.reqs.find(x=>x.id===id);if(!r)return;
 let passInfo='';
 if(r.kind==='store'){
 let n=STORES.length+1;while(ST('s'+n))n++;const sid='s'+n;
-STORES.push({id:sid,name:r.store,sec:r.sec,owner:r.phone,color:SEC(r.sec).color,desc:'متجر جديد معتمد — بانتظار أول منتجاته وهويته',rt:0,sales:0,approved:true,susp:false,open:true,city:'الرياض',dlMode:'customer',freeMin:0,iban:r.iban,cr:r.cr,crDoc:r.crDoc||''});
+STORES.push({id:sid,name:r.store,sec:r.sec,owner:r.phone,color:SEC(r.sec).color,desc:'متجر جديد — بانتظار أول منتجاته وهويته',rt:0,sales:0,susp:false,open:true,city:'الرياض',dlMode:'customer',freeMin:0,iban:r.iban,cr:r.cr,crDoc:r.crDoc||''});
 DB.storeWallets[sid]=0;}
 const u=USERS[r.phone];
 if(u){u.pend=null;delete u.rejected;
