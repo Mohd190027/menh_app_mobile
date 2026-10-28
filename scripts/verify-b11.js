@@ -215,8 +215,8 @@ const chk = (name, cond, extra) => {
   const merchView = await pg.evaluate(() => document.body.innerText.includes('إجابات العميل على أسئلة المنتجات'));
   chk('بطاقة التاجر: تعرض إجابات العميل', merchView);
 
-  // ============ T8: الإدارة — مركز الإدارة المدمج ============
-  console.log('== T8: مركز إدارة ضمين المدمج ==');
+  // ============ T8: الإدارة — المركز نظرة عامة + صفحة المتاجر المستقلة ============
+  console.log('== T8: المركز وصفحة المتاجر المستقلة ==');
   await pg.evaluate(() => { SES = { phone: '0500000003', role: 'admin', store: null }; render(); go('a-hub'); });
   await pg.waitForTimeout(500);
   const hub = await pg.evaluate(() => ({
@@ -225,36 +225,41 @@ const chk = (name, cond, extra) => {
     over: document.querySelectorAll('.kpis .kpi').length,
   }));
   chk('المركز: العنوان «مركز إدارة ضمين»', hub.h1.includes('مركز إدارة ضمين'), hub.h1);
-  chk('المركز: ٣ تبويبات (نظرة عامة/طلبات/متاجر)', hub.tabs.length === 3 && hub.tabs[0].includes('نظرة عامة') && hub.tabs[1].includes('طلبات التسجيل') && hub.tabs[2].includes('المتاجر'), hub.tabs);
+  chk('المركز: بلا تبويبات (طلبات التسجيل والمتاجر فُصلا)', hub.tabs.length === 0, hub.tabs);
   chk('المركز: النظرة العامة تعرض KPIs', hub.over >= 5, hub.over);
-  // القائمة العلوية: ٤ بناد + زر «المتاجر ▾» بقائمة منسدلة (بلا اعتماد)
+  // القائمة العلوية: ٥ بنود مع زر «المتاجر» المستقل
   const anav = await pg.evaluate(() => [...document.querySelectorAll('#top .nav .nlink')].map(x => x.textContent.trim()));
-  chk('قائمة الإدارة: ٥ بنود (٤ صفحات + زر المتاجر ▾)', anav.length === 5, anav);
-  chk('قائمة الإدارة: فيها مركز الإدارة وزر «المتاجر ▾» وبلا طلبات منفصلة', anav.some(x => x.includes('مركز الإدارة')) && anav.some(x => x.trim() === '🏪 المتاجر ▾') && !anav.some(x => x.includes('طلبات التسجيل')), anav);
-  // تبويب الطلبات
-  await pg.evaluate(() => ahubTab('reqs'));
+  chk('قائمة الإدارة: ٥ بنود', anav.length === 5, anav);
+  chk('قائمة الإدارة: زر «🏪 المتاجر» مستقل وبلا طلبات منفصلة', anav.some(x => x.trim() === '🏪 المتاجر') && !anav.some(x => x.includes('طلبات التسجيل')), anav);
+  // زر المتاجر ← الصفحة المستقلة
+  await pg.evaluate(() => { const b = [...document.querySelectorAll('#top .nav .nlink')].find(x => x.textContent.trim() === '🏪 المتاجر'); b.click(); });
   await pg.waitForTimeout(400);
-  const reqsT = await pg.evaluate(() => ({
-    cards: document.querySelectorAll('.acard').length,
-    head: document.body.innerText.includes('📋 طلبات التسجيل'),
+  const sp = await pg.evaluate(() => ({
+    page: VIEW.page, atab: VIEW.atab, h1: document.querySelector('.pghead h1')?.textContent || '',
+    tabs: [...document.querySelectorAll('.tabs button')].map(x => x.textContent.trim()),
   }));
-  chk('تبويب الطلبات: يعرض الطلبات', reqsT.head && reqsT.cards >= 1, reqsT);
-  // مسار إشعار قديم a-reqs → تبويب reqs
-  await pg.evaluate(() => go('a-reqs'));
-  await pg.waitForTimeout(400);
-  chk('المسار القديم a-reqs يفتح تبويب الطلبات', await pg.evaluate(() => VIEW.page === 'a-hub' && VIEW.atab === 'reqs'));
-  await pg.evaluate(() => go('a-over'));
-  await pg.waitForTimeout(400);
-  chk('المسار القديم a-over يفتح النظرة العامة', await pg.evaluate(() => VIEW.page === 'a-hub' && VIEW.atab === 'over'));
-  // تبويب المتاجر
-  await pg.evaluate(() => ahubTab('stores'));
-  await pg.waitForTimeout(400);
+  chk('زر المتاجر: يفتح صفحة «المتاجر» بتبويبها الافتراضي', sp.page === 'a-stores' && sp.atab === 'stores' && sp.h1.includes('المتاجر') && sp.tabs.length === 2 && sp.tabs[0].includes('طلبات التسجيل') && sp.tabs[1].includes('جميع المتاجر'), sp);
   const storT = await pg.evaluate(() => ({
     rows: document.querySelectorAll('.acard .row').length,
     head: document.body.innerText.includes('🏪 إدارة المتاجر'),
     approve: document.body.innerText.includes('اعتماد'),
   }));
   chk('تبويب المتاجر: يعرض كل المتاجر بلا أي اعتماد', storT.head && storT.rows >= 8 && !storT.approve, storT);
+  // تبويب الطلبات داخل الصفحة المستقلة
+  await pg.evaluate(() => astTab('reqs'));
+  await pg.waitForTimeout(400);
+  const reqsT = await pg.evaluate(() => ({
+    cards: document.querySelectorAll('.acard').length,
+    head: document.body.innerText.includes('📋 طلبات التسجيل'),
+  }));
+  chk('تبويب الطلبات: يعرض الطلبات', reqsT.head && reqsT.cards >= 1, reqsT);
+  // مسار إشعار قديم a-reqs → صفحة المتاجر · تبويب reqs
+  await pg.evaluate(() => go('a-reqs'));
+  await pg.waitForTimeout(400);
+  chk('المسار القديم a-reqs يفتح صفحة المتاجر · تبويب الطلبات', await pg.evaluate(() => VIEW.page === 'a-stores' && VIEW.atab === 'reqs'));
+  await pg.evaluate(() => go('a-over'));
+  await pg.waitForTimeout(400);
+  chk('المسار القديم a-over يفتح المركز (نظرة عامة)', await pg.evaluate(() => VIEW.page === 'a-hub'));
 
   // ============ T9: تغيير اسم القسم ============
   console.log('== T9: تغيير اسم القسم من صفحة الأقسام ==');

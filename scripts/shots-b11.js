@@ -19,8 +19,8 @@ const { chromium } = require('playwright');
   await pg.evaluate(() => { const p = P('p19'); p.qs = [{ q: 'ما لون التغليف المطلوب؟', t: 'opts', o: ['ذهبي', 'فضي', 'وردي'] }, { q: 'اكتب رسالة الكارت المرفق', t: 'txt', o: [] }]; go('product', p.id); });
   await pg.waitForTimeout(700);
   await pg.screenshot({ path: 'scripts/shots/b11-pqs.png' });
-  // 4) مركز الإدارة — تبويب المتاجر
-  await pg.evaluate(() => { SES = { phone: '0500000003', role: 'admin', store: null }; render(); go('a-hub'); ahubTab('stores'); });
+  // 4) صفحة المتاجر المستقلة — تبويب المتاجر
+  await pg.evaluate(() => { SES = { phone: '0500000003', role: 'admin', store: null }; render(); go('a-stores'); });
   await pg.waitForTimeout(600);
   await pg.screenshot({ path: 'scripts/shots/b11-hub.png' });
   // 5) جوال — الرئيسية

@@ -15,36 +15,36 @@ const chk = (name, cond, extra) => {
   await pg.goto('file:///home/z/my-project/download/dameen.html');
   await pg.waitForTimeout(900);
 
-  // ============ T1: زر المتاجر ▾ في قائمة الإدارة العلوية ============
-  console.log('== T1: زر «المتاجر ▾» بقائمة منسدلة ==');
+  // ============ T1: زر «المتاجر» المباشر ← صفحة مستقلة ============
+  console.log('== T1: زر «المتاجر» ← صفحة مستقلة بتبويبين ==');
   await pg.evaluate(() => { SES = { phone: '0500000003', role: 'admin', store: null }; render(); go('a-hub'); });
   await pg.waitForTimeout(500);
-  const btn = await pg.$('#top .nav [data-storesb]');
-  chk('زر «🏪 المتاجر ▾» موجود في الشريط العلوي', !!btn);
-  await pg.click('#top .nav [data-storesb]');
-  await pg.waitForTimeout(250);
-  const ddOpen = await pg.evaluate(() => {
-    const el = document.querySelector('#storesdrop');
-    return { open: el && el.classList.contains('open'), fixed: el && getComputedStyle(el).position === 'fixed', items: el ? [...el.querySelectorAll('.hti')].map(x => x.innerText.trim()) : [] };
-  });
-  chk('القائمة تفتح (position:fixed)', ddOpen.open && ddOpen.fixed, ddOpen);
-  chk('القائمة فيها «طلبات التسجيل» و«جميع المتاجر»', ddOpen.items.length === 2 && ddOpen.items[0].includes('طلبات التسجيل') && ddOpen.items[1].includes('جميع المتاجر'), ddOpen.items);
-  // اختيار «طلبات التسجيل» → تبويب reqs
-  await pg.evaluate(() => [...document.querySelectorAll('#storesdrop .hti')].find(x => x.innerText.includes('طلبات التسجيل')).click());
+  const hasBtn = await pg.evaluate(() => [...document.querySelectorAll('#top .nav .nlink')].some(x => x.textContent.trim() === '🏪 المتاجر'));
+  chk('زر «🏪 المتاجر» مباشر في الشريط العلوي', hasBtn);
+  chk('لا قائمة منسدلة متبقية (storesdrop محذوفة)', await pg.evaluate(() => !document.querySelector('#storesdrop')));
+  // المركز: نظرة عامة فقط بلا تبويبات
+  const hub1 = await pg.evaluate(() => ({ tabs: document.querySelectorAll('.tabs button').length, h1: (document.querySelector('.pghead h1') || {}).textContent || '' }));
+  chk('المركز: بلا تبويبات (نظرة عامة فقط)', hub1.tabs === 0 && hub1.h1.includes('مركز إدارة ضمين'), hub1);
+  // زر المتاجر ← الصفحة المستقلة
+  await pg.evaluate(() => { const b = [...document.querySelectorAll('#top .nav .nlink')].find(x => x.textContent.trim() === '🏪 المتاجر'); b.click(); });
   await pg.waitForTimeout(400);
-  chk('اختيار «طلبات التسجيل» → تبويب الطلبات', await pg.evaluate(() => VIEW.page === 'a-hub' && VIEW.atab === 'reqs' && document.body.innerText.includes('📋 طلبات التسجيل')));
-  // فتح واختيار «جميع المتاجر»
-  await pg.click('#top .nav [data-storesb]');
-  await pg.waitForTimeout(250);
-  await pg.evaluate(() => [...document.querySelectorAll('#storesdrop .hti')].find(x => x.innerText.includes('جميع المتاجر')).click());
-  await pg.waitForTimeout(400);
-  chk('اختيار «جميع المتاجر» → تبويب المتاجر', await pg.evaluate(() => VIEW.page === 'a-hub' && VIEW.atab === 'stores' && document.body.innerText.includes('🏪 إدارة المتاجر')));
-  // إغلاق بالنقر خارجها
-  await pg.click('#top .nav [data-storesb]');
-  await pg.waitForTimeout(200);
-  await pg.click('.pghead h1');
-  await pg.waitForTimeout(200);
-  chk('النقر خارج القائمة يغلقها', await pg.evaluate(() => !document.querySelector('#storesdrop').classList.contains('open')));
+  const sp = await pg.evaluate(() => ({ page: VIEW.page, atab: VIEW.atab, h1: (document.querySelector('.pghead h1') || {}).textContent || '', tabs: [...document.querySelectorAll('.tabs button')].map(x => x.textContent.trim()) }));
+  chk('الزر يفتح صفحة «المتاجر» المستقلة', sp.page === 'a-stores' && sp.h1.includes('المتاجر'), sp);
+  chk('التبويب الافتراضي «جميع المتاجر» + تبويبان', sp.atab === 'stores' && sp.tabs.length === 2 && sp.tabs[0].includes('طلبات التسجيل') && sp.tabs[1].includes('جميع المتاجر'), sp.tabs);
+  // تحويل التبويب داخل الصفحة
+  await pg.evaluate(() => astTab('reqs'));
+  await pg.waitForTimeout(300);
+  chk('astTab(reqs) يعرض الطلبات', await pg.evaluate(() => VIEW.atab === 'reqs' && document.body.innerText.includes('📋 طلبات التسجيل')));
+  await pg.evaluate(() => astTab('stores'));
+  await pg.waitForTimeout(300);
+  chk('astTab(stores) يعرض إدارة المتاجر', await pg.evaluate(() => VIEW.atab === 'stores' && document.body.innerText.includes('🏪 إدارة المتاجر')));
+  // ملخص المركز ينقل للصفحة
+  await pg.evaluate(() => go('a-hub'));
+  await pg.waitForTimeout(300);
+  const sumGo = await pg.evaluate(() => document.body.innerText.includes('المتاجر وطلبات التسجيل') && document.body.innerText.includes('فتح صفحة المتاجر'));
+  chk('المركز: بطاقة ملخص بزر «فتح صفحة المتاجر»', sumGo);
+  const kpiClick = await pg.evaluate(() => { const k = [...document.querySelectorAll('.kpi')].find(x => x.textContent.includes('متجر في ضمين')); k.click(); return { page: VIEW.page, atab: VIEW.atab }; });
+  chk('KPI المتاجر ينقل لصفحة المتاجر', kpiClick.page === 'a-stores' && kpiClick.atab === 'stores', kpiClick);
 
   // ============ T2: حذف حق الاعتماد نهائياً ============
   console.log('== T2: حذف حق الاعتماد ==');
@@ -59,16 +59,16 @@ const chk = (name, cond, extra) => {
   chk('دالة aApprove حُذفت', noApprove.aApproveFn);
   chk('المركز لا يذكر «اعتماد» إطلاقاً', !noApprove.hubTxt.includes('اعتماد'), noApprove.hubTxt.includes('اعتماد'));
   // KPI بلا «معلق»
-  await pg.evaluate(() => { ahubTab('over'); });
+  await pg.evaluate(() => { go('a-hub'); });
   await pg.waitForTimeout(400);
   const kpi = await pg.evaluate(() => document.querySelector('.kpis').innerText);
   chk('KPI المتاجر: بلا عدد «معلق»', kpi.includes('متجر في ضمين') && !kpi.includes('معلق'), kpi.replace(/\n/g, ' | '));
-  // بطاقة صحة المتاجر في النظرة العامة
-  const health = await pg.evaluate(() => document.body.innerText.includes('صحة المتاجر'));
-  chk('بطاقة «صحة المتاجر» بدل «بانتظار الاعتماد»', health);
+  // بطاقة الملخص في النظرة العامة (بدل بطاقات الإدارة المنقولة)
+  const health = await pg.evaluate(() => document.body.innerText.includes('المتاجر وطلبات التسجيل'));
+  chk('بطاقة ملخص المتاجر والطلبات في المركز', health);
 
   // تبويب المتاجر: أزرار إيقاف/إلغاء فقط
-  await pg.evaluate(() => ahubTab('stores'));
+  await pg.evaluate(() => go('a-stores'));
   await pg.waitForTimeout(400);
   const storesTab = await pg.evaluate(() => ({
     rows: document.querySelectorAll('.acard .row').length,
@@ -114,7 +114,7 @@ const chk = (name, cond, extra) => {
     n: DB.reqs.filter(r => r.status === 'pending').length,
     fn: typeof aApproveReq === 'function' && typeof aRejectReq === 'function',
   }));
-  chk('a-reqs يفتح تبويب الطلبات', reqs.page === 'a-hub' && reqs.atab === 'reqs');
+  chk('a-reqs يفتح صفحة المتاجر · تبويب الطلبات', reqs.page === 'a-stores' && reqs.atab === 'reqs');
   chk('الموافقة/الرفض متاحان', reqs.fn, reqs);
   // موافقة تفتح متجراً جديداً بلا حقل approved ويظهر فوراً للعملاء
   await pg.evaluate(() => { DB.reqs.push({ id: 'rq12', kind: 'store', store: 'متجر اختبار ب١٢', sec: 'deco', own: 'سعد', phone: '05001112233', email: '', cr: 'CR-12', iban: 'SA12', at: Date.now(), status: 'pending' }); render(); });

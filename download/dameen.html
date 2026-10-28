@@ -767,7 +767,7 @@ return{ok:true};
 
 /* ================= الحالة ================= */
 let SES=null,VIEW={page:'home'},CART=[],GFav=[],CK={step:0,addr:0,pay:'mada'},CPN=null,PTS=0,RATE={stars:0},COMP={sub:'damaged'},EVP=[],FREE_DL=false;
-let LASTSEC=null,AHUBT='over';
+let LASTSEC=null,ASTT='stores';
 const me=()=>SES?USERS[SES.phone]:null;
 const isFav=pid=>{if(!SES)return GFav.includes(pid);const u=me();return u&&u.favs&&u.favs.includes(pid)};
 const cartCount=()=>CART.reduce((a,c)=>a+c.qty,0);
@@ -777,10 +777,10 @@ if(page==='section'){VIEW={page:'section',sec:arg,cat:'الكل',q:''};LASTSEC=a
 else if(page==='store')VIEW={page:'store',store:arg,q:''};
 else if(page==='product')VIEW={page:'product',pid:arg,gi:0,q:''};
 else if(page==='search')VIEW={page:'search',q:arg};
-else if(page==='a-hub')VIEW={page:'a-hub',atab:arg||AHUBT||'over'};
-else if(page==='a-over'){VIEW={page:'a-hub',atab:'over'};AHUBT='over'}
-else if(page==='a-reqs'){VIEW={page:'a-hub',atab:'reqs'};AHUBT='reqs'}
-else if(page==='a-stores'){VIEW={page:'a-hub',atab:'stores'};AHUBT='stores'}
+else if(page==='a-hub')VIEW={page:'a-hub'};
+else if(page==='a-over')VIEW={page:'a-hub'};
+else if(page==='a-reqs'){VIEW={page:'a-stores',atab:'reqs'};ASTT='reqs'}
+else if(page==='a-stores')VIEW={page:'a-stores',atab:arg||ASTT||'stores'}
 else{VIEW={page};if(page==='home')LASTSEC=null}
 if(VIEW.page.startsWith('m-')&&(!SES||SES.role!=='merchant')){toast('سجّل دخولك بحساب تاجر أولاً','err');openAuth('merchant');return}
 if(VIEW.page.startsWith('a-')&&(!SES||SES.role!=='admin')){toast('هذه الصفحة مخصصة للإدارة','err');openAuth('admin');return}
@@ -790,7 +790,7 @@ function render(){
 const app=$('#app');
 const R={home:pgHome,search:pgSearch,section:pgSection,store:pgStore,product:pgProduct,cart:pgCart,orders:pgOrders,dlib:pgDLib,disputes:pgDisputes,account:pgAccount,favs:pgFavs,
 'm-dash':pgMDash,'m-prods':pgMProds,'m-orders':pgMOrders,'m-wallet':pgMWallet,'m-disputes':pgMDisputes,'m-set':pgMSet,
-'a-hub':pgAHub,'a-disputes':pgADisputes,'a-cats':pgACats,'a-rev':pgARev};
+'a-hub':pgAHub,'a-stores':pgAStoresPage,'a-disputes':pgADisputes,'a-cats':pgACats,'a-rev':pgARev};
 app.innerHTML=(R[VIEW.page]||pgHome)();
 renderTop();renderFab();appSave();
 }
@@ -825,11 +825,7 @@ ${mnav('m-dash','📊 لوحة التحكم')}${mnav('m-prods','🧺 المنت�
 </nav>${bellBtn()}${roleDD()}</div>`;
 }else if(SES.role==='admin'){
 h=`<div class="topin">${brand}${sb}<nav class="nav">
-${mnav('a-hub','📊 مركز الإدارة')}${mnav('a-disputes','⚖️ التحكيم')}${mnav('a-cats','🗂️ الأقسام')}${mnav('a-rev','📈 الإيرادات')}
-<button class="nlink" data-storesb onclick="storesDD(event,this)">🏪 المتاجر ▾</button>
-<div class="ddmenu secs" id="storesdrop"><div class="sechd">إدارة ضمين — اختر وجهة</div>
-<div class="hti" onclick="storesDDGo('reqs')"><b>📋 طلبات التسجيل</b><span>مراجعة طلبات فتح المتاجر والانضمام للإدارة</span></div>
-<div class="hti" onclick="storesDDGo('stores')"><b>🏪 جميع المتاجر</b><span>الإيقاف والإلغاء ومراجعة المحافظ</span></div></div>
+${mnav('a-hub','📊 مركز الإدارة')}${mnav('a-stores','🏪 المتاجر')}${mnav('a-disputes','⚖️ التحكيم')}${mnav('a-cats','🗂️ الأقسام')}${mnav('a-rev','📈 الإيرادات')}
 </nav>${bellBtn()}${roleDD()}</div>`;
 }else{ /* عميل مسجّل: القائمة الكاملة */
 const u=me();
@@ -858,9 +854,8 @@ ddPlace(el,btn);
 if(!window.__secInit){window.__secInit=1;
 document.addEventListener('click',e=>{const el=$('#secdrop');
 if(el&&el.classList.contains('open')&&!el.contains(e.target)&&!(e.target.closest&&e.target.closest('[data-secb]')))el.classList.remove('open');
-const el2=$('#storesdrop');
-if(el2&&el2.classList.contains('open')&&!el2.contains(e.target)&&!(e.target.closest&&e.target.closest('[data-storesb]')))el2.classList.remove('open')});
-window.addEventListener('scroll',()=>{const el=$('#secdrop');if(el)el.classList.remove('open');const el2=$('#storesdrop');if(el2)el2.classList.remove('open')},true)}
+});
+window.addEventListener('scroll',()=>{const el=$('#secdrop');if(el)el.classList.remove('open')},true)}
 function ddPlace(el,btn){
 const r=btn.getBoundingClientRect(),vw=window.innerWidth;
 el.style.top=(r.bottom+8)+'px';
@@ -870,13 +865,6 @@ let end=Math.max(margin,Math.min(vw-r.right,vw-w-margin));
 if(w>room){el.style.insetInlineEnd='';el.style.width=room+'px';el.style.left=margin+'px'}
 else{el.style.width='';el.style.left='';el.style.insetInlineEnd=end+'px'}
 }
-function storesDD(e,btn){
-e.stopPropagation();
-const el=$('#storesdrop');if(!el)return;
-if(el.classList.contains('open')){el.classList.remove('open');return}
-ddPlace(el,btn);
-}
-function storesDDGo(t){const el=$('#storesdrop');if(el)el.classList.remove('open');go('a-hub',t)}
 function bellBtn(){const n=DB.notifs.filter(x=>x.to===SES.phone&&!x.read).length;
 return `<button class="iconbtn" onclick="openBell()" title="الإشعارات">🔔${n?`<span class="bdg">${ar(n)}</span>`:''}</button>`}
 function roleDD(){const u=me();const roleTxt={customer:'عميل',merchant:'تاجر',admin:'الإدارة'}[SES.role];
@@ -2946,16 +2934,21 @@ function mSaveShip(){const s=myStore();s.dlMode=$('#ms-dlm').value;s.freeMin=Mat
 function mAddQ(){const v=($('#ms-q').value||'').trim();if(v.length<3){toast('اكتب سؤالاً أوضح','err');return}const s=myStore();s.qs=s.qs||[];s.qs.push(v);toast('أُضيف السؤال — سيظهر للعملاء عند الطلب ✓','ok');render()}
 function mDelQ(i){const s=myStore();s.qs.splice(i,1);toast('حُذف السؤال');render()}
 /* ================= صفحات الإدارة ================= */
-/* مركز الإدارة: نظرة عامة + طلبات التسجيل + المتاجر في صفحة واحدة بتبويبات */
+/* مركز الإدارة: نظرة عامة فقط — طلبات التسجيل والمتاجر في صفحة «المتاجر» المستقلة */
 function pgAHub(){
-const t=['over','reqs','stores'].includes(VIEW.atab)?VIEW.atab:'over';AHUBT=t;
-const pends=DB.reqs.filter(r=>r.status==='pending').length;
-const tab=(k,l,n)=>`<button class="${t===k?'on':''}" onclick="ahubTab('${k}')">${l}${n?` (${ar(n)})`:''}</button>`;
 return `<div class="pghead"><h1>🛡️ مركز إدارة ضمين</h1><span class="tag nvy">المشرف العام</span></div>
-<div class="tabs" style="margin-top:8px">${tab('over','📊 نظرة عامة')}${tab('reqs','📋 طلبات التسجيل',pends)}${tab('stores','🏪 المتاجر',STORES.length)}</div>
-${t==='over'?pgAOver():t==='reqs'?pgAReqs():pgAStores()}`;
+${pgAOver()}`;
 }
-function ahubTab(t){VIEW.atab=t;render()}
+/* صفحة المتاجر المستقلة: طلبات التسجيل + جميع المتاجر بتبويبين */
+function pgAStoresPage(){
+const t=['reqs','stores'].includes(VIEW.atab)?VIEW.atab:'stores';ASTT=t;
+const pends=DB.reqs.filter(r=>r.status==='pending').length;
+const tab=(k,l,n)=>`<button class="${t===k?'on':''}" onclick="astTab('${k}')">${l}${n?` (${ar(n)})`:''}</button>`;
+return `<div class="pghead"><h1>🏪 المتاجر</h1><span class="tag nvy">طلبات التسجيل وإدارة المتاجر</span></div>
+<div class="tabs" style="margin-top:8px">${tab('reqs','📋 طلبات التسجيل',pends)}${tab('stores','🏪 جميع المتاجر',STORES.length)}</div>
+${t==='reqs'?pgAReqs():pgAStores()}`;
+}
+function astTab(t){VIEW.atab=t;render()}
 const vaultNow=()=>r2(DB.orders.reduce((a,o)=>a+o.groups.filter(g=>['pending','preparing','shipped','received','disputed'].includes(g.status)).reduce((x,g)=>x+g.sub+((g.ship&&g.ship.charge)||(g.dl||0)),0),0));
 function pgAOver(){
 const open=DB.disputes.filter(d=>d.status==='open');
@@ -2969,7 +2962,7 @@ return `<div class="kpis">
 <div class="kpi amb"><i>🔒</i><b>${money(vaultNow())}</b><span>مبالغ محجوزة حالياً</span></div>
 <div class="kpi nvy"><i>🔓</i><b>${money(releasedTotal)}</b><span>إجمالي الشحنات المحررة</span></div>
 <div class="kpi red"><i>⚖️</i><b>${ar(open.length)}</b><span>نزاعات بانتظار حكمك</span></div>
-<div class="kpi"><i>🏪</i><b>${ar(STORES.length)}</b><span>متجر في ضمين</span></div>
+<div class="kpi" style="cursor:pointer" onclick="go('a-stores')"><i>🏪</i><b>${ar(STORES.length)}</b><span>متجر في ضمين</span></div>
 <div class="kpi"><i>👥</i><b>${ar(Object.keys(USERS).length)}</b><span>مستخدم مسجل</span></div>
 </div>
 <div class="grid2 mt">
@@ -2978,13 +2971,13 @@ ${open.length?open.map(d=>`<div class="row" style="cursor:pointer" onclick="open
 <div style="flex:1"><b>${esc(d.subject)}</b><div class="hint">${ST(d.store).name} · طلب #${ar(d.order)} · ${ago(d.openedAt)}</div></div>
 <span class="tag red">يحتاج حكماً</span></div>`).join(''):'<div class="hint mb">لا نزاعات معلقة — كل شيء تحت السيطرة 🕊️</div>'}
 <button class="btn soft wide" onclick="go('a-disputes')">كل النزاعات ←</button></div>
-<div class="acard"><h3>🚦 صحة المتاجر</h3>
-${STORES.filter(s=>s.susp).map(s=>`<div class="row"><div class="mstore" style="--c:${s.color};pointer-events:none"><div class="lg">${s.name[0]}</div><div><b>${esc(s.name)}</b><span class="mr">${SEC(s.sec).name} · ${USERS[s.owner]?esc(USERS[s.owner].name):''}</span></div></div><button class="btn gray xs" onclick="aSusp('${s.id}')">إلغاء الإيقاف</button></div>`).join('')||'<div class="hint">كل المتاجر تعمل بشكل سليم 🟢</div>'}
-</div></div>
-<div class="acard mt"><h3>📋 طلبات تسجيل جديدة ${pends.length?`<span class="tag amb">${ar(pends.length)} بانتظار البت</span>`:'<span class="tag grn">لا طلبات معلقة</span>'}</h3>
-${pends.length?pends.slice(0,3).map(r=>`<div class="row"><div style="flex:1;min-width:0"><b>${r.kind==='store'?'🏪 '+esc(r.store):'🛡️ '+esc(r.own)}</b><div class="hint">${r.kind==='store'?esc(r.own)+' · '+SEC(r.sec).name:esc(r.role||'فريق الإدارة')} · ${ago(r.at)}</div></div><button class="btn sm" onclick="go('a-reqs')">مراجعة التفاصيل</button></div>`).join(''):'<p class="hint">طلبات فتح المتاجر والانضمام لفريق الإدارة تظهر هنا فور ورودها.</p>'}
-${pends.length?`<button class="btn soft wide mt" onclick="go('a-reqs')">كل الطلبات والتفاصيل الكاملة ←</button>`:''}
+<div class="acard"><h3>🏪 المتاجر وطلبات التسجيل</h3>
+<div class="rows">
+<div class="row"><div class="fx" style="font-size:13px">🏪 متاجر ضمين</div><span class="tag ${STORES.filter(s=>s.susp).length?'amb':'grn'}">${ar(STORES.length)} متجر · ${ar(STORES.filter(s=>s.susp).length)} موقوف</span></div>
+<div class="row"><div class="fx" style="font-size:13px">📋 طلبات تسجيل بانتظار البت</div><span class="tag ${pends.length?'amb':'grn'}">${ar(pends.length)} طلب</span></div>
 </div>
+<button class="btn soft wide mt" onclick="go('a-stores')">فتح صفحة المتاجر وطلبات التسجيل ←</button>
+</div></div>
 <div class="acard mt"><h3>💬 مراقبة محادثات الطلبات ${vTot?`<span class="tag red">${ar(vTot)} مخالفة محجوبة</span>`:'<span class="tag grn">بلا مخالفات</span>'}</h3>
 <p class="hint mb">محادثات العميل × التاجر مرتبطة بالطلب — تُحجب الأرقام والروابط ووسائل التواصل الخارجية تلقائياً، وتُحذف المحادثة بعد ٣ مخالفات مع تنبيه فوري للإدارة.</p>
 <div class="rows">${chats.slice(0,5).map(({o,g,gi})=>{const last=[...(g.chat||[])].reverse().find(m=>m.r!=='sys');

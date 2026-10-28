@@ -56,7 +56,7 @@ const ok = (cond, name) => { if (cond) { pass++; console.log('  ✓ ' + name); }
   await page.fill('#lg-pw', '1234');
   await page.evaluate(() => doLogin());
   await page.waitForTimeout(300);
-  ok(page.evaluate(() => SES && SES.role === 'admin' && VIEW.page === 'a-hub' && VIEW.atab === 'over'), 'دخول الإدارة فهد ببريده وتوجيهه للمركز');
+  ok(page.evaluate(() => SES && SES.role === 'admin' && VIEW.page === 'a-hub'), 'دخول الإدارة فهد ببريده وتوجيهه للمركز (نظرة عامة)');
   await page.evaluate(() => logout());
   await page.evaluate(() => openAuth());
   await page.fill('#lg-id', '0500000001');
