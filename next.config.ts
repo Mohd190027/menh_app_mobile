@@ -7,14 +7,6 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
   reactStrictMode: false,
-  async rewrites() {
-    return {
-      // قبل أي مسار آخر: الصفحة الجذر تقدّم تطبيق ضمين (ملف ثابت كامل مكتفٍ)
-      beforeFiles: [{ source: "/", destination: "/dameen.html" }],
-      afterFiles: [],
-      fallback: [],
-    };
-  },
 };
 
 export default nextConfig;
