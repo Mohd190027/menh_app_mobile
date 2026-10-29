@@ -1,0 +1,2765 @@
+/* ================= الأدوات ================= */
+const $=s=>document.querySelector(s);
+const ar=n=>String(n).replace(/[0-9]/g,d=>'٠١٢٣٤٥٦٧٨٩'[d]);
+const ard=n=>{let s=(+(+n).toFixed(2)).toLocaleString('en-US');return ar(s).replace(/,/g,'٬').replace(/\./g,'٫')};
+const money=n=>ard(n)+' ر.س';
+const pctf=n=>ard(n)+'٪';
+const r2=n=>Math.round(n*100)/100;
+const esc=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+function hash(s){let h=0;s=String(s);for(let i=0;i<s.length;i++){h=(h*31+s.charCodeAt(i))|0}return Math.abs(h)}
+function imgTag(src,cls,alt){src=src||'';const seed='d'+(hash(src+alt)%9973);return `<img src="${src}" class="${cls||''}" alt="${esc(alt||'صورة')}" loading="lazy" onerror="this.onerror=null;this.src='https://picsum.photos/seed/${seed}/700/700'">`}
+const MONTHS=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+function dt(ts){const d=new Date(ts);const h=d.getHours(),m=String(d.getMinutes()).padStart(2,'0');const t=(h%12||12)+':'+ar(m)+(h<12?' ص':' م');return ar(d.getDate())+' '+MONTHS[d.getMonth()]+'، '+t}
+function ago(ts){const s=(Date.now()-ts)/1000;if(s<60)return'قبل لحظات';if(s<3600)return'قبل '+ar(Math.floor(s/60))+' د';if(s<86400)return'قبل '+ar(Math.floor(s/3600))+' س';return'قبل '+ar(Math.floor(s/86400))+' يوم'}
+function clock(ms){if(ms<0)ms=0;const t=Math.floor(ms/1000);const h=String(Math.floor(t/3600)).padStart(2,'0'),m=String(Math.floor(t%3600/60)).padStart(2,'0'),s=String(t%60).padStart(2,'0');return ar(h+':'+m+':'+s)}
+function toast(msg,type){const t=document.createElement('div');t.className='toast '+(type||'');t.innerHTML=(type==='ok'?'✓ ':type==='err'?'⚠ ':'◆ ')+msg;$('#toasts').appendChild(t);setTimeout(()=>{t.style.opacity=0;t.style.transform='translateY(-10px)';setTimeout(()=>t.remove(),320)},3400)}
+const STARS=r=>{r=Math.round(r);return '<span class="stars">'+'★'.repeat(r)+'☆'.repeat(5-r)+'</span>'};
+
+/* ================= الأقسام ================= */
+const SECTIONS=[
+{id:'fashion',name:'عالم الأزياء والجمال',icon:'👗',color:'#7A3B44',winMin:120,win:'ساعتان',desc:'عبايات وأزياء وعطور وعناية بلمسة محلية',img:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/6f94d1cccea3.jpg'},
+{id:'family',name:'عالم المأكولات والضيافة',icon:'🏡',color:'#556636',winMin:30,win:'٣٠ دقيقة',desc:'عسل وتمور وأطباق مطابخ وحلويات طازجة',img:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/b2f1f08ffc64.png'},
+{id:'deco',name:'عالم الهدايا والديكور والمناسبات',icon:'🎁',color:'#A45A3A',winMin:1440,win:'٢٤ ساعة',desc:'هدايا وديكور وتنسيق مناسبات ميداني',img:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/0dcd6b176ac1.jpg'},
+{id:'gaming',name:'عالم الألعاب والأجهزة والمنتجات الرقمية',icon:'🎮',color:'#50489E',winMin:180,win:'٣ ساعات',desc:'أجهزة ألعاب وملحقات وأصول رقمية بتسليم فوري',img:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/68dae69f3198.webp'}];
+const CATS={fashion:[{n:'عبايات',comm:2.5},{n:'أزياء',comm:2.5},{n:'حقائب وعطور',comm:2.5},{n:'العناية والجمال',comm:2.5}],family:[{n:'عسل وتمور',comm:2.5},{n:'ألبان ومخبوزات',comm:2.5},{n:'حلويات وأطباق',comm:2.5},{n:'سدو وحرف',comm:2.5}],deco:[{n:'ديكور',comm:2.5},{n:'هدايا',comm:2.5},{n:'قهوة وضيافة',comm:2.5},{n:'تنسيق مناسبات',comm:2.5}],gaming:[{n:'أجهزة وملحقات',comm:3},{n:'ألعاب رقمية وأكواد',comm:1.5},{n:'اشتراكات رقمية',comm:1.5},{n:'كتب وثيمات رقمية',comm:1}]};
+const catComm=(sec,cat)=>{const c=(CATS[sec]||[]).find(x=>x.n===cat);return +((c?c.comm:2.5).toFixed(2))};
+const SEC=id=>SECTIONS.find(s=>s.id===id);
+
+/* ================= المتاجر ================= */
+const STORES=[
+{id:'s1',name:'دَفى العبايات',sec:'fashion',owner:'0500000002',color:'#7A3B44',cover:'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?q=80&w=760&auto=format&fit=crop',desc:'عبايات كتان وخامات فاخرة بخياطة سعودية متقنة',rt:4.8,sales:342,susp:false,open:true,city:'الرياض',dlMode:'customer',freeMin:300},
+{id:'s2',name:'خيوط الغندورة',sec:'fashion',owner:'0500000004',color:'#96505E',cover:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/b79232a91370.jpg',desc:'طرق بيتية وأزياء مطرزة يدوياً بخيوط ملونة',rt:4.6,sales:198,susp:false,open:true,city:'جدة',dlMode:'customer',freeMin:350},
+{id:'s3',name:'مزرعة الواحة',sec:'family',owner:'0500000005',color:'#556636',cover:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/c2626d093c49.jpg',desc:'عسل سدر وتمور خلاص من مزارعنا مباشرة',rt:4.9,sales:521,susp:false,open:true,city:'الأحساء',dlMode:'half',freeMin:250},
+{id:'s4',name:'بيت السدو',sec:'family',owner:'0500000006',color:'#6B7A3F',cover:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/cfe35a802f4f.jpg',desc:'منتجات سدو أصيلة منسوجة على النول التقليدي',rt:4.7,sales:87,susp:false,open:true,city:'بريدة',dlMode:'customer',freeMin:0,qs:['هل لديك ملاحظة على درجة تمليح الجبن؟','التميس بالبر أم بالعسل الأسود؟']},
+{id:'s5',name:'لمسة ديكور',sec:'deco',owner:'0500000007',color:'#A45A3A',cover:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/11c491ea9778.jpg',desc:'شموع ومباخر ومستلزمات منزل بأناقة هادئة',rt:4.5,sales:264,susp:false,open:true,city:'الطائف',dlMode:'customer',freeMin:400},
+{id:'s6',name:'هدايا المعمور',sec:'deco',owner:'0500000008',color:'#B26640',cover:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/98a1ab5d2183.jpg',desc:'بوكسات هدايا مغلفة بفخامة تناسب كل مناسبة',rt:4.8,sales:173,susp:false,open:true,city:'الرياض',dlMode:'free',freeMin:0},
+{id:'s7',name:'فخار الطائف',sec:'deco',owner:'0500000009',color:'#8F5B36',cover:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/9a3a0638140e.jpg',desc:'فخاريات مدوّرة يدوياً من طين الطائف',rt:4.4,sales:12,susp:false,open:true,city:'الطائف',dlMode:'customer',freeMin:0},
+{id:'s8',name:'مطبخ أم خالد',sec:'family',owner:'0500000010',color:'#7C5A3A',cover:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/1c2383e2b42c.jpg',desc:'طبخ بيتي سعودي — كيك مناسبات وورق عنب على أصولها',rt:4.7,sales:156,susp:false,open:true,city:'الرياض',dlMode:'customer',freeMin:150,qs:['هل لديك حساسية من أي مكسرات؟','الكريمة أم التمر على الكيكة؟','وقت التسليم المفضل لديك؟']},
+{id:'s9',name:'قيمز زون',sec:'gaming',owner:'0500000011',color:'#50489E',cover:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/28b3519cc57c.jpg',desc:'أجهزة ألعاب وملحقات تقنية أصلية بضمان الوكيل — تغليف حماية خاص للأجهزة القابلة للكسر',rt:4.7,sales:214,susp:false,open:true,city:'الرياض',dlMode:'customer',freeMin:500},
+{id:'s10',name:'بايت كود',sec:'gaming',owner:'0500000012',color:'#3D7B8C',cover:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/8eac332529c2.png',desc:'أكواد ألعاب واشتراكات رقمية وكتب إلكترونية وثيمات — تسليم فوري لحظة الدفع بلا شحن',rt:4.8,sales:342,susp:false,open:true,city:'جدة',dlMode:'free',freeMin:0}];
+const ST=id=>STORES.find(s=>s.id===id);
+const U='https://images.unsplash.com/photo-';
+const IM=(id,s)=>U+id+'?q=80&w=760&auto=format&fit=crop';
+const PICS=(s)=>'https://picsum.photos/seed/'+encodeURIComponent(s)+'/760/760';
+const ZPOOL=['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/271fff8e23ab.jpeg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/650709575035.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/cfe35a802f4f.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/291826012a56.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/ed876a628b49.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/8792c1cd454c.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/11c491ea9778.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/559a027cf1cb.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/285d08d3a5ca.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/98a1ab5d2183.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/2f0ce9ff82fd.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/ffebfbe70844.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/9a3a0638140e.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/1c2383e2b42c.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/991d8bb4c001.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/e44feac627da.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/53aef9882d40.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/b79232a91370.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/a2ad882f2382.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/c2626d093c49.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/7bd7eee784a6.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/cce49520b1e4.jpeg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/6f94d1cccea3.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/b2f1f08ffc64.png','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/0dcd6b176ac1.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/e861dc8f6341.png','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/e28496a66dff.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/28b3519cc57c.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/2f9d9fe61140.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/7ddc9c999a9d.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/160a70aabe91.jpg'];
+
+/* ================= المنتجات ================= */
+let PRODUCTS=[
+{id:'p1',store:'s1',name:'عباية كتان «نسمة»',cat:'عبايات',price:349,off:15,stock:12,sold:214,rt:4.9,rc:86,imgs:[IM('1594633312681-425c7b97ccd1'),IM('1515372039744-b8f02a3ae446'),IM('1523381210434-271e8be1f52b')],
+desc:'عباية كتان بخامة مصرية مريحة وقَصّة واسعة تناسب يومك كامل. تطريز يدوي دقيق على الأكمام يمنحها لمسة أنيقة بعيدة عن المبالغة، مع سحّاب جانبي مخفي وجيوب داخلية عملية.',
+specs:{'الخامة':'كتان مصري ١٠٠٪','اللون':'كحلي غامق','المقاسات':'S / M / L / XL','العناية':'غسيل بارد يدوي'},ratings:[{by:'0500000001',name:'نورة',stars:5,txt:'الخامة ثقيلة وفخمة والخياطة نظيفة جداً، وصلت قبل الموعد.',at:Date.now()-864e5*5}]},
+{id:'p2',store:'s1',name:'عباية حرير مطرزة «ليان»',cat:'عبايات',price:520,off:0,stock:7,sold:97,rt:4.7,rc:41,imgs:[IM('1515372039744-b8f02a3ae446'),IM('1594633312681-425c7b97ccd1')],
+desc:'عباية مناسبات من الحرير الطبيعي بتطريز لؤلؤي على الصدر والأكمام. مناسبة للمناسبات المسائية والدعوات الخاصة، تأتي مع كيس حفظ مبطن بالقطن.',
+specs:{'الخامة':'حرير طبيعي','التطريز':'لؤلؤ يدوي','الطول':'متوفر حتى ٦٠ سم','التغليف':'كيس حفظ مبطن'},ratings:[]},
+{id:'p3',store:'s1',name:'طرحة شيفون مزدوجة',cat:'عبايات',price:95,off:20,stock:30,sold:186,rt:4.6,rc:52,imgs:[IM('1523381210434-271e8be1f52b')],
+desc:'طرحة شيفون بطبقتين لا تكشف ولا تنزلق، بخياطة مزدوجة تحفظ شكلها بعد الغسيل. متوفرة بعدة ألوان هادئة تناسب العبايات اليومية.',
+specs:{'الخامة':'شيفون مزدوج','المقاس':'١٨٠ × ٧٥ سم','الألوان':'أسود / كحلي / زيتي'},ratings:[]},
+{id:'p4',store:'s2',name:'طقم بيت قطني مطرز «دفء»',cat:'أزياء',price:189,off:0,stock:15,sold:143,rt:4.6,rc:33,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/53aef9882d40.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/b79232a91370.jpg'],
+desc:'طقم بيت من القطن المشغول بتطريز يدوي على الصدر. مريح للاستخدام اليومي والاستقبالات العائلية، خامة تتنفس ولا تسبب الحكة.',
+specs:{'الخامة':'قطن مشغول','المقاسات':'M / L / XL','الألوان':'بيج / رمادي'},ratings:[]},
+{id:'p5',store:'s2',name:'فستان سواريه مخمل «سهرة»',cat:'أزياء',price:640,off:10,stock:4,sold:58,rt:4.8,rc:19,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/a2ad882f2382.jpg'],
+desc:'فستان مخمل بقَصّة A كلاسيكية وأزرار لؤلؤية ظهرية. مثالي لحفلات الزواج والمناسبات المسائية، مع حاشية داخلية ناعمة تمنع الالتصاق.',
+specs:{'الخامة':'مخمل مستورد','الطول':'ميدي','التنظيف':'تنظيف جاف فقط'},ratings:[]},
+{id:'p6',store:'s2',name:'حقيبة يد جلد طبيعي',cat:'حقائب وعطور',price:280,off:0,stock:9,sold:121,rt:4.8,rc:22,imgs:[IM('1548036328-c9fa89d128fa')],
+desc:'حقيبة يد من الجلد الطبيعي المدبوغ نباتياً، تصنع يدوياً وتأتي برائحة الجلد الأصيلة. تتسع للجوال والمحفظة والأساسيات، بحزام كتف قابل للفك.',
+specs:{'الخامة':'جلد طبيعي مدبوغ','الحجم':'٢٤ × ١٦ سم','الحزام':'قابل للفك والتعديل'},ratings:[]},
+{id:'p7',store:'s2',name:'عطر عود ملكي ٥٠ مل',cat:'حقائب وعطور',price:220,off:0,stock:18,sold:167,rt:4.7,rc:44,imgs:[IM('1541643600914-78a08a3003d8')],
+desc:'عطر زيتي مركّز بمزيج العود الكمبودي والورد الطائفي، ثبات يمتد لأكثر من ثماني ساعات. يأتي في علبة خشبية تصلح للإهداء.',
+specs:{'النوع':'زيتي مركّز','الحجم':'٥٠ مل','الثبات':'٨+ ساعات','التغليف':'علبة خشب'},ratings:[]},
+{id:'p8',store:'s3',name:'عسل سدر جبلي ٥٠٠ جم',cat:'عسل وتمور',price:185,off:0,stock:26,sold:412,rt:4.9,rc:154,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/c2626d093c49.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/7bd7eee784a6.jpg'],
+desc:'عسل سدر جبلي خام غير مبستر، يُقطف من مناحلنا في مرتفعات الجنوب مرة واحدة في السنة. قوامه كثيف وطعمه غني، ويأتي ببرطمان زجاجي محكم الغلق مع شهادة منشأ.',
+specs:{'النوع':'سدر خام','الوزن':'٥٠٠ جم','المصدر':'مرتفعات الجنوب','التخزين':'بعيداً عن الشمس'},ratings:[{by:'0500000001',name:'نورة',stars:5,txt:'طعمه ما يشبه عسل جدي الله يرحمه، أصلي وواضح.',at:Date.now()-864e5*2}]},
+{id:'p9',store:'s3',name:'تمر خلاص فاخر ١ كجم',cat:'عسل وتمور',price:65,off:10,stock:40,sold:380,rt:4.8,rc:96,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/cce49520b1e4.jpeg'],
+desc:'تمر خلاص مفضل بدرجة أولى، حبة كبيرة لينة بحلاوة متوازنة. يُنتقى حبة حبة ويُعبأ في علبة أنيقة مناسبة للضيافة والإهداء.',
+specs:{'النوع':'خلاص مفضل','الوزن':'١ كجم','الدرجة':'أولى'},ratings:[]},
+{id:'p10',store:'s3',name:'دبس تمر بلدي',cat:'عسل وتمور',price:45,off:0,stock:22,sold:154,rt:4.6,rc:38,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/271fff8e23ab.jpeg'],
+desc:'دبس تمر بلدي مطبوخ على الحطب دون أي إضافات أو سكريات. كثيف بلون العنبر، مثالي مع الفطور الشتوي والحلويات الشعبية.',
+specs:{'الوزن':'٤٠٠ جم','المكوّنات':'تمر فقط'},ratings:[]},
+{id:'p11',store:'s3',name:'سلة الواحة (عسل + تمر + دبس)',cat:'عسل وتمور',price:265,off:12,stock:14,sold:98,rt:4.9,rc:27,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/650709575035.jpg'],
+desc:'سلة خشبية تجمع عسل سدر ٢٥٠ جم وتمر خلاص ٥٠٠ جم ودبس بلدي، مغلفة بجبينة كتان وشريط. الهدية المثالية للمناسبات وزيارات العزيمة.',
+specs:{'المحتوى':'٣ منتجات','التغليف':'سلة خشب + كتان'},ratings:[]},
+{id:'p12',store:'s4',name:'مفرش سدو للطاولة',cat:'سدو وحرف',price:420,off:0,stock:5,sold:64,rt:4.7,rc:29,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/cfe35a802f4f.jpg'],
+desc:'مفرش منسوج على النول الأصلي بخيوط صوف ملونة بنقوش السدو النجدية. كل قطعة تستغرق أسبوعين من النسج اليدوي، ولا تتكرر بنفس توزيعة الألوان.',
+specs:{'الخامة':'صوف طبيعي','المقاس':'١٤٠ × ٩٠ سم','الصناعة':'نول يدوي'},ratings:[]},
+{id:'p13',store:'s4',name:'حزام سدو منسوج',cat:'سدو وحرف',price:150,off:0,stock:8,sold:73,rt:4.5,rc:17,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/291826012a56.jpg'],
+desc:'حزام منسوج بخيوط السدو الملوّنة مع إبزيم نحاسي مصقول. قطعة تراثية عملية تلبس مع الثوب أو كإكسسوار عصري فوق المعطف.',
+specs:{'العرض':'٤ سم','الإبزيم':'نحاس'},ratings:[]},
+{id:'p14',store:'s4',name:'جبن قريش بلدي ٣٥٠ جم',cat:'ألبان ومخبوزات',ptype:'chilled',price:25,off:0,stock:20,sold:96,rt:4.6,rc:31,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/ed876a628b49.jpg'],
+desc:'جبن قريش بلدي يُحضّر صباح كل يوم من حليب المزرعة، قوامه طري وملحه خفيف. يُسلّم مبرداً في نفس يوم صناعته.',
+specs:{'الوزن':'٣٥٠ جم','الصلاحية':'٥ أيام مبردة'},ratings:[]},
+{id:'p15',store:'s4',name:'خبز تميس بيتي (٤ حبات)',cat:'ألبان ومخبوزات',ptype:'instant',price:12,off:0,stock:35,sold:640,rt:4.8,rc:203,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/8792c1cd454c.jpg'],
+desc:'تميس بيتي يُخبز على التنور الحجري بعجين مخمّر ببطء. يخرج ساخناً مع الزبدة والعسل الأسود، ويُسلّم في أكياس حرارية تحفظ حرارته.',
+specs:{'الكمية':'٤ حبات','التسليم':'ساخن يومياً'},ratings:[]},
+{id:'p16',store:'s5',name:'شمعة ياسمين معطرة',cat:'ديكور',price:65,off:0,stock:28,sold:231,rt:4.5,rc:47,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/11c491ea9778.jpg'],
+desc:'شمعة صويا معطرة برائحة الياسمين المسائي، فتيل قطني نظيف يحترق دون دخان. تعبئ المنزل بهدوء لأكثر من ٣٥ ساعة، في وعاء زجاجي يعاد استخدامه.',
+specs:{'الشمعة':'شمع صويا','الرائحة':'ياسمين','مدة الاحتراق':'٣٥+ ساعة','الوزن':'٢٢٠ جم'},ratings:[]},
+{id:'p17',store:'s5',name:'مبخرة نحاسية مزخرفة',cat:'ديكور',price:140,off:20,stock:11,sold:158,rt:4.7,rc:39,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/559a027cf1cb.jpg'],
+desc:'مبخرة نحاسية بنقش يدوي ومقبض حراري معزول. تأتي مع طبق فحم عازل وغطاء محفور يوزع الدخان بلطف، قطعة تجمع بين الأصالة والاستخدام اليومي.',
+specs:{'الخامة':'نحاس مطروق','التشطيب':'نقش يدوي','يشمل':'طبق فحم + غطاء'},ratings:[]},
+{id:'p18',store:'s5',name:'طقم فناجيل قهوة مذهّب (٦)',cat:'قهوة وضيافة',fragile:true,price:195,off:0,stock:9,sold:129,rt:4.8,rc:26,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/285d08d3a5ca.jpg'],
+desc:'ستة فناجيل بورسلين بحافة مذهّبة مقاومة للاحتكاك، تصلح للقهوة والشاي. تصميم بقوارير رفيعة يليق بالمجالس، وتأتي في علبة مبطنة تصلح للإهداء.',
+specs:{'العدد':'٦ فناجيل','الخامة':'بورسلين','الطلاء':'ذهبي ٢٤ قيراط'},ratings:[]},
+{id:'p19',store:'s6',name:'بوكس هدايا «شكراً» مخمل',cat:'هدايا',ptype:'ship',giftOk:true,customOk:true,price:240,off:0,stock:16,sold:174,rt:4.8,rc:31,imgs:[IM('1549465220-1a8b9238cd48'),'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/98a1ab5d2183.jpg'],
+desc:'بوكس مخمل فارغ يضم ٤ علب داخلية و٣ بطاقات إهداء بألوان هادئة، يعاد تشكيله حسب المناسبة. التغليف يشمل شريط ساتان وبطاقة يدوية بخط جميل.',
+specs:{'المحتوى':'٤ علب + ٣ بطاقات','اللون':'أخضر زيتي / كحلي','التغليف':'ساتان + بطاقة'},ratings:[]},
+{id:'p20',store:'s6',name:'لوحة خط عربي مؤطرة «الفرج»',cat:'هدايا',ptype:'ship',giftOk:true,price:160,off:0,stock:7,sold:88,rt:4.6,rc:18,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/ffebfbe70844.jpg'],
+desc:'لوحة خط ديواني بكلمة «الفرج» مرسومة يدوياً بالحبر الأسود على ورق مقوى عاجي، بإطار خشب طبيعي وزجاج عاكس. توقيع الخطاط على الزاوية.',
+specs:{'المقاس':'٤٠ × ٣٠ سم','الإطار':'خشب طبيعي','الخط':'ديواني حر'},ratings:[]},
+{id:'p21',store:'s7',name:'مزهرية فخار مزججة',cat:'ديكور',fragile:true,price:110,off:0,stock:6,sold:12,rt:4.4,rc:5,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/9a3a0638140e.jpg'],
+desc:'مزهرية فخارية مدوّرة على الدولاب ومزججة بطلاء لامع غير متكرر. كل قطعة فريدة بدرجة لونها، من طين الطائف الأحمر.',
+specs:{'الارتفاع':'٢٤ سم','الخامة':'فخار مزجج'},ratings:[]},
+{id:'p22',store:'s8',name:'كيكة العيد بالكريمة (حساسة للحرارة)',cat:'حلويات وأطباق',ptype:'chilled',price:145,off:0,stock:6,sold:89,rt:4.8,rc:21,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/1c2383e2b42c.jpg'],
+desc:'كيكة إسفنجية بطبقات الكريمة المخفوقة، تُخبز يوم الطلب وتُسلّم مبردة في صندوق حافظ للحرارة. حساسة للحرارة — يُجدول لها النظام تلقائياً توصيلاً مبرداً مع أقرب شركة متعاقدة.',
+specs:{'الحجم':'٨ أشخاص','الحفظ':'مبردة حتى التسليم','التحضير':'يوم الطلب'},ratings:[]},
+{id:'p23',store:'s8',name:'صحن ورق عنب عائلي (طازج)',cat:'حلويات وأطباق',ptype:'instant',price:55,off:0,stock:15,sold:132,rt:4.7,rc:30,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/991d8bb4c001.jpg'],
+desc:'ورق عنب بلدي ملفوف يدوياً ومطبوخ على أصوله مع لحم مفروم وأرز بسمتي. يُحضّر يوم الطلب ويُرسل فور تأكيده مع مندوب فوري — وقت التسليم المتوقع ٤٥ دقيقة.',
+specs:{'الحجم':'صحن عائلي','التسليم':'فوري خلال ٤٥ دقيقة','التحضير':'يوم الطلب'},ratings:[]},
+{id:'p24',store:'s5',name:'تنسيق طاولة ضيافة كاملة (خدمة ميدانية)',cat:'تنسيق مناسبات',ptype:'field',price:850,off:0,stock:4,sold:23,rt:4.9,rc:9,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/e44feac627da.jpg'],
+desc:'خدمة تنسيق ميداني لطاولة المناسبة: خلفية قماش، تنسيق ورد طبيعي، أدوات تقديم وإضاءة هادئة. فريق المتجر يركّب قبل المناسبة ويفكّ بعدها — بلا بوليصة شحن تجاري، ومع حجز موعد مسبق ومشاركة موقع المناسبة.',
+specs:{'الخدمة':'تركيب + فك','المدة':'حتى ٦ ساعات','الحجز':'موعد مسبق إلزامي'},ratings:[]},
+{id:'p25',store:'s9',name:'سماعة ألعاب لاسلكية «صقر برو»',cat:'أجهزة وملحقات',ptype:'std',fragile:true,price:349,off:10,stock:14,sold:167,rt:4.8,rc:38,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/308769bd3796.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/2f9d9fe61140.jpg'],
+desc:'سماعة ألعاب لاسلكية بتقنية صوت محيطي ٧٫١ افتراضي وبطارية تدوم ٤٠ ساعة متواصلة، مع مايك عازل للضوضاء بإلغاء بيئي وإضاءة RGB قابلة للتخصيص من التطبيق. تُشحن بتغليف حماية خاص لأنها من الأجهزة القابلة للكسر، وتشمل وسادتين احتياطيتين وحمّال مغناطيسي.',
+specs:{'الاتصال':'لاسلكي ٢٫٤ جيجا + بلوتوث ٥٫٣','البطارية':'٤٠ ساعة','الصوت':'محيطي ٧٫١ افتراضي','الوزن':'٣١٢ جم'},ratings:[{by:'0500000001',name:'نورة',stars:5,txt:'خفيفة على الرأس والصوت غامر، وصلت بتغليف حماية ممتاز.',at:Date.now()-864e5*3}]},
+{id:'p26',store:'s9',name:'ذراع تحكم احترافي «نمر»',cat:'أجهزة وملحقات',ptype:'std',price:189,off:0,stock:26,sold:241,rt:4.7,rc:52,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/e861dc8f6341.png','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/5bd6ab3c9322.png'],
+desc:'ذراع تحكم احترافي بأزرار ميكانيكية قابلة للبرمجة وعصا مقاومة للانحراف بدقة عالية، مع أذرع خلفية قابلة للتبديل ووضعيات إعدادات محفوظة لثلاث ألعاب. مناسب لمنصات PC والأندرويد، ويأتي بحافظة صلبة تناسب السفر.',
+specs:{'التوافق':'PC / أندرويد','الأزرار':'٨ ميكانيكية قابلة للبرمجة','البطارية':'٢٠ ساعة'},ratings:[]},
+{id:'p27',store:'s9',name:'جهاز ألعاب محمول «وهج X»',cat:'أجهزة وملحقات',ptype:'std',fragile:true,price:1499,off:5,stock:6,sold:87,rt:4.9,rc:24,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/04fd480125c5.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/7ddc9c999a9d.jpg'],
+desc:'جهاز ألعاب محمول بشاشة أموليد ٧ بوصة بمعدل تحديث ١٤٤ هرتز ومعالج ثماني النوى مخصص للألعاب، يشغّل مكتبتك الرقمية بالكامل مع دعم البث السحابي. يُشحن بصندوق مقوّى بعلامة قابل للكسر وتغليف ممتص للصدمات + تأمين شحن إضافي.',
+specs:{'الشاشة':'أموليد ٧ بوصة / ١٤٤ هرتز','التخزين':'٥١٢ جيجابايت','البطارية':'حتى ٨ ساعات لعب'},ratings:[]},
+{id:'p28',store:'s9',name:'لوحة مفاتيح ميكانيكية RGB «قوس»',cat:'أجهزة وملحقات',ptype:'std',price:279,off:0,stock:18,sold:198,rt:4.6,rc:41,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/e28496a66dff.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/4e591ed2c48b.png'],
+desc:'لوحة مفاتيح ميكانيكية بمفاتيح حمراء قابلة للتبديل الساخن وإضاءة RGB لكل مفتاح مع ٢٢ نمط إضاءة جاهز، وهيكل ألمنيوم مختوم مقاوم للغبار. تدعم الاتصال السلكي ولاسلكي مع ثلاث أجهزة في آن واحد، وتشمل مسند معصم مغناطيسي.',
+specs:{'المفاتيح':'حمراء قابلة للتبديل','الاتصال':'سلكي + ٢٫٤ جيجا + بلوتوث','الإضاءة':'RGB لكل مفتاح'},ratings:[]},
+{id:'p29',store:'s10',name:'كود لعبة «سباق الرمال ٥» الرقمي',cat:'ألعاب رقمية وأكواد',ptype:'digital',digi:{kind:'code',val:'DRR5-9K2M-X7Q4-88FV'},price:149,off:15,stock:99,sold:512,rt:4.8,rc:117,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/2fb50ac6678a.jpg'],
+desc:'كود رقمي أصلي للعبة سباق الرمال ٥ كاملة الإصدار القياسي، يُسلّم فور إتمام الدفع في مكتبتك الرقمية دون أي شحن أو انتظار. الكود صالح للتفعيل مرة واحدة على حسابك، ويعمل بكل اللغات بما فيها العربية.',
+specs:{'النوع':'كود تفعيل رقمي','التسليم':'فوري بعد الدفع','الصلاحية':'تفعيل واحد'},ratings:[]},
+{id:'p30',store:'s10',name:'اشتراك ١٢ شهراً بلس جيمنج',cat:'اشتراكات رقمية',ptype:'digital',digi:{kind:'code',val:'PSN-4T8B-22LD-QW90'},price:235,off:0,stock:99,sold:368,rt:4.9,rc:88,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/160a70aabe91.jpg'],
+desc:'كود اشتراك ١٢ شهراً كاملة في خدمة بلس جيمنج مع ألعاب شهرية مجانية وخصومات حصرية على المتجر الرقمي. يصل الكود لحظة الدفع في مكتبتك الرقمية عبر رابط مؤقت آمن، ويفعّل على حسابك بثلاث خطوات دون بطاقة.',
+specs:{'المدة':'١٢ شهراً','المنطقة':'السعودية والخليج','التسليم':'فوري بعد الدفع'},ratings:[]},
+{id:'p31',store:'s10',name:'كتاب إلكتروني «احترف صناعة الألعاب» PDF',cat:'كتب وثيمات رقمية',ptype:'digital',digi:{kind:'file',val:'game-dev-master-ar.pdf',size:'٤٫٢ م.ب'},price:45,off:0,stock:99,sold:156,rt:4.7,rc:33,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/06fdd0b9a622.jpg'],
+desc:'كتاب إلكتروني عربي شامل من ٣٢٠ صفحة يأخذك من أساسيات محركات الألعاب إلى نشر أول لعبة لك على المتاجر، مع أمثلة كود قابلة للتنزيل ومشاريع عملية موزعة على كل فصل. يُسلّم فور الدفع عبر رابط مؤقت آمن، وتبقى نسخته دائمة في مكتبتك.',
+specs:{'الصيغة':'PDF','الصفحات':'٣٢٠ صفحة','اللغة':'العربية'},ratings:[]},
+{id:'p32',store:'s10',name:'حزمة ثيمات «نيون نايت» (١٢ واجهة)',cat:'كتب وثيمات رقمية',ptype:'digital',digi:{kind:'file',val:'neon-night-themes.zip',size:'١٨ م.ب'},price:25,off:0,stock:99,sold:203,rt:4.6,rc:47,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/1f1482a46bbb.jpg'],
+desc:'حزمة من ١٢ ثيم واجهة نيون بتدرجات ليلية متناسقة للأجهزة وسطح المكتب، تشمل خلفيات وأيقونات مؤشرات وأصوات تنبيه مطابقة. ملف واحد مضغوط يُسلّم فوراً بعد الدفع، مع دليل تركيب مصور بالعربية داخل الحزمة.',
+specs:{'المحتوى':'١٢ ثيم متكامل','الصيغة':'ZIP','التوافق':'ويندوز / ماك / أندرويد'},ratings:[]}];
+
+/* ================= الحسابات ================= */
+const NOW=Date.now();
+const USERS={
+'0500000001':{name:'نورة العبدالله',role:'customer',pass:'1234',pts:340,bal:240,since:NOW-864e5*210,
+ptsLog:[{t:'تحرير طلب #١٠٢١',v:29,at:NOW-864e5*6},{t:'تقييم تجربتك',v:10,at:NOW-864e5*6},{t:'استبدال في السلة',v:-100,at:NOW-864e5*9},{t:'تحرير طلب #١٠١٨',v:24,at:NOW-864e5*12}],
+favs:['p1','p8'],addrs:[{t:'المنزل',a:'الرياض، حي الياسمين، شارع الأمير سلطان، مبنى ١٢',def:true},{t:'العمل',a:'الرياض، طريق الملك فهد، برج المملكة، الدور ١٤'}],
+notif:{ord:true,off:true,dis:true,rev:true},hidePhone:false,email:'noura@mail.com'},
+'0500000002':{name:'ريم الدوسري',role:'merchant',pass:'1234',store:'s1',since:NOW-864e5*400,notif:{ord:true,dis:true},email:'rima@dafi.sa'},
+'0500000003':{name:'فهد العتيبي',role:'admin',pass:'1234',since:NOW-864e5*500,notif:{dis:true},email:'fahd@dameen.sa'},
+'0500000004':{name:'سارة الحربي',role:'merchant',pass:'1234',store:'s2',since:NOW-864e5*300},
+'0500000005':{name:'ماجد القحطاني',role:'merchant',pass:'1234',store:'s3',since:NOW-864e5*380},
+'0500000006':{name:'حصة الشمري',role:'merchant',pass:'1234',store:'s4',since:NOW-864e5*250},
+'0500000007':{name:'عبدالله الزهراني',role:'merchant',pass:'1234',store:'s5',since:NOW-864e5*180},
+'0500000008':{name:'منال الغامدي',role:'merchant',pass:'1234',store:'s6',since:NOW-864e5*150},
+'0500000009':{name:'تركي الثقفي',role:'merchant',pass:'1234',store:'s7',since:NOW-864e5*20},
+'0500000010':{name:'أم خالد السالم',role:'merchant',pass:'1234',store:'s8',since:NOW-864e5*90},
+'0500000011':{name:'فيصل الحربي',role:'merchant',pass:'1234',store:'s9',since:NOW-864e5*120,notif:{ord:true,dis:true}},
+'0500000012':{name:'لينا العسيري',role:'merchant',pass:'1234',store:'s10',since:NOW-864e5*100,notif:{ord:true,dis:true}}};
+
+/* ================= قاعدة البيانات الحيّة ================= */
+const DB={
+notifs:[
+{to:'0500000001',ic:'🚚',t:'طلبك في الطريق',b:'مزرعة الواحة شحنت طلبك #١٠٢٢',at:NOW-36e5*5,read:false,go:['orders']},
+{to:'0500000001',ic:'⏳',t:'نافذة الحماية بدأت',b:'بقي أقل من ٨ دقائق لتحرير تلقائي لطلب #١٠٢٣',at:NOW-6e5,read:false,go:['orders']},
+{to:'0500000001',ic:'🎁',t:'عرض من قسم الأزياء',b:'خصومات تصل إلى ٢٠٪ على العبايات',at:NOW-864e5,read:true,go:['section','fashion']}],
+aRevenue:1268.75,
+revMonths:[{m:'يونيو',v:186},{m:'يوليو',v:212},{m:'أغسطس',v:254},{m:'سبتمبر',v:301},{m:'أكتوبر',v:316}],
+storeWallets:{s1:4820.5,s2:2160,s3:9130.25,s4:1540,s5:3310,s6:2980,s7:0,s9:2760,s10:4180},
+orders:[
+{id:1018,customer:'0500000001',at:NOW-864e5*12,pay:'mada',addr:'الرياض، حي الياسمين، شارع الأمير سلطان، مبنى ١٢',
+groups:[{store:'s6',items:[{pid:'p19',qty:1,price:240}],sub:240,dl:0,status:'refunded',payout:{sub:240,comm:0,net:0}}]},
+{id:1021,customer:'0500000001',at:NOW-864e5*6,pay:'mada',addr:'الرياض، حي الياسمين، شارع الأمير سلطان، مبنى ١٢',
+groups:[{store:'s1',items:[{pid:'p1',qty:1,price:296.65},{pid:'p3',qty:1,price:76}],sub:372.65,dl:0,status:'released',rated:{stars:5,txt:'وصلت بسرعة والخامات فخمة'},payout:{sub:372.65,comm:9.32,net:363.33},releasedAt:NOW-864e5*5}]},
+{id:1022,customer:'0500000001',at:NOW-864e5*2,pay:'visa',addr:'الرياض، حي الياسمين، شارع الأمير سلطان، مبنى ١٢',
+groups:[{store:'s3',items:[{pid:'p8',qty:1,price:185},{pid:'p9',qty:2,price:58.5}],sub:243.5,dl:0,status:'shipped'}]},
+{id:1023,customer:'0500000001',at:NOW-36e5*7,pay:'bal',addr:'الرياض، حي الياسمين، شارع الأمير سلطان، مبنى ١٢',
+groups:[{store:'s5',items:[{pid:'p16',qty:2,price:130}],sub:130,dl:12,status:'received',complaintUntil:NOW+8*60e3}]},
+{id:1024,customer:'0500000001',at:NOW-864e5,pay:'mada',addr:'الرياض، حي الياسمين، شارع الأمير سلطان، مبنى ١٢',
+groups:[{store:'s4',items:[{pid:'p12',qty:1,price:420}],sub:420,dl:0,status:'disputed',complaintUntil:NOW+864e5}]}],
+disputes:[
+{id:'d0',order:1018,store:'s6',customer:'0500000001',subject:'لا يطابق الوصف',openedAt:NOW-864e5*11,status:'resolved',
+ruling:{act:'refund',by:'الإدارة',text:'بعد الاطلاع على الصور المرفقة ومقارنتها بوصف المنتج، تبيّن اختلاف درجة اللون بشكل جوهري. اعتُمد استرجاع كامل المبلغ إلى محفظة العميلة.',at:NOW-864e5*10},
+messages:[
+{r:'sys',t:'فتحت العميلة نزاعاً على الطلب #١٠١٨ (متجر هدايا المعمور) بسبب: لا يطابق الوصف',at:NOW-864e5*11},
+{r:'customer',t:'طلبت البوكس باللون الأخضر الزيتي كما في الصورة ووصل كحلي غامق تماماً، الفرق واضح جداً.',at:NOW-864e5*11+5e5,img:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/2f0ce9ff82fd.jpg'},
+{r:'merchant',t:'نعتذر عن الخطأ، يبدو أنه التباس في اللون عند التغليف. مستعدون لاستبدالها أو استرجاع المبلغ حسب ما تقرر الإدارة.',at:NOW-864e5*11+9e5},
+{r:'sys',t:'أصدرت الإدارة حكمها: استرجاع كامل المبلغ للعميلة + تحذير للمتجر بضبط مطابقة الألوان.',at:NOW-864e5*10}]},
+{id:'d1',order:1024,store:'s4',customer:'0500000001',subject:'المنتج تالف',openedAt:NOW-864e5+36e5,status:'open',ruling:null,
+messages:[
+{r:'sys',t:'فتحت العميلة نزاعاً على الطلب #١٠٢٤ (متجر بيت السدو) بسبب: المنتج تالف',at:NOW-864e5+36e5},
+{r:'customer',t:'المفرش وصل بشد واضح عند أحد الأطراف مع خيط مقطوع، الضرر ظاهر من أول نظرة. مرفق صور الوضع عند الوصول.',at:NOW-864e5+36e5+3e5,img:'https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/2ee34fcf2428.jpg'},
+{r:'merchant',t:'وعليكم السلام، نعتذر جداً عما وصلك. راجعنا تقرير الجودة قبل الشحن وكان سليماً، ويحتمل أن يكون الضرر من النقل. نرجو احتساب صور زاوية آخر للتأكد.',at:NOW-864e5+36e5+7e5}]}],
+coupons:{DAMIN10:{type:'pct',v:10,max:50,store:'all',min:0,uses:0},SAVE20:{type:'pct',v:20,max:80,store:'all',min:200,uses:14},DAFI15:{type:'pct',v:15,max:60,store:'s1',min:150,uses:37},BYTE10:{type:'pct',v:10,max:30,store:'s10',min:30,uses:9}},
+ptsVal:0.1,freeDlPts:250,aPtsWallet:0,ptsFunding:[],logiWallet:418.6,vat:527.4,
+reqs:[
+{id:'rq-101',kind:'store',own:'هند الشهري',store:'عطور تلال الطائف',email:'hind@talal.sa',phone:'0501122334',cr:'1010456789',iban:'SA0380000000608010167519',sec:'fashion',at:NOW-864e5*2,status:'pending'},
+{id:'rq-102',kind:'admin',own:'خالد المطيري',email:'khaled.m@dameen.sa',phone:'0505544332',role:'مشرف تحكيم ونزاعات',code:'DMN-2026',at:NOW-36e5*30,status:'pending'}]};
+const ptsVal=()=>DB.ptsVal||0.1;
+const fdPts=()=>DB.freeDlPts||250;
+const P=id=>PRODUCTS.find(p=>p.id===id);
+const eff=p=>p.off?r2(p.price*(1-p.off/100)):p.price;
+const stOK=s=>!s.susp;
+const storeOwner=id=>{const s=ST(id);return s?USERS[s.owner]:null};
+const secOf=id=>{const s=ST(id);return s?SEC(s.sec):SECTIONS[0]};
+
+/* ================= محرك اللوجستيات وحماية الالتفاف ================= */
+const CITIES=['الرياض','جدة','مكة المكرمة','المدينة المنورة','الدمام','الخبر','الأحساء','الطائف','بريدة','أبها','تبوك'];
+const CITY_DL=(a,b)=>a===b?12:22;
+const PTI=p=>({chilled:'🧊 توصيل مبرد',instant:'🛵 توصيل فوري',field:'🎪 خدمة ميدانية',digital:'⚡ رقمي فوري'}[p.ptype]||'');
+const custCity=()=>{const u=me();if(u&&u.addrs&&u.addrs.length){let i=(CK.addr>=0&&u.addrs[CK.addr])?CK.addr:u.addrs.findIndex(a=>a.def);if(i<0)i=0;return(u.addrs[i].a.split('،')[0]||'').trim()||'الرياض'}return 'الرياض'};
+function shipQuote(items,st,city,fd){
+const ptypes=items.map(x=>x.p.ptype||'std');
+const gsub=r2(items.reduce((a,x)=>a+eff(x.p)*x.qty,0));
+let mode='std',cost=CITY_DL(st.city||'الرياض',city),label='شحن سريع عبر شركاء ضمين (OTO/Torod)',fragile=false,blocked=null;
+if(ptypes.every(t=>t==='digital')){mode='digital';cost=0;label='تسليم رقمي فوري — ٠ ر.س شحن'}
+else if(ptypes.every(t=>t==='field')){mode='field';cost=0;label='توصيل وتركيب فريق المتجر'}
+else if(ptypes.includes('instant')){
+if((st.city||'الرياض')!==city){mode='instant';cost=0;label='توصيل فوري محلي';blocked='خارج نطاق التوصيل الفوري — «'+st.name+'» يوصل داخل مدينة '+st.city+' فقط (نطاق '+ar(st.rangeKm||20)+' كم) حفاظاً على حرارة الوجبة'}
+else{mode='instant';cost=10;label='مندوب فوري — ٤٥ دقيقة تقريباً داخل '+city}}
+else if(ptypes.includes('chilled')){
+mode='chilled';const same=(st.city||'الرياض')===city;cost=r2(cost+8);
+label=same?'توصيل مبرد بمندوب مجهز بحافظة برودة (Cooling Box) داخل المدينة':'شحن مبرد بين المدن عبر شركات مبردة متعاقدة (OTO/Torod)'}
+if(mode==='std'&&items.some(x=>x.p.fragile)){fragile=true;cost=r2(cost+15);label='شحن سريع + قابل للكسر (تغليف خاص ورسوم حماية ١٥ ر.س)'}
+let charge=cost,subsidy=0,source='customer',why='';
+if(mode==='field'||mode==='digital'){charge=0;subsidy=cost;source='merchant';why=mode==='field'?'خدمة ميدانية بفريق المتجر':'تسليم رقمي فوري'}
+else if(st.dlMode==='free'){charge=0;subsidy=cost;source='merchant';why='توصيل مجاني من المتجر'}
+else if((st.freeMin||0)>0&&gsub>=st.freeMin){charge=0;subsidy=cost;source='merchant';why='تخطيت سقف الشحن المجاني'}
+else if(st.dlMode==='half'){charge=r2(cost/2);subsidy=r2(cost/2);source='merchant';why='مناصفة مع المتجر'}
+if(fd&&mode!=='field'&&mode!=='digital'&&charge>0){charge=0;subsidy=cost;source='pts';why='استبدال نقاط الولاء'}
+return{mode,cost,charge,subsidy,source,why,label,gsub,fragile,blocked};
+}
+const COURIERS={std:['OTO Express','Torod Shipping','سمسا عبر OTO'],chilled:['OTO Fresh — سلسلة التبريد','Torod Cooler المتعاقدة'],instant:['Torod Now — مندوب فوري','مرسول فوري']};
+function mkLogi(mode,seed){
+const cs=COURIERS[mode]||COURIERS.std;
+const courier=cs[hash(String(seed))%cs.length];
+const wb='WB-'+(100000+hash('wb'+seed)%899999);
+return{wb,courier,mode,events:[{t:'أُصدرت بوليصة الشحن آلياً عبر الربط اللوجستي ('+courier+')',at:Date.now()},{t:'أُرسل طلب استلام (Pickup Request) للمندوب',at:Date.now()+1}]}
+}
+/* فلترة محادثات الطلبات — منع التواصل خارج التطبيق */
+const BYPASS_WORDS=['واتساب','واتس اب','واتس','جوال','تحويل','حساب خارجي','رقمي','رقمك','رقم الهاتف','هاتفي','سناب','سناب شات','انستقرام','انستغرام','تويتر','تيليجرام','تليجرام','ايميل','بريد إلكتروني','stc pay','stcpay','حوالة','كاش خارجي'];
+function chatGuard(txt){
+const t=String(txt||'');
+if(/(https?:\/\/|www\.|\S+\.(com|net|org|io|me|co)(\s|$|\/))/i.test(t))return{ok:false,why:'رابط خارجي'};
+const digits=t.replace(/[٠-٩]/g,d=>String('٠١٢٣٤٥٦٧٨٩'.indexOf(d))).replace(/[\s\-–—ـ.,_/]/g,'');
+if(/(05\d{8}|9665\d{8}|009665\d{8}|\d{9,})/.test(digits))return{ok:false,why:'رقم جوال'};
+const norm=t.replace(/[أإآ]/g,'ا').toLowerCase();
+for(const w of BYPASS_WORDS){if(norm.includes(w.replace(/[أإآ]/g,'ا').toLowerCase()))return{ok:false,why:'مصطلح تواصل خارجي'}}
+return{ok:true};
+}
+
+/* ================= الحالة ================= */
+let SES=null,VIEW={page:'home'},CART=[],GFav=[],CK={step:0,addr:0,pay:'mada'},CPN=null,PTS=0,RATE={stars:0},COMP={sub:'damaged'},EVP=[],FREE_DL=false;
+let LASTSEC=null,ASTT='stores';
+const me=()=>SES?USERS[SES.phone]:null;
+const isFav=pid=>{if(!SES)return GFav.includes(pid);const u=me();return u&&u.favs&&u.favs.includes(pid)};
+const cartCount=()=>CART.reduce((a,c)=>a+c.qty,0);
+/* ================= التنقل ================= */
+function go(page,arg){
+if(page==='section'){VIEW={page:'section',sec:arg,cat:'الكل',q:''};LASTSEC=arg}
+else if(page==='store')VIEW={page:'store',store:arg,q:''};
+else if(page==='product')VIEW={page:'product',pid:arg,gi:0,q:''};
+else if(page==='search')VIEW={page:'search',q:arg};
+else if(page==='a-hub')VIEW={page:'a-hub'};
+else if(page==='a-over')VIEW={page:'a-hub'};
+else if(page==='a-reqs'){VIEW={page:'a-stores',atab:'reqs'};ASTT='reqs'}
+else if(page==='a-stores')VIEW={page:'a-stores',atab:arg||ASTT||'stores'}
+else{VIEW={page};if(page==='home')LASTSEC=null}
+if(VIEW.page.startsWith('m-')&&(!SES||SES.role!=='merchant')){toast('سجّل دخولك بحساب تاجر أولاً','err');openAuth('merchant');return}
+if(VIEW.page.startsWith('a-')&&(!SES||SES.role!=='admin')){toast('هذه الصفحة مخصصة للإدارة','err');openAuth('admin');return}
+closeModal();render();window.scrollTo({top:0,behavior:'smooth'});
+}
+function render(){
+const app=$('#app');
+const R={home:pgHome,search:pgSearch,section:pgSection,store:pgStore,product:pgProduct,cart:pgCart,orders:pgOrders,dlib:pgDLib,disputes:pgDisputes,account:pgAccount,favs:pgFavs,
+'m-dash':pgMDash,'m-prods':pgMProds,'m-orders':pgMOrders,'m-wallet':pgMWallet,'m-disputes':pgMDisputes,'m-set':pgMSet,
+'a-hub':pgAHub,'a-stores':pgAStoresPage,'a-disputes':pgADisputes,'a-cats':pgACats,'a-rev':pgARev};
+app.innerHTML=(R[VIEW.page]||pgHome)();
+renderTop();renderFab();appSave();
+}
+function renderFab(){
+const f=$('#fab');const show=!SES&&cartCount()>0;
+f.style.display=show?'grid':'none';
+f.innerHTML='🛒'+(cartCount()?`<span class="bdg">${ar(cartCount())}</span>`:'');
+}
+function searchGo(){const q=($('#sq')||{}).value||'';if(q.trim())go('search',q.trim())}
+/* زر الرئيسية: داخل قسم (منتج/متجر/بحث سياقي) يعيدك بداية القسم نفسه — وإلا الصفحة الرئيسية */
+function homeGo(){
+const pg=VIEW.page;
+if(pg==='product'){const p=P(VIEW.pid);const st=p?ST(p.store):null;if(st&&st.sec){go('section',st.sec);return}}
+if(pg==='store'){const st=ST(VIEW.store);if(st&&st.sec){go('section',st.sec);return}}
+if(pg==='search'&&LASTSEC){go('section',LASTSEC);return}
+go('home');
+}
+
+/* ================= القائمة العلوية ================= */
+function renderTop(){
+const t=$('#top');
+const sbox=`<div class="sbox"><input id="sq" placeholder="ابحث عن منتج أو متجر…" value="${esc(VIEW.q||'')}" onkeydown="if(event.key==='Enter')searchGo()"><span class="si">🔎</span></div>`;
+const sb=VIEW.page==='home'?'':sbox;
+const brand=`<div class="brand" onclick="go('home')"><div class="lg">ض</div><div class="bt"><b>ضمين</b><small>تسوّق مضمون بثقة</small></div></div>`;
+let h='';
+if(!SES){ /* زائر: الرئيسية نظيفة بلا بحث — البحث يظهر داخل الأقسام والمتاجر */
+h=`<div class="topin">${brand}${sb}<button class="btn" onclick="openAuth()">تسجيل الدخول</button>${instChip()}</div>`;
+}else if(SES.role==='merchant'){
+const st=ST(SES.store);
+h=`<div class="topin">${brand}${sb}<nav class="nav">
+${mnav('m-dash','📊 لوحة التحكم')}${mnav('m-prods','🧺 المنتجات')}${mnav('m-orders','📦 الطلبات')}${mnav('m-wallet','💰 المحفظة')}${mnav('m-disputes','⚖️ النزاعات')}${mnav('m-set','⚙️ الإعدادات')}
+</nav>${bellBtn()}${roleDD()}</div>`;
+}else if(SES.role==='admin'){
+h=`<div class="topin">${brand}${sb}<nav class="nav">
+${mnav('a-hub','📊 مركز الإدارة')}${mnav('a-stores','🏪 المتاجر')}${mnav('a-disputes','⚖️ التحكيم')}${mnav('a-cats','🗂️ الأقسام')}${mnav('a-rev','📈 الإيرادات')}
+</nav>${bellBtn()}${roleDD()}</div>`;
+}else{ /* عميل مسجّل: القائمة الكاملة */
+const u=me();
+h=`<div class="topin">${brand}${sb}<nav class="nav">
+<button class="nlink ${VIEW.page==='home'?'on':''}" onclick="homeGo()">الرئيسية</button>
+<button class="nlink ${['section','store','product'].includes(VIEW.page)?'on':''}" data-secb onclick="secDD(event,this)">🗂️ الأقسام ▾</button>
+<div class="ddmenu secs" id="secdrop"><div class="sechd">عوالم ضمين — اختر قسماً</div>${SECTIONS.map(s=>`<div class="hti" onclick="go('section','${s.id}')"><b><span style="color:${s.color}">●</span> ${s.name}</b><span>${s.desc}</span></div>`).join('')}</div>
+${mnav('favs','❤️ المفضلة')}
+${mnav('orders','🧾 طلباتي')}
+${mnav('dlib','📚 مكتبتي')}
+${mnav('disputes','⚖️ نزاعاتي')}
+<button class="nlink" onclick="go('cart')">🛒 السلة${cartCount()?`<span class="bdg">${ar(cartCount())}</span>`:''}</button>
+${mnav('account','👤 حسابي')}
+</nav>${bellBtn()}${roleDD()}</div>`;
+}
+t.innerHTML=h;
+}
+const mnav=(p,l)=>`<button class="nlink ${VIEW.page===p?'on':''}" onclick="go('${p}')">${l}</button>`;
+/* قائمة الأقسام المنسدلة — لوحة ثابتة (fixed) لا تُقص بحركة الشريط */
+function secDD(e,btn){
+e.stopPropagation();
+const el=$('#secdrop');if(!el)return;
+if(el.classList.contains('open')){el.classList.remove('open');return}
+ddPlace(el,btn);
+}
+if(!window.__secInit){window.__secInit=1;
+document.addEventListener('click',e=>{const el=$('#secdrop');
+if(el&&el.classList.contains('open')&&!el.contains(e.target)&&!(e.target.closest&&e.target.closest('[data-secb]')))el.classList.remove('open');
+});
+window.addEventListener('scroll',()=>{const el=$('#secdrop');if(el)el.classList.remove('open')},true)}
+function ddPlace(el,btn){
+const r=btn.getBoundingClientRect(),vw=window.innerWidth;
+el.style.top=(r.bottom+8)+'px';
+el.classList.add('open');
+const w=el.offsetWidth,margin=10,room=vw-2*margin;
+let end=Math.max(margin,Math.min(vw-r.right,vw-w-margin));
+if(w>room){el.style.insetInlineEnd='';el.style.width=room+'px';el.style.left=margin+'px'}
+else{el.style.width='';el.style.left='';el.style.insetInlineEnd=end+'px'}
+}
+function bellBtn(){const n=DB.notifs.filter(x=>x.to===SES.phone&&!x.read).length;
+return `<button class="iconbtn" onclick="openBell()" title="الإشعارات">🔔${n?`<span class="bdg">${ar(n)}</span>`:''}</button>`}
+function roleDD(){const u=me();const roleTxt={customer:'عميل',merchant:'تاجر',admin:'الإدارة'}[SES.role];
+return `<div class="dd" onclick="event.stopPropagation();this.classList.toggle('open')">
+<div class="avat">${u.name[0]}</div>
+<div class="ddmenu">
+<div style="padding:9px 11px"><b style="font-size:13px">${esc(u.name)}</b><div class="hint">${ar(SES.phone)} · ${roleTxt}</div></div>
+<div class="sep"></div>
+${SES.role!=='customer'?`<div class="it" onclick="switchRole('customer')">🛍️ التسوق كعميل</div>`:''}
+${SES.role!=='merchant'?`<div class="it" onclick="switchRole('merchant')">🏪 لوحة التاجر</div>`:''}
+${SES.role!=='admin'&&u.role==='admin'?`<div class="it" onclick="switchRole('admin')">🛡️ مركز الإدارة</div>`:''}
+${appMode()?'':'<div class="it" onclick="installApp()">📲 ثبّت التطبيق</div>'}
+<div class="it" onclick="go('account')">⚙️ حسابي وإعداداتي</div>
+<div class="sep"></div>
+<div class="it" style="color:var(--red)" onclick="logout()">⏻ تسجيل الخروج</div>
+</div></div>`}
+
+/* ================= الجلسة ================= */
+function switchRole(r){
+if(r==='customer'){SES.role='customer';go('home');return}
+if(r==='merchant'){const own=STORES.find(s=>s.owner===SES.phone);
+if(own){SES.role='merchant';SES.store=own.id;go('m-dash')}
+else if(me().role==='admin'){SES.role='merchant';SES.store='s1';go('m-dash')}
+else{toast('لا يوجد متجر مرتبط بحسابك — استخدم حساب التاجر التجريبي','amb');openAuth('merchant')}
+return}
+if(r==='admin'){if(me().role==='admin'){SES.role='admin';go('a-over')}else{toast('الإدارة تدخل بحساب المشرف العام فقط','err');openAuth('admin')}}
+}
+function logout(){SES=null;VIEW={page:'home'};go('home');toast('تم تسجيل الخروج، تجوّل بحرية 👋')}
+
+/* ================= الدخول ================= */
+let AUTH={tab:'login',reg:'customer',sec:null,gname:'',gemail:''},REQDOC=null,REJ=null,CATDEL=null;
+const GICON='<svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>';
+function openAuth(hint){AUTH={tab:'login',reg:'customer',sec:null,gname:'',gemail:'',hint:hint||''};openModal(authHTML())}
+function authTab(t){AUTH.tab=t;$('#authbody').innerHTML=authBody()}
+function regTab(r){AUTH.reg=r;$('#authbody').innerHTML=authBody()}
+function authHTML(){return `<div class="mbody" id="authbody" style="padding:18px">${authBody()}</div>`}
+function authBody(){
+const hero=`<div class="authhero"><button class="ax" onclick="closeModal()" title="إغلاق">✕</button><div class="alg">ض</div><h2>أهلاً بك في ضمين</h2><p>مالك يُحجز في خزنة مستقلة، والتاجر لا يستلم إلا بعد استلامك وتقييمك</p></div>`;
+const tabs=`<div class="atabs"><button class="atab ${AUTH.tab==='login'?'on':''}" onclick="authTab('login')">🔑 تسجيل الدخول</button><button class="atab ${AUTH.tab==='reg'?'on':''}" onclick="authTab('reg')">✨ حساب جديد</button></div>`;
+if(AUTH.tab==='login')return `${hero}${tabs}
+<div class="fld"><label>رقم الجوال أو البريد الإلكتروني</label><input class="inp" id="lg-id" placeholder="05xxxxxxxx أو name@mail.com" value="${AUTH.hint==='merchant'?'0500000002':AUTH.hint==='admin'?'0500000003':'0500000001'}"></div>
+<div class="fld mt"><label>كلمة المرور</label><input class="inp" type="password" id="lg-pw" placeholder="••••" value="1234" onkeydown="if(event.key==='Enter')doLogin()"></div>
+<button class="btn wide mt" onclick="doLogin()">🔑 دخول</button>
+<div class="orline">أو</div>
+<button class="gbtn" onclick="gAuth()">${GICON} المتابعة بحساب Google</button>
+<div class="switchbox">
+<p class="hint" style="font-weight:800;text-align:center;margin-bottom:7px">🧪 حسابات التجربة السريعة</p>
+<div class="fgrid" style="grid-template-columns:1fr 1fr 1fr;gap:7px">
+<button class="btn soft sm" onclick="quickLogin('customer')">🛍️ عميل</button>
+<button class="btn soft sm" onclick="quickLogin('merchant')">🏪 تاجر</button>
+<button class="btn soft sm" onclick="quickLogin('admin')">🛡️ إدارة</button>
+</div></div>
+<p class="authfoot">ليس لديك حساب؟ <a onclick="authTab('reg')">أنشئ حسابك الآن</a></p>`;
+if(AUTH.reg==='customer')return `${hero}${tabs}
+<div class="fld"><label>الاسم الكامل</label><input class="inp" id="rg-nm" placeholder="مثال: نورة العبدالله" value="${esc(AUTH.gname||'')}"></div>
+<div class="fgrid mt">
+<div class="fld"><label>رقم الجوال</label><input class="inp" id="rg-ph" placeholder="05xxxxxxxx"></div>
+<div class="fld"><label>البريد الإلكتروني (اختياري)</label><input class="inp" id="rg-em" placeholder="name@mail.com" value="${esc(AUTH.gemail||'')}"></div>
+</div>
+<div class="fld mt"><label>مدينتك</label><select class="inp" id="rg-city">${CITIES.map(c=>`<option ${c==='الرياض'?'selected':''}>${c}</option>`).join('')}</select></div>
+<div class="fgrid mt">
+<div class="fld"><label>كلمة المرور</label><input class="inp" type="password" id="rg-pw" placeholder="٤ خانات فأكثر"></div>
+<div class="fld"><label>تأكيد كلمة المرور</label><input class="inp" type="password" id="rg-pw2" placeholder="أعد كتابتها"></div>
+</div>
+<button class="btn wide mt" onclick="doRegister()">✨ إنشاء الحساب + ٥٠ نقطة ترحيبية</button>
+<div class="orline">أو</div>
+<button class="gbtn" onclick="gAuth()">${GICON} التسجيل السريع عبر Google</button>
+<div class="switchbox">
+<p class="hint" style="font-weight:800;text-align:center;margin-bottom:7px">لديك نشاط تجاري أو ترغب بالانضمام لفريق الإدارة؟</p>
+<div class="fgrid" style="grid-template-columns:1fr 1fr;gap:8px">
+<button class="btn sm" onclick="regTab('store')">🏪 متجر جديد</button>
+<button class="btn sm" onclick="regTab('admin')">🛡️ حساب إدارة</button>
+</div></div>
+<p class="authfoot">لديك حساب؟ <a onclick="authTab('login')">تسجيل الدخول</a></p>`;
+if(AUTH.reg==='store')return `${hero}${tabs}
+<div class="demo mb"><b style="font-size:12px">🏪 طلب افتتاح متجر جديد</b><p class="hint" style="margin-top:3px">تظهر بياناتك كاملة للإدارة لتوافق أو ترفض — وبعد الموافقة يفتح متجرك في العالم الذي تختاره ويصلك إشعار فوري.</p></div>
+<div class="fld"><label>اسم المتجر</label><input class="inp" id="st-nm" placeholder="مثال: عطور تلال الطائف"></div>
+<div class="fgrid mt">
+<div class="fld"><label>اسم المالك</label><input class="inp" id="st-own" placeholder="الاسم الكامل"></div>
+<div class="fld"><label>رقم الجوال</label><input class="inp" id="st-ph" placeholder="05xxxxxxxx"></div>
+</div>
+<div class="fld mt"><label>البريد الإلكتروني</label><input class="inp" id="st-em" placeholder="store@mail.com"></div>
+<div class="fgrid mt">
+<div class="fld"><label>رقم السجل التجاري / الوثيقة</label><input class="inp" id="st-cr" placeholder="10xxxxxxxx"></div>
+<div class="fld"><label>رقم الآيبان (SA...)</label><input class="inp" id="st-iban" placeholder="SA0000000000000000000000"></div>
+</div>
+<div class="fld mt"><label>إرفاق وثيقة السجل (اختياري)</label>
+<button class="btn soft sm wide" style="justify-content:center" id="st-doc-btn" onclick="pickReqDoc()">📎 اختيار ملف الوثيقة</button></div>
+<div class="fld mt"><label>اختر عالم متجرك — واحد فقط</label>
+<div class="secpick">${SECTIONS.map(s=>`<button type="button" style="--c:${s.color}" class="${AUTH.sec===s.id?'on':''}" onclick="authSec('${s.id}',this)"><small>${s.icon}</small>${s.name.replace('عالم ','')}</button>`).join('')}</div></div>
+<div class="fgrid mt">
+<div class="fld"><label>كلمة المرور</label><input class="inp" type="password" id="st-pw" placeholder="٤ خانات فأكثر"></div>
+<div class="fld"><label>تأكيد كلمة المرور</label><input class="inp" type="password" id="st-pw2" placeholder="أعد كتابتها"></div>
+</div>
+<button class="btn wide mt" onclick="doRegStore()">📨 إرسال طلب الاعتماد للإدارة</button>
+<p class="authfoot"><a onclick="regTab('customer')">↩ عودة لتسجيل العميل</a> · <a onclick="authTab('login')">تسجيل الدخول</a></p>`;
+return `${hero}${tabs}
+<div class="demo mb"><b style="font-size:12px">🛡️ طلب انضمام لفريق الإدارة</b><p class="hint" style="margin-top:3px">تراجع الإدارة العليا طلبك بكامل تفاصيله — بعد الموافقة تدخل مركز الإدارة بصلاحيات كاملة، وتسجيل الدخول موحّد للجميع.</p></div>
+<div class="fld"><label>الاسم الكامل</label><input class="inp" id="ad-nm" placeholder="مثال: خالد المطيري"></div>
+<div class="fgrid mt">
+<div class="fld"><label>رقم الجوال</label><input class="inp" id="ad-ph" placeholder="05xxxxxxxx"></div>
+<div class="fld"><label>البريد الإلكتروني</label><input class="inp" id="ad-em" placeholder="name@dameen.sa"></div>
+</div>
+<div class="fld mt"><label>القسم الإشرافي</label><select class="inp" id="ad-role"><option>مشرف تحكيم ونزاعات</option><option>مشرف متاجر واعتماد</option><option>مشرف مالي وإيرادات</option><option>مشرف عام</option></select></div>
+<div class="fld mt"><label>رمز الدعوة الإداري</label><input class="inp" id="ad-code" placeholder="يصدر من الإدارة العليا — للتجربة: DMN-2026"></div>
+<div class="fgrid mt">
+<div class="fld"><label>كلمة المرور</label><input class="inp" type="password" id="ad-pw" placeholder="٤ خانات فأكثر"></div>
+<div class="fld"><label>تأكيد كلمة المرور</label><input class="inp" type="password" id="ad-pw2" placeholder="أعد كتابتها"></div>
+</div>
+<button class="btn wide mt" onclick="doRegAdmin()">📨 إرسال طلب الانضمام</button>
+<p class="authfoot"><a onclick="regTab('customer')">↩ عودة لتسجيل العميل</a> · <a onclick="authTab('login')">تسجيل الدخول</a></p>`;
+}
+function userIdx(id){id=String(id||'').trim();if(USERS[id])return id;const e=id.toLowerCase();return Object.keys(USERS).find(k=>USERS[k].email&&USERS[k].email.toLowerCase()===e)||null}
+function doLogin(){
+const id=($('#lg-id').value||'').trim(),pw=($('#lg-pw').value||'').trim();
+const k=userIdx(id);
+if(!k||USERS[k].pass!==pw){toast('الجوال / البريد أو كلمة المرور غير صحيحة','err');return}
+const u=USERS[k];
+if(u.pend){toast('طلب تسجيلك ('+(u.pend==='store'?'متجرك':'حساب الإدارة')+') قيد مراجعة الإدارة — سنشعرك فور البت','amb');return}
+if(u.rejected){toast('رفضت الإدارة طلب تسجيلك: '+u.rejected,'err');return}
+SES={phone:k,role:u.role,store:u.store||null};
+closeModal();toast('أهلاً بك '+esc(u.name)+' 👋','ok');
+if(u.role==='merchant')go('m-dash');else if(u.role==='admin')go('a-over');else{render()}
+}
+function doRegister(){
+const nm=($('#rg-nm').value||'').trim(),ph=($('#rg-ph').value||'').trim(),em=($('#rg-em').value||'').trim().toLowerCase(),pw=($('#rg-pw').value||'').trim(),pw2=($('#rg-pw2').value||'').trim();
+if(!nm||ph.length<10||pw.length<4){toast('أكمل البيانات: الاسم، جوال ١٠ أرقام، كلمة مرور ٤ فأكثر','err');return}
+if(pw!==pw2){toast('كلمتا المرور غير متطابقتين','err');return}
+if(USERS[ph]){toast('هذا الجوال مسجل مسبقاً — سجّل دخولك','amb');authTab('login');return}
+if(em&&Object.values(USERS).some(u=>u.email&&u.email.toLowerCase()===em)){toast('هذا البريد مرتبط بحساب آخر','amb');return}
+USERS[ph]={name:nm,role:'customer',pass:pw,pts:50,bal:0,since:Date.now(),email:em||'',city:$('#rg-city').value,ptsLog:[{t:'هدية الترحيب بضمين',v:50,at:Date.now()}],favs:[...GFav],addrs:[],notif:{ord:true,off:true,dis:true,rev:true},hidePhone:false};
+GFav=[];
+SES={phone:ph,role:'customer'};
+closeModal();toast('تم إنشاء حسابك وأُضيفت ٥٠ نقطة ترحيبية 🎉','ok');render();
+}
+function authSec(id,el){AUTH.sec=id;if(el&&el.parentElement){el.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('on'));el.classList.add('on')}}
+function pickReqDoc(){$('#fup').onchange=e=>{const f=e.target.files[0];if(!f)return;
+REQDOC={name:f.name,size:Math.max(1,Math.round(f.size/1024))};$('#fup').value='';
+toast('أُرفقت الوثيقة: '+f.name+' ✓','ok');
+const b=$('#st-doc-btn');if(b)b.innerHTML='📎 '+esc(f.name)+' ('+ar(REQDOC.size)+' كب)'};
+$('#fup').click()}
+function doRegStore(){
+const nm=($('#st-nm').value||'').trim(),own=($('#st-own').value||'').trim(),ph=($('#st-ph').value||'').trim(),em=($('#st-em').value||'').trim(),cr=($('#st-cr').value||'').trim(),iban=($('#st-iban').value||'').replace(/\s+/g,'').toUpperCase(),pw=($('#st-pw').value||'').trim(),pw2=($('#st-pw2').value||'').trim();
+if(nm.length<2||own.length<2||ph.length<10||!em.includes('@')||!cr){toast('أكمل بيانات المتجر: الاسم، المالك، جوال ١٠ أرقام، بريد، رقم السجل','err');return}
+if(!/^SA/i.test(iban)||iban.length<20){toast('رقم الآيبان غير صحيح — يبدأ بـ SA ويتكون من ٢٤ خانة','err');return}
+if(pw.length<4){toast('كلمة المرور ٤ خانات فأكثر','err');return}
+if(pw!==pw2){toast('كلمتا المرور غير متطابقتين','err');return}
+if(!AUTH.sec){toast('اختر عالم متجرك أولاً','err');return}
+if(USERS[ph]){toast(USERS[ph].pend==='store'?'أرسلت طلب متجر بهذا الجوال مسبقاً — قيد المراجعة':'هذا الجوال مسجل — سجّل دخولك','amb');return}
+const rid='rq-'+(100+DB.reqs.length+1);
+DB.reqs.unshift({id:rid,kind:'store',own,store:nm,email:em.toLowerCase(),phone:ph,cr,crDoc:REQDOC?REQDOC.name:'',iban,sec:AUTH.sec,at:Date.now(),status:'pending'});
+USERS[ph]={name:own,role:'merchant',pass:pw,pend:'store',reqId:rid,email:em.toLowerCase(),since:Date.now(),notif:{ord:true,dis:true}};
+REQDOC=null;closeModal();reqSent('store',nm);
+pushNotif('0500000003','📋','طلب تسجيل متجر جديد','«'+nm+'» بانتظار مراجعتك واعتمادك في طلبات التسجيل',['a-reqs']);
+}
+function doRegAdmin(){
+const nm=($('#ad-nm').value||'').trim(),ph=($('#ad-ph').value||'').trim(),em=($('#ad-em').value||'').trim(),role=$('#ad-role').value,code=($('#ad-code').value||'').trim(),pw=($('#ad-pw').value||'').trim(),pw2=($('#ad-pw2').value||'').trim();
+if(nm.length<2||ph.length<10||!em.includes('@')){toast('أكمل البيانات: الاسم، جوال ١٠ أرقام، البريد','err');return}
+if(code!=='DMN-2026'){toast('رمز الدعوة الإداري غير صحيح — للتجربة استخدم DMN-2026','err');return}
+if(pw.length<4||pw!==pw2){toast('راجع كلمة المرور وتأكيدها (٤ خانات فأكثر)','err');return}
+if(USERS[ph]){toast(USERS[ph].pend==='admin'?'أرسلت طلب إدارة بهذا الجوال مسبقاً — قيد المراجعة':'هذا الجوال مسجل — سجّل دخولك','amb');return}
+const rid='rq-'+(100+DB.reqs.length+1);
+DB.reqs.unshift({id:rid,kind:'admin',own:nm,email:em.toLowerCase(),phone:ph,role,at:Date.now(),status:'pending'});
+USERS[ph]={name:nm,role:'admin',pass:pw,pend:'admin',reqId:rid,email:em.toLowerCase(),since:Date.now(),notif:{dis:true}};
+closeModal();reqSent('admin',nm);
+pushNotif('0500000003','📋','طلب انضمام لفريق الإدارة',nm+' — '+role+' بانتظار مراجعتك',['a-reqs']);
+}
+function reqSent(kind,nm){
+openModal(`<div class="mbody" style="padding:28px 22px;text-align:center">
+<div style="font-size:54px">📨</div>
+<h2 style="font-family:Alexandria;font-size:17px;margin:9px 0 5px">استلمنا طلبك!</h2>
+<p class="hint" style="line-height:2">${kind==='store'?'طلب اعتماد متجر «'+esc(nm)+'»':'طلب انضمامك لفريق الإدارة'} وصل للإدارة بكامل تفاصيله — ستراجع الإدارة بياناتك وتصلك نتيجة الموافقة أو الرفض بإشعار، وحينها تسجّل دخولك بجوالك وكلمة مرورك (الدخول موحّد للجميع).</p>
+<div class="demo mt" style="text-align:right"><b style="font-size:11.5px">🧪 للتجربة السريعة</b><p class="hint" style="margin-top:3px;line-height:1.9">سجّل الدخول الآن بحساب الإدارة ← افتح «📋 طلبات التسجيل» وستجد طلبك أول القائمة — اضغط موافقة، ثم اخرج وسجّل دخولك بالجوال وكلمة المرور اللذين أدخلتهما.</p></div>
+<button class="btn wide mt" onclick="closeModal()">فهمت، شكراً</button></div>`);
+}
+function gAuth(){
+const accs=[{ph:'0500000001',n:'نورة العبدالله',e:'noura@mail.com',c:'#7A3B44',r:'عميلة',t:'grn'},{ph:'0500000002',n:'ريم الدوسري',e:'rima@dafi.sa',c:'#556636',r:'تاجرة',t:'amb'},{ph:'0500000003',n:'فهد العتيبي',e:'fahd@dameen.sa',c:'#1D4432',r:'إدارة',t:'nvy'}];
+openModal(`<div class="mhead"><b>المتابعة بحساب Google</b><button class="x" onclick="closeModal()">✕</button></div>
+<div class="mbody">
+<div class="demo mb"><b style="font-size:11.5px">OAuth محاكى للنسخة التجريبية</b><p class="hint" style="margin-top:2px">تُحاكي هذه النافذة اختيار حساب Google دون أي اتصال خارجي — اختر حساباً مرتبطاً بضمين أو أنشئ جديداً.</p></div>
+${accs.map(a=>`<div style="display:flex;gap:11px;align-items:center;padding:10px 4px;border-bottom:1px dashed var(--line);cursor:pointer" onclick="gLogin('${a.ph}')">
+<div style="width:38px;height:38px;border-radius:50%;background:${a.c};color:#fff;display:grid;place-items:center;font-weight:800;font-family:Alexandria;flex-shrink:0">${a.n[0]}</div>
+<div style="flex:1;min-width:0"><b style="font-size:13px">${a.n}</b><div class="hint">${a.e}</div></div>
+<span class="tag ${a.t}">${a.r}</span></div>`).join('')}
+<div style="display:flex;gap:11px;align-items:center;padding:11px 4px;cursor:pointer" onclick="gNew()">
+<div style="width:38px;height:38px;border-radius:50%;background:#fff;border:1.5px solid var(--line);display:grid;place-items:center;font-size:18px;color:var(--mut);flex-shrink:0">＋</div>
+<div style="flex:1"><b style="font-size:13px">استخدام حساب Google آخر</b><div class="hint">ينشئ حساب عميل جديد ببريدك مباشرة</div></div></div>
+</div>`);
+}
+function gLogin(ph){const u=USERS[ph];if(!u)return;
+SES={phone:ph,role:u.role,store:u.store||null};
+closeModal();toast('دخلت عبر Google كـ'+esc(u.name)+' 👋','ok');
+if(u.role==='merchant')go('m-dash');else if(u.role==='admin')go('a-over');else render()}
+function gNew(){AUTH={tab:'reg',reg:'customer',sec:null,gname:'مستخدم Google',gemail:'user'+(1000+Date.now()%9000)+'@gmail.com',hint:''};openModal(authHTML());toast('جلبنا اسمك وبريدك من Google — أكمل جوالك وكلمة مرورك','ok')}
+function quickLogin(r){
+const map={customer:'0500000001',merchant:'0500000002',admin:'0500000003'};
+const u=USERS[map[r]];SES={phone:map[r],role:u.role,store:u.store||null};
+closeModal();toast('دخلت كـ'+esc(u.name)+' ('+({customer:'عميل',merchant:'تاجر',admin:'إدارة'}[r])+')','ok');
+if(r==='merchant')go('m-dash');else if(r==='admin')go('a-over');else render();
+}
+
+/* ================= الإشعارات ================= */
+function pushNotif(to,ic,t,b,goArgs){
+DB.notifs.unshift({to,ic,t,b,at:Date.now(),read:false,go:goArgs||null});
+if(SES&&SES.phone===to)toast(ic+' '+t);
+renderTop();
+}
+function openBell(){
+const list=DB.notifs.filter(n=>n.to===SES.phone);
+list.forEach(n=>n.read=true);
+openModal(`<div class="mhead"><b>🔔 الإشعارات</b><button class="x" onclick="closeModal()">✕</button></div><div class="mbody" style="padding:10px 14px">
+${list.length?list.map(n=>`<div class="row" style="display:flex;gap:11px;padding:11px 4px;border-bottom:1px dashed #EAE3D0;align-items:flex-start;${n.go?'cursor:pointer':''}" ${n.go?`onclick="closeModal();go('${n.go[0]}${n.go[1]?",'"+n.go[1]+"'":""}')"`:''}>
+<div style="font-size:20px">${n.ic}</div>
+<div style="flex:1"><b style="font-size:13px">${esc(n.t)}</b><div class="hint">${esc(n.b)}</div></div>
+<div class="hint" style="white-space:nowrap">${ago(n.at)}</div></div>`).join(''):`<div class="empty"><div class="em">🔕</div><b>لا إشعارات بعد</b><span>ستظهر هنا تحديثات طلباتك ونزاعاتك</span></div>`}
+</div>`);
+}
+
+/* ================= النوافذ ================= */
+function openModal(html,cls){$('#modals').innerHTML=`<div class="mback" onclick="if(event.target===this)closeModal()"><div class="mcard ${cls||''}">${html}</div></div>`;document.body.style.overflow='hidden'}
+function closeModal(){$('#modals').innerHTML='';document.body.style.overflow=''}
+function zoomImg(src){openModal(`<div class="mhead"><b>عرض الصورة</b><button class="x" onclick="closeModal()">✕</button></div><div class="mbody" style="text-align:center"><img src="${src}" style="width:100%;border-radius:16px;border:1px solid var(--line)"></div>`)}
+/* ================= بطاقة المنتج ================= */
+function pcard(p){
+const s=ST(p.store),sec=SEC(s.sec),e=eff(p),fav=isFav(p.id);
+return `<div class="pcard" onclick="go('product','${p.id}')">
+<div class="ph">${p.off?`<span class="offb">خصم ${ar(p.off)}٪</span>`:''}${p.pts?`<span class="ptsb">🌟 ${ar(p.pts)} نقطة</span>`:''}<span class="secb" style="--c:${sec.color}">${sec.name}</span>
+<button class="favh ${fav?'on':''}" onclick="event.stopPropagation();toggleFav('${p.id}')">${fav?'♥':'♡'}</button>
+${imgTag(p.imgs[0],'','')} </div>
+<div class="pb"><div class="nm">${esc(p.name)}</div>
+<div class="st">${STARS(p.rt)} <span>${ar(p.rc)}</span><span>·</span><span>${esc(s.name)}</span></div>
+<div class="pr"><b>${money(e)}</b>${p.off?`<s>${ard(p.price)}</s>`:''}</div></div></div>`;
+}
+const pubProds=()=>PRODUCTS.filter(p=>stOK(ST(p.store)));
+
+/* ================= الرئيسية ================= */
+function pgHome(){
+const u=me();
+const bubs=[...pubProds()].sort((a,b)=>b.sold-a.sold).slice(0,12);
+let fi=0;
+const track=bubs.map(p=>{const sec=secOf(p.store);
+return `<div class="bub" style="--c:${sec.color}" onclick="go('product','${p.id}')">
+<div class="ring"><div style="--d:${(fi++*0.55).toFixed(2)}s">${imgTag(p.imgs[0],'','')}</div></div><b>${esc(p.name)}</b><span>${ard(eff(p))} ر.س</span></div>`}).join('');
+return `
+<div class="hero">
+<h1>${u?'أهلاً بك يا '+esc(u.name.split(' ')[0])+' 👋':'تسوّق <em>بضمين</em>… مالك محجوز حتى ترضى'}</h1>
+<p>نحجز مبلغك في خزنة مستقلة، ولا يستلم التاجر إلا بعد استلامك وتقييمك — والعمولة تُحسم من التاجر فقط وتذهب مباشرة للإدارة.</p>
+<div class="trust"><span class="tchip"><i>🔒</i> خزنة ضمان مستقلة</span><span class="tchip"><i>⏱️</i> تحرير تلقائي بانتهاء نافذة الحماية</span><span class="tchip"><i>⚖️</i> تحكيم ثلاثي الأطراف</span><span class="tchip"><i>🚚</i> شحن آلي عبر OTO وTorod</span><span class="tchip"><i>💳</i> مدى وApple Pay وتقسيط تابي وتمارا</span><span class="tchip"><i>⚡</i> تسليم رقمي فوري</span></div>
+</div>
+
+<div class="bubzone"><div class="lbl"><span class="dot"></span> يتجدّد الآن بين متاجر ضمين — انقر أي منتج لتفاصيله</div>
+<div class="bubwrap"><div class="bubtrack">${track}${track}</div></div></div>
+
+<div class="secthead"><h2>عوالم ضمين الأربعة</h2><div class="ln"></div><span class="hint">اختر عالمك وابدأ بضمان</span></div>
+<div class="trio">${SECTIONS.map(s=>{
+const sts=STORES.filter(x=>x.sec===s.id&&stOK(x)).length;
+const prs=PRODUCTS.filter(p=>SEC(ST(p.store).sec).id===s.id&&stOK(ST(p.store))).length;
+return `<div class="tri" style="--c:${s.color}" onclick="go('section','${s.id}')">
+<img class="bg" src="${s.img}" alt="${esc(s.name)}" loading="lazy" onerror="this.style.display='none'">
+<div class="shade"></div>
+<div class="win"><i>🛡️ نافذة الحماية</i><b>${s.win}</b></div>
+<div class="body"><div class="ic">${s.icon}</div><div class="tx"><b>${s.name}</b><span>${s.desc}</span><div class="stx"><em>${ars(sts)} متاجر</em><em>${ars(prs)} منتج</em><em>تسوّق الآن ←</em></div></div></div></div>`}).join('')}</div>
+
+<div class="secthead"><h2>كيف يعمل ضمين؟</h2><div class="ln"></div></div>
+<div class="how">
+<div class="howc"><div class="n">١</div><div><b>اطلب وادفع</b><span>يُحجز مبلغك في خزنة ضمين المستقلة — لا يلمسه التاجر.</span></div></div>
+<div class="howc"><div class="n">٢</div><div><b>استلم وقيّم</b><span>خلال نافذة حماية القسم، افحص طلبك بكل راحة.</span></div></div>
+<div class="howc"><div class="n">٣</div><div><b>نحرر المبلغ</b><span>بالرضا أو تلقائياً — صافي التاجر يحرر لحظتها، والعمولة للإدارة.</span></div></div>
+</div>`;
+}
+function ars(n){return ar(n)}
+
+/* ================= البحث ================= */
+function pgSearch(){
+const q=(VIEW.q||'').trim();
+const ql=q.replace(/[أإآ]/g,'ا');
+const hit=s=>s.replace(/[أإآ]/g,'ا').includes(ql);
+const ps=pubProds().filter(p=>hit(p.name)||hit(p.cat)||hit(ST(p.store).name));
+const ss=STORES.filter(s=>stOK(s)&&hit(s.name));
+return `<div class="pghead"><button class="backb" onclick="go('home')">→</button><h1>نتائج البحث عن «${esc(q)}»</h1><span class="tag gry">${ar(ps.length+ss.length)} نتيجة</span></div>
+${ss.length?`<div class="secthead"><h2>متاجر</h2><div class="ln"></div></div><div class="ministores">${ss.map(s=>mstore(s)).join('')}</div>`:''}
+<div class="secthead"><h2>منتجات</h2><div class="ln"></div></div>
+${ps.length?`<div class="pgrid">${ps.map(pcard).join('')}</div>`:`<div class="empty"><div class="em">🔍</div><b>لا نتائج مطابقة</b><span>جرّب كلمة أعم مثل «عباية» أو «عسل»</span></div>`}`;
+}
+
+/* ================= بطاقة المتجر المصغّرة ================= */
+function mstore(s){
+const n=PRODUCTS.filter(p=>p.store===s.id).length;
+return `<div class="mstore" style="--c:${s.color}" onclick="go('store','${s.id}')">
+<div class="lg">${s.logo?`<img src="${s.logo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`:s.name[0]}</div>
+<div><b>${esc(s.name)}</b><span class="mr">★ ${ard(s.rt)} · 📍 ${esc(s.city||'')} · ${ar(n)} منتج${n>4?'':' جديد'}</span></div></div>`;
+}
+function bigstore(s){
+const sec=SEC(s.sec);const n=PRODUCTS.filter(p=>p.store===s.id).length;
+return `<div class="bigstore" style="--c:${s.color}" onclick="go('store','${s.id}')">
+<div class="cov"><img src="${s.cover||sec.img}" alt="${esc(s.name)}" loading="lazy" onerror="this.onerror=null;this.src='${sec.img}'"><div class="tint"></div><span class="winb">🛡️ حماية ${sec.win}</span></div>
+<div class="info">
+<div class="lg">${s.logo?`<img src="${s.logo}" style="width:100%;height:100%;object-fit:cover">`:s.name[0]}</div>
+<h3>${esc(s.name)}</h3>
+<div class="desc">${esc(s.desc)}</div>
+<div class="meta"><span>★ <b>${ard(s.rt)}</b> تقييم</span><span>📍 ${esc(s.city||'—')}</span><span>🧺 <b>${ar(n)}</b> منتج</span><span>🛒 ${ars(s.sales)} طلباً</span></div>
+<div class="vst">🚪 زيارة المتجر</div>
+</div></div>`;
+}
+
+/* ================= صفحة القسم ================= */
+function pgSection(){
+const sec=SEC(VIEW.sec)||SECTIONS[0];
+const cats=['الكل',...CATS[sec.id].map(c=>c.n)];
+const stores=STORES.filter(s=>s.sec===sec.id&&stOK(s));
+let ps=PRODUCTS.filter(p=>ST(p.store).sec===sec.id&&stOK(ST(p.store)));
+if(VIEW.cat!=='الكل')ps=ps.filter(p=>p.cat===VIEW.cat);
+return `<div class="pghead"><button class="backb" onclick="go('home')">→</button><h1>${sec.icon} ${sec.name}</h1></div>
+<div class="sechero" style="--acc:${sec.color};background-image:linear-gradient(115deg,${sec.color}F2 0%,${sec.color}C9 55%,${sec.color}9C 100%),url('${sec.img}');background-size:cover;background-position:center">
+<div class="ic">${sec.icon}</div>
+<div style="flex:1"><h1>${sec.name}</h1><p>${sec.desc} — ${ars(stores.length)} متاجر موثوقة بنفس القسم</p></div>
+<div class="winb">🛡️ نافذة الحماية: ${sec.win}</div>
+</div>
+<div class="secthead"><h2>متاجر القسم</h2><div class="ln"></div></div>
+<div class="storegrid">${stores.map(bigstore).join('')}</div>
+<div class="chiprow" style="margin-top:6px">${cats.map(c=>`<button class="chip ${VIEW.cat===c?'on':''}" style="--acc:${sec.color}" onclick="VIEW.cat='${c}';render()">${c}</button>`).join('')}</div>
+<div class="secthead"><h2>${ars(ps.length)} منتجاً</h2><div class="ln"></div></div>
+${ps.length?`<div class="pgrid">${ps.map(pcard).join('')}</div>`:`<div class="empty"><div class="em">🧺</div><b>لا منتجات في هذا التصنيف حالياً</b><span>تابع المتاجر قريباً</span></div>`}`;
+}
+
+/* ================= صفحة المتجر ================= */
+function pgStore(){
+const s=ST(VIEW.store);
+if(!s)return pgHome();
+const sec=SEC(s.sec);
+const ps=PRODUCTS.filter(p=>p.store===s.id);
+return `<div class="pghead"><button class="backb" onclick="go('section','${sec.id}')">→</button><h1>${esc(s.name)}</h1><span class="tag" style="background:${s.color}18;color:${s.color}">${sec.name}</span></div>
+<div class="storeban" style="--c:${s.color};${s.cover?`background-image:linear-gradient(100deg,${s.color}F2,${s.color}C4),url('${s.cover}');background-size:cover;background-position:center`:''}">
+<div class="lg">${s.logo?`<img src="${s.logo}" style="width:100%;height:100%;object-fit:cover">`:s.name[0]}</div>
+<div style="flex:1"><h1>${esc(s.name)}</h1><p>${esc(s.desc)}</p>
+<div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:7px;font-size:11.5px;opacity:.95">
+<span>📍 ${esc(s.city||'—')}</span><span>·</span><span>★ ${ard(s.rt)} تقييم المتجر</span><span>·</span><span>${ars(s.sales)} طلباً مكتمل البيع</span><span>·</span><span>🛡️ نافذة حماية ${sec.win}</span></div></div>
+${s.open?'':'<span class="tag wht">مغلق مؤقتاً</span>'}
+</div>
+<div class="secthead"><h2>منتجات المتجر (${ars(ps.length)})</h2><div class="ln"></div></div>
+${ps.length?`<div class="pgrid">${ps.map(pcard).join('')}</div>`:`<div class="empty"><div class="em">🏪</div><b>لا منتجات معروضة الآن</b><span>المتجر يجهّز مفاجآته</span></div>`}`;
+}
+/* ================= صفحة المنتج ================= */
+let QTY=1;
+function dlBadge(p){
+const t=p.ptype||'std';
+const M={chilled:{ic:'🧊',l:'توصيل مبرد — حساس للحرارة',d:'يُرسل مندوب مجهز بحافظة برودة (Cooling Box) داخل نفس المدينة، أو شحن مبرد بين المدن عبر شركات مبردة متعاقدة (OTO/Torod) حسب موقعك.'},
+instant:{ic:'🛵',l:'توصيل فوري',d:'يبحث النظام عن مندوب فوري فور تأكيد الطلب داخل مدينة المتجر فقط — التسليم المتوقع خلال ٤٥ دقيقة حفاظاً على حرارة الطبق.'},
+field:{ic:'🎪',l:'خدمة ديكور وتنسيق ميداني',d:'بلا شحن تجاري: فريق المتجر يوصل ويركّب في موقع المناسبة (أو تستلم من مقر المتجر)، مع حجز موعد مسبق ودردشة تنسيق بعد الدفع لإرسال موقعك.'},
+digital:{ic:'⚡',l:'منتج رقمي — تسليم فوري',d:'الكود/الملف يوصلك لحظة الدفع في «مكتبتك الرقمية» عبر رابط مؤقت آمن (S3 Signed) صالح ١٠ دقائق — ٠ ر.س شحن ولا انتظار.'},
+ship:{ic:'📦',l:'قابل للشحن',d:'تُصدر له بوليصة آلية عبر شركاء ضمين اللوجستيين (OTO/Torod).'}};
+const m=M[t];if(!m)return '';
+return `<div style="display:flex;gap:10px;align-items:flex-start;background:var(--card2);border:1px dashed var(--line);border-radius:12px;padding:9px 12px;margin-bottom:9px"><span style="font-size:18px">${m.ic}</span><div><b style="font-size:12px">${m.l}</b><div class="hint">${m.d}</div>${p.fragile?'<div class="hint" style="color:#B3541E;font-weight:700">⚠️ قابل للكسر — تنبيه تلقائي في بوليصة الشحن + رسوم حماية ١٥ ر.س تُضاف لسعر الشحن</div>':''}${p.customOk?'<div class="hint" style="color:var(--amb2);font-weight:700">✏️ قابل للتعديل حسب طلبك — بعد الدفع تفتح دردشة التعديلات مع التاجر (طلب أي مبلغ إضافي يكون بضمان ضمين)</div>':''}${p.giftOk?'<div class="hint" style="color:var(--amb2);font-weight:700">🎁 قابل للإهداء — يكفي جوال المستلم ومدينته عند إتمام الطلب</div>':''}</div></div>`;
+}
+function pgProduct(){
+const p=P(VIEW.pid);if(!p)return pgHome();
+if(VIEW._pid!==VIEW.pid){VIEW._pid=VIEW.pid;QTY=1;VIEW.tab='desc';RATE={stars:0};PANS={}}
+const s=ST(p.store),sec=SEC(s.sec),e=eff(p),fav=isFav(p.id);
+const similar=PRODUCTS.filter(x=>x.id!==p.id&&ST(x.store).sec===s.sec&&stOK(ST(x.store))).slice(0,4);
+const gal=p.imgs.length>1?p.imgs:[p.imgs[0],p.imgs[0]];
+const tab=VIEW.tab||'desc';
+return `<div class="pghead"><button class="backb" onclick="go('store','${s.id}')">→</button><h1>${esc(p.name)}</h1><span class="tag" style="background:${sec.color}18;color:${sec.color}">${sec.name}</span></div>
+<div class="ppage">
+<div class="pgal">
+<div class="main">${imgTag(gal[VIEW.gi||0],'','' )}</div>
+${p.imgs.length>1?`<div class="thumbs">${p.imgs.map((im,i)=>`<img src="${im}" class="${i===(VIEW.gi||0)?'on':''}" onclick="VIEW.gi=${i};render()" onerror="this.onerror=null;this.src='https://picsum.photos/seed/d${hash(im)%997}/200/200'">`).join('')}</div>`:''}
+<div class="gstrip"><span class="gi">🛡️</span><div><b>حماية ضمين مفعّلة على هذا المنتج</b><br>مبلغك يُحجز في خزنة مستقلة، ونافذة فحص القسم «${sec.name}» هي <b>${sec.win}</b> بعد الاستلام — للطلب أو الاسترجاع قبل التحرير.</div></div>
+</div>
+<div>
+<div style="display:flex;gap:8px;align-items:flex-start">
+<h2 style="font-size:18px;flex:1">${esc(p.name)}</h2>
+<button class="iconbtn ${fav?'':''}" style="color:${fav?'var(--red)':'inherit'}" onclick="toggleFav('${p.id}')">${fav?'♥':'♡'}</button>
+</div>
+<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:4px 0 10px">
+${STARS(p.rt)} <b style="font-size:12.5px">${ard(p.rt)}</b><span class="hint">(${ar(p.rc)} تقييم)</span>
+<span class="hint">· بيع ${ar(p.sold)} مرة</span><span class="hint">· ${p.stock>0?'متوفر ('+ar(p.stock)+')':'نفدت الكمية'}</span>
+</div>
+<div style="display:flex;align-items:baseline;gap:10px;margin-bottom:5px">
+<span class="fx" style="font-size:26px;font-weight:800;color:var(--grn)">${money(e)}</span>
+${p.off?`<s class="mut">${money(p.price)}</s><span class="tag red">وفّر ${ar(p.off)}٪</span>`:''}
+</div>
+${p.pts?`<div class="hint" style="color:var(--amb2);font-weight:700;margin-bottom:10px">🌟 يمنح هذا المنتج ${ar(p.pts)} نقطة ولاء للعميل عند تحرير الطلب</div>`:'<div style="height:6px"></div>'}
+${dlBadge(p)}
+${p.qs&&p.qs.length?`<div class="pqwrap"><b style="font-size:12.5px">❓ أسئلة من التاجر — أجب عنها قبل الإضافة للسلة</b>${p.qs.map((q,i)=>qBlock(q,i,sec.color)).join('')}</div>`:''}
+<div class="hint mb">يبيعه متجر <a style="color:${s.color};font-weight:700;cursor:pointer" onclick="go('store','${s.id}')">${esc(s.name)}</a> ★ ${ard(s.rt)} · شحنة ضمن ${sec.win} حماية · يشحن من 📍 ${esc(s.city||'—')}</div>
+<div class="spread" style="gap:10px;flex-wrap:wrap">
+<div class="qty"><button onclick="qStep(1)">＋</button><b id="qv">${ar(QTY)}</b><button onclick="qStep(-1)">−</button></div>
+<button class="btn" style="flex:1" ${p.stock?'':'disabled'} onclick="addToCart('${p.id}',QTY)">🛒 أضف إلى السلة</button>
+<button class="btn amb" ${p.stock?'':'disabled'} onclick="addToCart('${p.id}',QTY,true)">اشترِ الآن</button>
+</div>
+<div class="tabs">
+<button class="${tab==='desc'?'on':''}" onclick="VIEW.tab='desc';render()">الوصف</button>
+<button class="${tab==='specs'?'on':''}" onclick="VIEW.tab='specs';render()">المواصفات</button>
+<button class="${tab==='revs'?'on':''}" onclick="VIEW.tab='revs';render()">التقييمات (${ar(p.rc)})</button>
+</div>
+${tab==='specs'?`<div>${Object.entries(p.specs).map(([k,v])=>`<div class="specrow"><span>${esc(k)}</span><b>${esc(v)}</b></div>`).join('')}</div>`:''}
+${tab==='revs'?revBlock(p):''}
+${tab==='desc'?`<p style="font-size:13.5px;line-height:1.95;color:#3d443a">${esc(p.desc)}</p>`:''}
+</div></div>
+<div class="secthead"><h2>منتجات مشابهة من قسم ${sec.name}</h2><div class="ln"></div></div>
+<div class="pgrid">${similar.map(pcard).join('')}</div>`;
+}
+function revBlock(p){
+const mine=p.ratings.some(r=>SES&&r.by===SES.phone);
+return `<div style="margin-bottom:12px">
+${mine||!SES?'':`<div class="acard" style="padding:14px"><b style="font-size:12.5px">أضف تقييمك للمنتج</b>
+<div class="starin" id="rstars">${[1,2,3,4,5].map(i=>`<span onclick="starPick(${i})">★</span>`).join('')}</div>
+<textarea class="inp" id="rtxt" placeholder="شاركي تجربتك بالتفصيل…" style="min-height:64px;margin-bottom:9px"></textarea>
+<button class="btn sm" onclick="submitRating('${p.id}')">إرسال التقييم</button></div>`}
+${p.ratings.length?p.ratings.slice().reverse().map(r=>`<div class="rev">
+<div class="rh"><div class="av">👤</div><b>${esc(r.name||'عميل')}</b>${STARS(r.stars)}<span class="hint">${ago(r.at)}</span></div>
+<p>${esc(r.txt)}</p></div>`).join(''):`<div class="empty" style="padding:26px"><div class="em">💬</div><b>لا تقييمات بعد</b><span>كن أول من يشارك تجربته</span></div>`}</div>`;
+}
+function starPick(n){RATE.stars=n;document.querySelectorAll('#rstars span').forEach((s,i)=>s.classList.toggle('on',i<n))}
+function submitRating(pid){
+if(!SES){toast('سجّل دخولك لتقييم المنتج','amb');openAuth();return}
+const p=P(pid);if(!RATE.stars){toast('اختر عدد النجوم أولاً','err');return}
+if(p.ratings.some(r=>r.by===SES.phone)){toast('قيّمت هذا المنتج مسبقاً','amb');return}
+const txt=($('#rtxt')||{value:''}).value.trim();
+p.ratings.push({by:SES.phone,name:me().name.split(' ')[0],stars:RATE.stars,txt,at:Date.now()});
+p.rc++;p.rt=r2((p.rt*(p.rc-1)+RATE.stars)/p.rc);
+toast('شكراً لتقييمك 💚','ok');render();
+}
+function qStep(d){const p=P(VIEW.pid);QTY=Math.min(Math.max(1,QTY+d),Math.max(1,p.stock||1));$('#qv').textContent=ar(QTY)}
+/* أسئلة التاجر المخصصة — الإجابة إجبارية قبل الإضافة للسلة */
+let PANS={};
+function qBlock(q,i,color){
+if(q.t==='opts')return `<div class="pq"><label>${esc(q.q)}</label><div class="chiprow" style="margin-top:7px">${q.o.map(o=>`<button class="chip ${(PANS[i]||'')===o?'on':''}" style="--acc:${color}" onclick="panChip(this,${i})" data-v="${esc(o)}">${esc(o)}</button>`).join('')}</div></div>`;
+return `<div class="pq"><label>${esc(q.q)}</label><input class="inp" style="font-size:12.5px;margin-top:7px" value="${esc(PANS[i]||'')}" oninput="PANS[${i}]=this.value" placeholder="اكتب جوابك هنا…"></div>`;
+}
+function panChip(el,i){PANS[i]=el.dataset.v;render()}
+function addToCart(pid,qty,buy){
+const p=P(pid);if(!p.stock){toast('نفدت الكمية حالياً','err');return}
+const qs=p.qs||[];
+if(qs.length){const miss=qs.findIndex((q,i)=>!String(PANS[i]||'').trim());
+if(miss>=0){toast('أجب عن سؤال التاجر «'+qs[miss].q+'» أولاً — يظهر فوق زر الشراء','err');const el=document.querySelector('.pqwrap');if(el)el.scrollIntoView({behavior:'smooth',block:'center'});return}}
+const ans=qs.length?qs.map((q,i)=>({q:q.q,a:String(PANS[i]||'').trim()})):[];
+const ex=CART.find(c=>c.pid===pid);
+if(ex){ex.qty=Math.min(ex.qty+qty,p.stock);if(ans.length)ex.ans=ans}
+else CART.push({pid,qty:Math.min(qty,p.stock),ans});
+toast('أُضيف «'+esc(p.name)+'» إلى السلة','ok');
+if(buy)go('cart');else{renderTop();renderFab()}
+}
+function toggleFav(pid){
+if(!SES){GFav.includes(pid)?GFav=GFav.filter(x=>x!==pid):GFav.push(pid);toast(GFav.includes(pid)?'أُضيف للمفضلة (سيُحفظ عند التسجيل)':'أُزيل من المفضلة');render();return}
+const u=me();u.favs=u.favs||[];
+u.favs.includes(pid)?u.favs=u.favs.filter(x=>x!==pid):u.favs.push(pid);
+toast(u.favs.includes(pid)?'❤️ أُضيف إلى مفضلتك':'أُزيل من المفضلة');render();
+}
+function pgFavs(){
+const ids=SES?(me().favs||[]):GFav;
+const ps=ids.map(P).filter(Boolean);
+return `<div class="pghead"><h1>❤️ مفضلتي</h1><span class="tag amb">${ar(ps.length)} منتج</span></div>
+${ps.length?`<div class="pgrid">${ps.map(pcard).join('')}</div>`:`<div class="empty"><div class="em">🤍</div><b>لا منتجات في مفضلتك بعد</b><span>اضغط ♡ على أي منتج يعجبك</span><button class="btn mt" onclick="go('home')">ابدأ التصفح</button></div>`}`;
+}
+/* ================= المكتبة الرقمية ================= */
+function pgDLib(){
+if(!SES)return `<div class="pghead"><h1>📚 مكتبتي الرقمية</h1></div><div class="empty"><div class="em">🔐</div><b>سجّل دخولك لعرض مكتبتك</b><span>كل أصل رقمي تشتريه في ضمين يُسلَّم فوراً هنا</span><button class="btn mt" onclick="openAuth()">تسجيل الدخول</button></div>`;
+const u=me();const lib=u.dlib||[];
+return `<div class="pghead"><h1>📚 مكتبتي الرقمية</h1><span class="tag grn">${ar(lib.length)} أصل رقمي</span></div>
+<p class="hint mb" style="line-height:1.8">⚡ كل لعبة رقمية أو كود اشتراك أو كتاب إلكتروني تشتريه يُسلَّم هنا فور الدفع — الأكواد تُعرض مباشرة، والملفات عبر روابط مؤقتة آمنة موقّعة (S3 Signed) صالحة ١٠ دقائق لكل عملية، وتبقى مشترياتك محفوظة دائماً ويمكن توليد رابط جديد في أي وقت.</p>
+${lib.length?`<div class="pgrid">${lib.map((it,i)=>{const p=P(it.pid);const s=ST(it.store);
+return `<div class="dlgcard" style="--c:${s.color}">
+<div class="ph">${p?imgTag(p.imgs[0],'',''):''}</div>
+<div class="pb">
+<b style="font-size:12.5px;display:block;line-height:1.5">${esc(it.name)}</b>
+<div class="hint" style="margin:3px 0 8px">${esc(s.name)} · طلب #${ar(it.oid)} · ${dt(it.at)}</div>
+${it.kind==='code'?`<div class="dcode" id="dcode-${i}">••••-••••-••••-••••</div>
+<div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
+<button class="btn soft xs" onclick="dReveal(${i})">👁️ إظهار الكود</button>
+<button class="btn gray xs" onclick="dCopy(${i})">📋 نسخ</button></div>`
+:`<div class="hint" style="margin-bottom:6px">📁 ${esc(it.val)}${it.size?' · '+esc(it.size):''}</div>
+<button class="btn soft xs" onclick="dLink(${i})">🔗 تحميل عبر رابط مؤقت آمن</button>`}
+</div></div>`}).join('')}</div>
+<div class="hint mt" style="text-align:center">🔒 الروابط المؤقتة موقّعة رقمياً وتنتهي بعد ١٠ دقائق — والمحتوى محفوظ في مكتبتك دائماً.</div>`
+:`<div class="empty"><div class="em">⚡</div><b>لا مشتريات رقمية بعد</b><span>تصفح «عالم الألعاب والأجهزة والمنتجات الرقمية» — التسليم فوري بعد الدفع بضمان ضمين</span><button class="btn mt" onclick="go('section','gaming')">🛒 تسوّق الرقميات</button></div>`}`;
+}
+function dReveal(i){const it=(me().dlib||[])[i];if(!it)return;const el=$('#dcode-'+i);if(!el)return;
+if(el.dataset.on){el.textContent='••••-••••-••••-••••';delete el.dataset.on;return}
+el.dataset.on='1';el.textContent=it.val;toast('الكود ظاهر الآن — انسخه واحتفظ به بأمان 🔒','ok')}
+function dCopy(i){const it=(me().dlib||[])[i];if(!it)return;
+const done=()=>toast('نُسخ الكود إلى الحافظة ✓','ok');
+if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(it.val).then(done,done);else done()}
+let DLN=null;
+function dLink(i){const it=(me().dlib||[])[i];if(!it)return;
+const tok=Math.random().toString(36).slice(2,10).toUpperCase();
+DLN={i,exp:Date.now()+600000};
+openModal(`<div class="mhead"><b>🔗 رابط مؤقت آمن (S3 Signed URL)</b><button class="x" onclick="closeModal()">✕</button></div>
+<div class="mbody">
+<div class="demo mb"><b style="font-size:12px">${esc(it.val)}</b>
+<p class="hint" style="margin-top:5px;word-break:break-all;direction:ltr;text-align:left;font-family:monospace;font-size:10.5px">https://files.dameen.sa/${encodeURIComponent(it.val)}?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=DMN%2F2026%2Fme-central-1%2Fs3%2Faws4_request&X-Amz-Expires=600&token=${tok}</p></div>
+<div class="srow"><span>⏳ صلاحية الرابط</span><b class="cd" data-cd="${DLN.exp}" style="border:0;background:none;padding:0">${clock(DLN.exp-Date.now())}</b></div>
+<div class="srow"><span>📁 الملف</span><b>${esc(it.val)}${it.size?' · '+esc(it.size):''}</b></div>
+<button class="btn amb wide mt" onclick="dDownload()">⬇️ تنزيل الملف الآن</button>
+<p class="hint mt" style="text-align:center">ينتهي الرابط تلقائياً بعد ١٠ دقائق — ويمكنك توليد رابط جديد من مكتبتك وقت الحاجة.</p>
+</div>`)}
+function dDownload(){
+const it=((me().dlib||[])[(DLN||{}).i]);if(!it)return;
+const txt='ضمين — تسليم رقمي آمن\n====================\nالمنتج: '+it.name+'\nالمتجر: '+ST(it.store).name+'\nرقم الطلب: #'+it.oid+'\nالملف: '+it.val+'\nالتاريخ: '+dt(it.at)+'\n\nرابط مؤقت موقع رقمياً (S3 Signed URL) صالح ١٠ دقائق.\nشكراً لتسوقك بضمان ضمين 💚';
+const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+txt],{type:'text/plain;charset=utf-8'}));
+a.download=String(it.val).replace(/\.[^.]+$/,'')+'-dameen.txt';
+document.body.appendChild(a);a.click();a.remove();
+toast('بدأ التنزيل عبر الرابط المؤقت ✓','ok')}
+/* ===== كود تأكيد الخدمات الميدانية (OTP) ===== */
+function otpBox(o,g,gi){
+return `<div class="otpbox">
+<div class="spread" style="flex-wrap:wrap"><b style="font-size:12px">🎯 تأكيد إتمام الخدمة بكود OTP</b>
+${g.otp?`<span class="tag grn">الكود وصل جوالك: <b style="letter-spacing:2px">${ar(g.otp)}</b></span>`:'<span class="tag amb">بانتظار كود فريق التنسيق بعد التركيب</span>'}</div>
+<p class="hint" style="margin:6px 0 9px;line-height:1.8">لا تُحرر مستحقات متجر الديكور والفعاليات إلا بإدخال كود التأكيد منك عند اكتمال التركيب في موقع المناسبة — حماية للطرفين، وبقية مبلغك محجوز بالخزنة حتى ذلك الحين.</p>
+<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+<input class="inp" id="otpin-${o.id}" style="width:120px;text-align:center;letter-spacing:4px;font-weight:800" maxlength="4" placeholder="٠٠٠٠">
+<button class="btn sm" onclick="checkOTP(${o.id},${gi})">✅ تأكيد إتمام الخدمة</button>
+${g.otpBad?`<span class="tag red">${ar(g.otpBad)} محاولة خاطئة</span>`:''}
+</div></div>`}
+function mSendOTP(oid,gi){
+const o=DB.orders.find(x=>x.id===oid);const g=o.groups[gi];
+g.otp=String(Math.floor(1000+Math.random()*9000));
+g.otpAt=Date.now();
+if(g.chat&&!g.chatDeleted)g.chat.push({r:'sys',t:'🎯 أرسل فريق التنسيق كود تأكيد إتمام الخدمة — أدخله بعد اكتمال التركيب ليُحرر مستحق المتجر.',at:Date.now()});
+pushNotif(o.customer,'🎯','كود تأكيد إتمام الخدمة','كودك لطلب #'+ar(oid)+': '+g.otp+' — أدخله في التطبيق بعد اكتمال التركيب في موقع المناسبة',['orders']);
+toast('أُرسل كود التأكيد للعميل (محاكاة SMS) ✓','ok');render();
+}
+function checkOTP(oid,gi){
+const o=DB.orders.find(x=>x.id===oid);const g=o.groups[gi];
+const raw=(($('#otpin-'+oid)||{value:''}).value)||'';
+const norm=String(raw).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).trim();
+if(!g.otp){toast('لم يرسل المتجر كود التأكيد بعد','amb');return}
+if(norm!==g.otp){g.otpBad=(g.otpBad||0)+1;toast('الكود غير صحيح — تأكد منه مع فريق التنسيق ('+ar(g.otpBad)+' محاولات)','err');render();return}
+g.otpOk=true;g.status='received';g.complaintUntil=Date.now();
+doRelease(o,g,'كود تأكيد العميل (OTP)',false);
+toast('تم تأكيد إتمام الخدمة وحُرر مستحق المتجر 🎯','ok');render();
+}
+/* ===== مشاركة الموقع وطلب المبالغ الإضافية في محادثة الطلب ===== */
+function sendMyLoc(){
+if(!OCHAT)return;
+const o=DB.orders.find(x=>x.id===OCHAT.oid);const g=o.groups[OCHAT.gi];
+const u=me();
+const done=(geo,txt)=>{
+g.chat.push({r:'customer',loc:{geo,txt},at:Date.now()});
+pushNotif(ST(g.store).owner,'📍','العميل شارك موقعه','وصل موقع العميل في محادثة طلب #'+ar(o.id)+' — لتوجيه الفريق بدقة',['m-orders']);
+toast(geo?'شاركت موقعك الحالي مع المتجر ✓':'شاركت عنوانك المحفوظ كرسالة موقع (تعذر GPS)','ok');
+ochatRefresh()};
+const fallback=()=>{const a=(u.addrs||[]).find(x=>x.def)||(u.addrs||[])[0];done(null,(a&&a.a)?a.a:'موقعي')};
+if(navigator.geolocation)navigator.geolocation.getCurrentPosition(p=>done({lat:+p.coords.latitude.toFixed(4),lng:+p.coords.longitude.toFixed(4)},'موقعي الحالي'),fallback,{timeout:8000});
+else fallback();
+}
+function mAskExtra(){
+if(!OCHAT)return;
+openModal(`<div class="mhead"><b>💰 طلب مبلغ إضافي (تعديل)</b><button class="x" onclick="closeModal()">✕</button></div>
+<div class="mbody">
+<div class="demo mb"><b style="font-size:12px">سعّر التعديل الذي اتفقت عليه مع العميل</b><p class="hint" style="margin-top:3px;line-height:1.8">يُرسل طلب الدفع داخل المحادثة — يدفع العميل بضمان ضمين، ويُحجز المبلغ مع بقية قيمة الطلب في الخزنة حتى الاستلام والتحرير.</p></div>
+<div class="fgrid"><div class="fld"><label>المبلغ (ر.س)</label><input class="inp" id="ex-amt" type="number" min="1" value="25"></div>
+<div class="fld"><label>السبب (يظهر للعميل)</label><input class="inp" id="ex-note" placeholder="مثال: إضافة اسم مطرز على البوكس"></div></div>
+<button class="btn amb wide mt" onclick="mAskExtraGo()">إرسال طلب الدفع للعميل</button>
+</div>`)}
+function mAskExtraGo(){
+if(!OCHAT)return closeModal();
+const o=DB.orders.find(x=>x.id===OCHAT.oid);const g=o.groups[OCHAT.gi];
+const amt=Math.max(1,+((($('#ex-amt')||{value:0}).value)||0));
+const note=(($('#ex-note')||{value:''}).value||'').trim();
+g.chat.push({r:'merchant',payreq:{amt,note,paid:false},at:Date.now()});
+pushNotif(o.customer,'💰','طلب التاجر مبلغاً إضافياً','قدّم متجر '+ST(g.store).name+' تعديلاً بـ'+money(amt)+' على طلبك #'+ar(o.id)+' — راجعه في محادثة الطلب',['orders']);
+closeModal();toast('أُرسل طلب الدفع إلى العميل ✓','ok');openOChat(OCHAT.oid,OCHAT.gi);
+}
+function payExtra(oid,gi,mi){
+const o=DB.orders.find(x=>x.id===oid);if(!o)return;const g=o.groups[gi];const m=g.chat[mi];
+if(!m||!m.payreq||m.payreq.paid)return;
+const u=me();const amt=m.payreq.amt;
+if((u.bal||0)>=amt){u.bal=r2((u.bal||0)-amt);m.payreq.via='محفظة ضمين'}
+else{m.payreq.via='بطاقة مدى (Moyasar)'}
+m.payreq.paid=true;
+g.sub=r2(g.sub+amt);g.extra=r2((g.extra||0)+amt);
+g.chat.push({r:'sys',t:'💰 حُجز مبلغ التعديل '+money(amt)+' في خزنة ضمين — إجمالي قيمة الشحنة الآن '+money(r2(g.sub+(g.dl||0)))+'، والمبلغ كله ضمن الحماية حتى الاستلام.',at:Date.now()});
+pushNotif(ST(g.store).owner,'💰','دفع العميل مبلغ التعديل','حُجز '+money(amt)+' إضافية في طلب #'+ar(oid)+' — ضمن حماية ضمين حتى التحرير',['m-orders']);
+toast('حُجز مبلغ التعديل في الخزنة بضمان ضمين ✓','ok');ochatRefresh();render();
+}
+/* ===== كوبونات المتجر والإدارة ===== */
+function mcouponCard(){
+const s=myStore();
+const mine=Object.entries(DB.coupons).filter(([k,c])=>c.store===s.id);
+return `<div class="acard"><h3>🎟️ كوبونات متجرك</h3>
+<p class="hint mb" style="line-height:1.8">أصدر كوبونات خاصة بعملاء متجرك — يُطبق الكوبون عند الطلب على قيمة منتجاتك في السلة، والعمولة تُحسب بعد الخصم، ولا يمس الخصم رسوم الشحن.</p>
+${mine.length?`<div class="rows mb">${mine.map(([k,c])=>`<div class="row" style="flex-wrap:wrap;gap:6px">
+<div style="flex:1;min-width:130px"><b class="fx" style="letter-spacing:1px">${esc(k)}</b><div class="hint">${c.type==='pct'?ar(c.v)+'٪ بحد أقصى '+money(c.max||c.v):'خصم ثابت '+money(c.v)} · حد أدنى ${money(c.min||0)}${c.maxUses?' · حتى '+ar(c.maxUses)+' استخدام':''}</div></div>
+<span class="tag grn">استُخدم ${ar(c.uses||0)} مرة</span>
+<button class="btn red xs" onclick="mDelCoupon('${esc(k)}')">🗑</button></div>`).join('')}</div>`:'<div class="hint mb">لا كوبونات صادرة لمتجرك بعد — الكوبونات تزيد مبيعاتك وتجذب العملاء الجدد.</div>'}
+<div class="fgrid">
+<div class="fld"><label>الكود (أحرف إنجليزية)</label><input class="inp" id="mc-code" placeholder="مثال: ${s.id.toUpperCase()}-15" style="text-transform:uppercase"></div>
+<div class="fld"><label>النوع</label><select class="inp" id="mc-type"><option value="pct">نسبة ٪</option><option value="amt">مبلغ ثابت (ر.س)</option></select></div>
+</div>
+<div class="fgrid mt">
+<div class="fld"><label>القيمة</label><input class="inp" id="mc-v" type="number" min="1" value="10"></div>
+<div class="fld"><label>أقصى خصم للنسبة (ر.س)</label><input class="inp" id="mc-max" type="number" min="1" value="50"></div>
+<div class="fld"><label>أدنى قيمة طلب (ر.س)</label><input class="inp" id="mc-min" type="number" min="0" value="0"></div>
+<div class="fld"><label>حد الاستخدام (٠ = بلا حد)</label><input class="inp" id="mc-uses" type="number" min="0" value="0"></div>
+</div>
+<button class="btn sm mt" onclick="mAddCoupon()">＋ إصدار كوبون لمتجرك</button>
+</div>`}
+function mAddCoupon(){
+const s=myStore();
+const code=(($('#mc-code')||{value:''}).value||'').trim().toUpperCase();
+const type=($('#mc-type')||{value:'pct'}).value;
+const v=+((($('#mc-v')||{value:0}).value)||0);
+const mx=+((($('#mc-max')||{value:0}).value)||0);
+const mn=+((($('#mc-min')||{value:0}).value)||0);
+const us=+((($('#mc-uses')||{value:0}).value)||0);
+if(!/^[A-Z0-9-]{3,15}$/.test(code)){toast('اكتب كوداً إنجليزياً من ٣ إلى ١٥ خانة (أحرف وأرقام و-)','err');return}
+if(DB.coupons[code]){toast('هذا الكود مستخدم مسبقاً في ضمين','err');return}
+if(v<1||(type==='pct'&&v>90)){toast('قيمة الكوبون بين ١ و٩٠٪ (أو مبلغ من ١ ر.س)','err');return}
+if(type==='pct'&&!mx){toast('حدد أقصى مبلغ للخصم عند النسبة','err');return}
+DB.coupons[code]={type,v,max:type==='pct'?mx:v,store:s.id,min:mn,uses:0,maxUses:us||0};
+toast('صدر كوبون «'+code+'» لمتجرك ✓','ok');render();
+}
+function mDelCoupon(k){delete DB.coupons[k];toast('حُذف الكوبون «'+k+'»');render()}
+function aCouponCard(){
+const all=Object.entries(DB.coupons);
+return `<div class="acard mt"><h3>🎟️ كوبونات الخصم — إدارة ضمين</h3>
+<p class="hint mb" style="line-height:1.8">أصدر كوبونات شاملة لكل متاجر ضمين أو خاصة بمتجر بعينه، وتابع كوبونات التجار واستخداماتها — يُطبق الكوبون على قيمة المنتجات عند الطلب فقط.</p>
+<div class="rows mb">${all.map(([k,c])=>`<div class="row" style="flex-wrap:wrap;gap:6px">
+<div style="flex:1;min-width:140px"><b class="fx" style="letter-spacing:1px">${esc(k)}</b><div class="hint">${c.type==='pct'?ar(c.v)+'٪ بحد أقصى '+money(c.max||c.v):'خصم ثابت '+money(c.v)} · حد أدنى ${money(c.min||0)}</div></div>
+<span class="tag ${c.store==='all'?'nvy':'gry'}">${c.store==='all'?'شامل لكل المتاجر':'متجر '+esc(ST(c.store).name)}</span>
+<span class="tag grn">استُخدم ${ar(c.uses||0)}${c.maxUses?' / '+ar(c.maxUses):''}</span>
+<button class="btn red xs" onclick="aDelCoupon('${esc(k)}')">🗑</button></div>`).join('')||'<div class="hint mb">لا كوبونات في المنصة بعد</div>'}</div>
+<div class="fgrid">
+<div class="fld"><label>الكود</label><input class="inp" id="ac-code" placeholder="مثال: DMN25" style="text-transform:uppercase"></div>
+<div class="fld"><label>النطاق</label><select class="inp" id="ac-store"><option value="all">شامل لكل المتاجر</option>${STORES.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join('')}</select></div>
+</div>
+<div class="fgrid mt">
+<div class="fld"><label>النوع</label><select class="inp" id="ac-type"><option value="pct">نسبة ٪</option><option value="amt">مبلغ ثابت (ر.س)</option></select></div>
+<div class="fld"><label>القيمة</label><input class="inp" id="ac-v" type="number" min="1" value="10"></div>
+<div class="fld"><label>أقصى خصم للنسبة (ر.س)</label><input class="inp" id="ac-max" type="number" min="1" value="60"></div>
+<div class="fld"><label>أدنى قيمة طلب (ر.س)</label><input class="inp" id="ac-min" type="number" min="0" value="0"></div>
+</div>
+<button class="btn sm mt" onclick="aAddCoupon()">＋ إصدار كوبون</button>
+</div>`}
+function aAddCoupon(){
+const code=(($('#ac-code')||{value:''}).value||'').trim().toUpperCase();
+const store=($('#ac-store')||{value:'all'}).value;
+const type=($('#ac-type')||{value:'pct'}).value;
+const v=+((($('#ac-v')||{value:0}).value)||0);
+const mx=+((($('#ac-max')||{value:0}).value)||0);
+const mn=+((($('#ac-min')||{value:0}).value)||0);
+if(!/^[A-Z0-9-]{3,15}$/.test(code)){toast('اكتب كوداً إنجليزياً من ٣ إلى ١٥ خانة','err');return}
+if(DB.coupons[code]){toast('هذا الكود مستخدم مسبقاً','err');return}
+if(v<1||(type==='pct'&&v>90)){toast('قيمة الكوبون بين ١ و٩٠٪ (أو مبلغ من ١ ر.س)','err');return}
+if(type==='pct'&&!mx){toast('حدد أقصى مبلغ للخصم عند النسبة','err');return}
+DB.coupons[code]={type,v,max:type==='pct'?mx:v,store,min:mn,uses:0,maxUses:0};
+toast('صدر كوبون «'+code+'» '+(store==='all'?'الشامل لكل المتاجر ✓':'لمتجر '+ST(store).name+' ✓'),'ok');render();
+}
+function aDelCoupon(k){delete DB.coupons[k];toast('حُذف الكوبون «'+k+'» من المنصة');render()}
+/* ===== حقول المنتجات الرقمية في فورم التاجر ===== */
+function mPtypePrev(){
+const el=$('#mp-dextra');if(!el)return;
+const v=($('#mp-ptype')||{value:'std'}).value;
+const p=MPID?P(MPID):null;
+if(v!=='digital'){el.innerHTML='';return}
+el.innerHTML=`<div class="acard mt" style="padding:11px;border-color:#50489E55">
+<b style="font-size:12px;color:#50489E">⚡ بيانات التسليم الرقمي</b>
+<div class="fgrid mt">
+<div class="fld"><label>نوع المحتوى</label><select class="inp" id="mp-dkind">
+<option value="code" ${p&&p.digi&&p.digi.kind==='code'?'selected':''}>كود / مفتاح رقمي</option>
+<option value="file" ${p&&p.digi&&p.digi.kind==='file'?'selected':''}>ملف (PDF / ZIP / حزمة ثيمات)</option></select></div>
+<div class="fld"><label>القيمة أو اسم الملف</label><input class="inp" id="mp-dval" value="${p&&p.digi?esc(p.digi.val):''}" placeholder="مثال: GAME-XXXX-XXXX أو book.pdf"></div>
+</div>
+<div class="mt" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+<button class="btn soft sm" onclick="pickDigiFile()">📎 رفع الملف بأمان (تخزين مؤقت موقّع S3)</button>
+<span class="hint" id="df-hint">يُسلّم للعميل عبر رابط مؤقت صالح ١٠ دقائق لكل عملية تحميل</span></div>
+<div class="hr" style="margin:10px 0"></div>
+<label style="display:flex;gap:8px;align-items:flex-start;font-size:11px;font-weight:700;cursor:pointer;background:#8A4B080a;border:1.5px dashed #8A4B0877;border-radius:11px;padding:9px 11px;line-height:1.7"><input type="checkbox" id="mp-ip" ${p&&p.ipOK?'checked':''} style="width:17px;height:17px;margin-top:2px"><span>⚖️ <b>إقرار الملكية الفكرية (إلزامي):</b> أتعهد أنني أملك كامل حقوق الملكية الفكرية للملفات والأكواد المرفوعة أو أنني موزّع معتمد مرخّص، وأتحمل كامل المسؤولية القانونية عن أي مخالفة، وأوافق على أن تحذف الإدارة أي محتوى مخالف وتوقف حسابي.</span></label>
+</div>`}
+function pickDigiFile(){
+$('#fup').onchange=e=>{const f=e.target.files[0];if(!f)return;
+const nm=f.name;$('#fup').value='';
+const dv=$('#mp-dval');if(dv)dv.value=nm;
+const dk=$('#mp-dkind');if(dk&&/\.(zip|pdf|png|jpg|rar|7z)$/i.test(nm))dk.value='file';
+const h=$('#df-hint');if(h){h.textContent='✓ رُفع «'+nm+'» ('+ar(Math.max(1,Math.round(f.size/1024)))+' كب) إلى التخزين المؤقت الموقّع';h.dataset.size=ar(Math.max(1,Math.round(f.size/1024)))+' كب'}
+toast('رُفع الملف بأمان إلى التخزين المؤقت الموقّع (S3) ✓','ok')};
+$('#fup').click()}
+
+/* ================= السلة ================= */
+function cartCalc(){
+const items=CART.map(c=>({...c,p:P(c.pid)})).filter(c=>c.p);
+const groups={};items.forEach(c=>{(groups[c.p.store]=groups[c.p.store]||[]).push(c)});
+const city=custCity();
+const fd=FREE_DL&&SES&&(me().pts||0)>=fdPts();
+const quotes={};let dlCharge=0,dlCost=0;
+Object.entries(groups).forEach(([sid,its])=>{const q=shipQuote(its,ST(sid),city,fd);quotes[sid]=q;dlCharge+=q.charge;dlCost+=q.cost});
+dlCharge=r2(dlCharge);dlCost=r2(dlCost);
+const sub=r2(items.reduce((a,c)=>a+eff(c.p)*c.qty,0));
+let cpn=0,cpnBad='';
+if(CPN&&DB.coupons[CPN]){const cc=DB.coupons[CPN];
+const csub=cc.store==='all'?sub:Object.entries(groups).reduce((a,[sid,its])=>sid===cc.store?a+r2(its.reduce((x,y)=>x+eff(y.p)*y.qty,0)):a,0);
+if(cc.store!=='all'&&!Object.keys(groups).includes(cc.store))cpnBad='كوبون «'+CPN+'» خاص بمتجر «'+ST(cc.store).name+'» وليس ضمن سلتك';
+else if(sub<(cc.min||0))cpnBad='كوبون «'+CPN+'» يشترط طلباً بقيمة '+money(cc.min)+' على الأقل';
+else if(cc.maxUses&&(cc.uses||0)>=cc.maxUses)cpnBad='كوبون «'+CPN+'» استُنفد ('+ar(cc.maxUses)+' استخدام)';
+else cpn=r2(Math.min(cc.type==='pct'?csub*cc.v/100:cc.v,cc.max||csub,csub));}
+const avail=SES?Math.max(0,(me().pts||0)-(fd?fdPts():0)):0;
+const ptsMax=SES?Math.floor(avail/100)*100:0;
+let ptsUse=Math.min(PTS,ptsMax,Math.floor(Math.max(sub-cpn,0)/(ptsVal()*100))*100);ptsUse=Math.max(0,Math.floor(ptsUse/100)*100);
+const ptsAmt=r2(ptsUse*ptsVal());
+const net=r2(Math.max(0,sub+dlCharge-cpn-ptsAmt));
+const tax=r2(net*0.15);
+const total=r2(net+tax);
+return{items,groups,sub,city,dlCharge,dlCost,quotes,fd,fdN:fdPts(),cpn,cpnBad,ptsMax,ptsUse,ptsAmt,net,tax,total};
+}
+function pgCart(){
+if(!CART.length)return `<div class="pghead"><h1>🛒 سلة التسوق</h1></div>
+<div class="empty"><div class="em">🛒</div><b>سلتك فارغة</b><span>تجوّل بين عوالم ضمين الأربعة واختر ما يعجبك — الدفع محمي بضمان ضمين</span>
+<button class="btn mt" onclick="go('home')">ابدأ التصفح</button></div>`;
+const c=cartCalc();
+return `<div class="pghead"><h1>🛒 سلة التسوق</h1><span class="tag grn">${ar(cartCount())} منتج · ${ar(Object.keys(c.groups).length)} شحنة</span></div>
+<div class="hint mb">🚚 شحنة مستقلة لكل متجر مع بوليصة مستقلة — كلفة الشحن تُحسب ديناميكياً من مدينة كل متجر إلى مدينتك (${esc(c.city)}) · الضريبة ١٥٪ على إجمالي الفاتورة.</div>
+<div class="cartgrid"><div>
+${Object.entries(c.groups).map(([sid,its])=>{
+const s=ST(sid),sec=SEC(s.sec),gsub=r2(its.reduce((a,x)=>a+eff(x.p)*x.qty,0));const q=c.quotes[sid];
+return `<div class="cgroup">
+<div class="cghead" style="--c:${s.color}"><div class="lg">${s.name[0]}</div>
+<div style="flex:1"><b style="color:${s.color}">${esc(s.name)}</b><div class="hint">شحنة مستقلة · 🛡️ حماية ${sec.win} بعد الاستلام</div></div>
+<span class="tag gry">${ar(its.length)} منتج</span></div>
+${its.map(x=>{const p=x.p,e=eff(p);
+return `<div class="citem" onclick="go('product','${p.id}')">
+<div class="im">${imgTag(p.imgs[0],'','')}</div>
+<div class="info">
+<b style="font-size:13px">${esc(p.name)}</b>
+<div class="hint">${esc(s.name)}${p.off?` · <span style="color:var(--red);font-weight:700">خصم ${ar(p.off)}٪</span>`:''}${PTI(p)?` · <span style="font-weight:700">${PTI(p)}</span>`:''}${p.giftOk?' · 🎁 قابل للإهداء':''}${p.fragile?' · <span style="color:#B3541E;font-weight:700">⚠️ قابل للكسر</span>':''}${p.customOk?' · ✏️ قابل للتعديل':''}${x.ans&&x.ans.length?' · <span style="color:var(--grn);font-weight:800">❓ أسئلة مجابة</span>':''}</div>
+<div style="display:flex;gap:9px;align-items:center;margin-top:5px">
+<div class="qty" onclick="event.stopPropagation()">
+<button onclick="cartQty('${p.id}',1)">＋</button><b>${ar(x.qty)}</b><button onclick="cartQty('${p.id}',-1)">−</button>
+</div>
+<b class="fx" style="color:var(--grn)">${money(r2(e*x.qty))}</b>
+</div></div>
+<button class="iconbtn" style="width:33px;height:33px;font-size:12px" onclick="event.stopPropagation();rmCart('${p.id}')" title="إزالة">🗑️</button>
+</div>`}).join('')}
+<div class="cghead" style="border:0;border-top:1px solid var(--line);background:transparent">
+<span>إجمالي الشحنة</span><b class="fx" style="margin-inline-start:auto">${money(gsub)}</b>
+<span class="hint">${q.mode==='field'?'🎪 توصيل وتركيب فريق المتجر':q.mode==='digital'?'⚡ تسليم رقمي فوري — ٠ ر.س شحن':q.charge?`+ شحن ${money(q.charge)} · ${q.label}`:`+ شحن مجاني 🎉${q.why?' — '+q.why:''}`}</span>
+${q.blocked?`<div style="color:var(--red);font-weight:700;font-size:11px;margin-top:5px;line-height:1.7">⛔ ${esc(q.blocked)}</div>`:''}
+${(s.freeMin||0)>0&&s.dlMode!=='free'&&q.mode!=='field'&&q.mode!=='digital'&&!q.blocked&&gsub<s.freeMin?`<div class="freeprog"><div class="fp-hint">أضف ${money(r2(s.freeMin-gsub))} لهذه الشحنة واحصل على شحن مجاني من ${esc(s.name)}</div><div class="pbar"><i style="width:${Math.min(100,r2(gsub/s.freeMin*100))}%"></i></div></div>`:''}
+</div>
+</div>`}).join('')}
+</div>
+<div class="sumbox">
+<b class="fx" style="font-size:15px">ملخص الطلب</b>
+<div class="hint mb" style="margin-top:2px">🔒 يُحجز المبلغ في خزنة ضمين ولا يُحرَّر للتاجر إلا بعد رضاك</div>
+<div class="srow"><span>المجموع الفرعي (${ar(cartCount())} منتج)</span><b>${money(c.sub)}</b></div>
+<div class="srow"><span>الشحن (${ar(Object.keys(c.groups).length)} شحنة · إلى ${esc(c.city)})</span><b>${c.dlCharge?money(c.dlCharge):'مجاني 🎉'}</b></div>
+<div class="hr" style="margin:8px 0"></div>
+<div style="display:flex;gap:7px;margin-bottom:9px">
+<input class="inp" id="cpnin" placeholder="كود الخصم (جرّب DAMIN10)" value="${CPN||''}" style="font-size:12px">
+${CPN?`<button class="btn gray sm" onclick="CPN=null;render()">إلغاء</button>`:`<button class="btn sm" onclick="applyCoupon()">تطبيق</button>`}
+</div>
+${c.cpnBad?`<div class="srow" style="color:var(--red);font-weight:700;font-size:11.5px">🎟️ ${esc(c.cpnBad)}</div>`:''}
+${c.cpn?`<div class="srow disc"><span>خصم الكوبون ${CPN}${DB.coupons[CPN]&&DB.coupons[CPN].store!=='all'?' — من متجر '+esc(ST(DB.coupons[CPN].store).name):' — شامل من الإدارة'}</span><b>− ${money(c.cpn)}</b></div>`:''}
+${SES?`
+<div class="srow"><span>🌟 نقاطك: ${ar(me().pts||0)} نقطة</span>
+<div style="display:flex;gap:5px;flex-wrap:wrap">
+${c.ptsMax>=100?`<button class="btn soft xs" onclick="ptsSet(${Math.min(100,c.ptsMax)})">+١٠٠</button>
+${c.ptsMax>=300?`<button class="btn soft xs" onclick="ptsSet(${Math.min(300,c.ptsMax)})">+٣٠٠</button>`:''}
+<button class="btn soft xs" onclick="ptsSet(${c.ptsMax})">الكل</button>`:''}
+${PTS?`<button class="btn gray xs" onclick="ptsSet(0)">إلغاء ${ar(PTS)}</button>`:''}
+</div></div>
+${c.ptsUse?`<div class="srow disc"><span>خصم النقاط (${ar(c.ptsUse)} نقطة)</span><b>− ${money(c.ptsAmt)}</b></div>`:''}
+${c.dlCharge>0?`
+<div class="srow"><span>🚚 توصيل مجاني؟</span>
+${(me().pts||0)>=c.fdN?`<button class="btn ${c.fd?'gray':'amb'} xs" onclick="FREE_DL=!FREE_DL;render()">${c.fd?'إلغاء الاستبدال':'استبدال '+ar(c.fdN)+' نقطة'}</button>`:`<span class="hint">تحتاج ${ar(c.fdN-(me().pts||0))} نقطة أخرى</span>`}</div>
+${c.fd?`<div class="srow disc"><span>توصيل مجاني بالنقاط (${ar(c.fdN)} نقطة)</span><b>− ${money(c.dlCost)}</b></div>`:''}`
+:''}`
+:`<div class="hint mb">🌟 سجّل دخولك لاستبدال نقاط الولاء (كل ١٠٠ نقطة = ${money(100*ptsVal())} — أو توصيل مجاني بـ${ar(fdPts())} نقطة)</div>`}
+<div class="srow"><span>ضريبة القيمة المضافة ١٥٪</span><b>${money(c.tax)}</b></div>
+<div class="srow tot"><span>الإجمالي (شامل الضريبة)</span><b>${money(c.total)}</b></div>
+<div class="hint" style="text-align:center;margin-top:6px">💳 قسّمها على ٤ دفعات مع تابي (${money(r2(c.total/4))} للدفعة) أو ٣ دفعات مع تمارا (${money(r2(c.total/3))})</div>
+<button class="btn amb wide mt" onclick="startCheckout()">🔒 إتمام الطلب الآمن</button>
+<p class="hint" style="text-align:center;margin-top:8px">عمولة ضمين (حسب تصنيف كل منتج) تُحسم من التاجر — لا تُضاف عليك أبداً</p>
+</div></div>`;
+}
+function cartQty(pid,d){const it=CART.find(c=>c.pid===pid);if(!it)return;
+it.qty+=d;const p=P(pid);
+if(it.qty>Math.max(1,p.stock||9)){it.qty=Math.max(1,p.stock||9);toast('الكمية المتاحة '+ar(p.stock||1),'amb')}
+if(it.qty<=0)CART=CART.filter(c=>c.pid!==pid);
+render()}
+function rmCart(pid){CART=CART.filter(c=>c.pid!==pid);toast('أُزيل من السلة');render()}
+function applyCoupon(){const v=($('#cpnin').value||'').trim().toUpperCase();
+if(!v){CPN=null;render();return}
+if(!DB.coupons[v]){toast('كود غير صالح','err');CPN=null;render();return}
+CPN=v;const c=DB.coupons[v];const cart=cartCalc();
+if(cart.cpnBad){toast(cart.cpnBad,'err');CPN=null;render();return}
+toast('فُعّل كوبون «'+v+'» 🎉 '+(c.store==='all'?'— خصم شامل من الإدارة على كل المتاجر':'— خصم من متجر '+ST(c.store).name),'ok');render()}
+function ptsSet(n){PTS=n;render()}
+
+/* ================= بوابة الطلب ================= */
+let OID=1025;
+function startCheckout(){
+if(!CART.length)return;
+const bl=Object.values(cartCalc().quotes).filter(q=>q.blocked);
+if(bl.length){toast(bl[0].blocked,'err');return}
+CK={step:SES?1:0,addr:me()&&me().addrs&&me().addrs.length?(me().addrs.findIndex(a=>a.def)>=0?me().addrs.findIndex(a=>a.def):0):-1,pay:'mada',geo:null,book:{},gift:{},ans:{},chatG:null};
+openModal(ckHTML(),'lg');}
+function ckHTML(){
+const steps=['الحساب','الموقع','الدفع'];
+const bars=steps.map((s,i)=>`<div class="ckstep ${CK.step===i?'on':(CK.step>i||((i===0)&&SES)?'done':'')}"><div class="b"></div>${s}</div>`).join('');
+return `<div class="mhead"><b>🔒 بوابة الطلب الآمن</b><button class="x" onclick="closeModal()">✕</button></div>
+<div class="mbody" id="ckbody">
+<div class="cksteps">${bars}</div>${ckBody()}
+</div>`;
+}
+function ckBody(){
+if(CK.step===0)return `
+<div class="demo mb"><b style="font-size:13px">🛡️ خطوة واحدة قبل الحجز</b>
+<p class="hint" style="margin-top:3px">سلتك محفوظة كما هي — سجّل دخولك أو أنشئ حساباً لإكمال الحجز في خزنة ضمين.</p></div>
+<div class="fld"><label>رقم الجوال</label><input class="inp" id="lg-ph" placeholder="05xxxxxxxx" value="0500000001"></div>
+<div class="fgrid mt">
+<div class="fld"><label>كلمة المرور</label><input class="inp" type="password" id="lg-pw" value="1234"></div>
+<div class="fld" style="display:flex;align-items:flex-end"><button class="btn wide" onclick="ckLogin()">دخول ومتابعة</button></div>
+</div>
+<div class="hr"></div>
+<p class="hint" style="text-align:center">أو جرب بحساب تجريبي:</p>
+<div class="fgrid" style="grid-template-columns:1fr 1fr 1fr;gap:8px">
+<button class="btn soft sm" onclick="ckQuick('customer')">🛍️ عميل</button>
+<button class="btn soft sm" onclick="ckQuick('merchant')">🏪 تاجر</button>
+<button class="btn soft sm" onclick="ckQuick('admin')">🛡️ إدارة</button></div>
+<p class="hint mt" style="text-align:center">جديد على ضمين؟ <a style="color:var(--amb);font-weight:700;cursor:pointer" onclick="closeModal();openAuth()">أنشئ حساباً</a> ثم عُد لإتمام طلبك.</p>`;
+if(CK.step===1){const u=me();
+return `
+<b style="font-size:13.5px" class="fx">📍 عنوان التسليم</b>
+<p class="hint" style="margin-top:3px">🚚 التوصيل عبر شركاء ضمين اللوجستيين (OTO / Torod) فقط — لا يوجد استلام شخصي «يد بيد»، ويُتابع الطلب بالحالات لحفظ حقوق الطرفين.</p>
+<div class="mt mb" style="display:flex;gap:8px;flex-wrap:wrap">
+<button class="btn soft sm" onclick="useGeo()">🛰️ تحديد موقعي تلقائياً</button>
+${CK.geo?`<span class="tag grn">✓ تم تحديد الموقع (٢٤٫٧١٣٦، ٤٦٫٦٧٥٣)</span>`:''}
+</div>
+${u.addrs&&u.addrs.length?u.addrs.map((a,i)=>`<div class="addrcard ${CK.addr===i?'on':''}" onclick="CK.addr=${i};ckRefresh()">
+<div class="rd"></div><div style="flex:1"><b style="font-size:12.5px">${esc(a.t)} ${a.def?'<span class="tag grn" style="font-size:9px">افتراضي</span>':''}</b><div class="hint">${esc(a.a)}</div></div></div>`).join(''):`<p class="hint mb">لا عناوين محفوظة — أضف عنواناً واحداً على الأقل.</p>`}
+<div class="acard" style="padding:13px;margin-top:10px">
+<b style="font-size:12.5px">➕ عنوان جديد</b>
+<div class="fgrid mt">
+<div class="fld"><label>الاسم المختصر</label><input class="inp" id="na-t" placeholder="مثال: المنزل"></div>
+<div class="fld"><label>المدينة</label><input class="inp" id="na-c" placeholder="الرياض"></div>
+</div>
+<div class="fld mt"><label>العنوان التفصيلي</label><input class="inp" id="na-a" placeholder="الحي، الشارع، رقم المبنى…"></div>
+<button class="btn soft sm mt" onclick="ckSaveAddr()">حفظ العنوان</button>
+</div>
+${ckExtras()}
+<div class="spread mt">
+<button class="btn gray sm" onclick="ckBack()">→ رجوع</button>
+<button class="btn sm" onclick="ckNext()">متابعة للدفع ←</button>
+</div>`;
+}
+if(CK.step===2){const c=cartCalc();const u=me();
+return `
+<b style="font-size:13.5px" class="fx">💳 طريقة الدفع</b>
+<p class="hint mb">يُخصم المبلغ منك ويُحجز في خزنة ضمين المستقلة — لا يصل للتاجر مباشرة.</p>
+<div class="pays">
+${[['mada','💳','مدى','بوابة Moyasar'],['visa','🏦','فيزا / ماستركارد','بوابة HyperPay'],['apple','🍎','Apple Pay','بوابة Moyasar'],['tabby','🅣','تابي','قسّمها على ٤ دفعات'],['tamara','🔵','تمارا','قسّمها على ٣ دفعات'],['bal','🌟','محفظة ضمين','رصيدك '+ard(u.bal||0)+' ر.س']].map(([k,i,n,s])=>`<button class="pay ${CK.pay===k?'on':''}" onclick="CK.pay='${k}';ckRefresh()"><i>${i}</i><b>${n}</b><span>${s}</span></button>`).join('')}
+</div>
+${(CK.pay==='tabby'||CK.pay==='tamara')?`<div class="acard mt" style="padding:12px;background:#1D44320a;border-color:#1D443233"><b class="fx" style="font-size:12.5px">${CK.pay==='tabby'?'🅣 تابي — ٤ دفعات شهرية بلا فوائد ولا رسوم':'🔵 تمارا — ٣ دفعات بلا فوائد'}</b>
+<div class="srow mt" style="padding:3px 0"><span>إجمالي الفاتورة (منتجات + شحن + ضريبة)</span><b>${money(c.total)}</b></div>
+<div class="srow disc"><span>دفعتك الأولى الآن</span><b>${money(r2(c.total/(CK.pay==='tabby'?4:3)))}</b></div>
+<div class="hint">يُقسّم كامل الفاتورة (المنتجات + الشحن + الضريبة) — والتحرير للتاجر يبقى بضمان ضمين.</div></div>`:''}
+${CK.pay==='bal'&&u.bal<c.total?`<p class="hint" style="color:var(--red);margin-top:8px">⚠️ رصيد محفظتك لا يكفي — اختر طريقة أخرى.</p>`:''}
+${CK.pay==='visa'?`<div class="acard mt" style="padding:12px"><div class="fgrid"><div class="fld"><label>رقم البطاقة</label><input class="inp" placeholder="٤٢٤٢ ٤٢٤٢ ٤٢٤٢ ٤٢٤٢"></div><div class="fld"><label>تاريخ الانتهاء / CVC</label><input class="inp" placeholder="١٢/٢٨ · ١٢٣"></div></div></div>`:''}
+<div class="demo" style="margin-top:10px"><b style="font-size:11.5px">🧮 كيف يتوزع مبلغك؟</b>
+<div class="hint" style="margin-top:3px;line-height:1.9">قيمة المنتجات: صافي التاجر بعد عمولة ضمين (تحددها الإدارة لكل تصنيف) · رسوم الشحن: تُحوّل لحساب الشريك اللوجستي · الضريبة ١٥٪: لصالح هيئة الزكاة والضريبة — والتحرير لا يتم إلا بعد استلامك ورضاك.</div></div>
+<div class="hr"></div>
+<div class="srow"><span>المنتجات والشحن (بعد الخصومات)</span><b>${money(c.net)}</b></div>
+<div class="srow"><span>ضريبة القيمة المضافة ١٥٪</span><b>${money(c.tax)}</b></div>
+<div class="srow tot"><span>إجمالي الحجز في الخزنة</span><b>${money(c.total)}</b></div>
+<div class="srow"><span>التسليم إلى</span><span style="font-size:11.5px">${esc(CK.addrTxt||addrTxt())}</span></div>
+<div class="spread mt">
+<button class="btn gray sm" onclick="ckBack()">→ رجوع</button>
+<button class="btn amb" onclick="placeOrder()">🔒 ادفع واحجز في الخزنة</button>
+</div>`;
+}
+const og=DB.orders.find(x=>x.id===CK.oid);const g0=(og&&CK.chatG!=null)?og.groups[CK.chatG]:null;
+return `<div style="text-align:center;padding:8px 4px">
+<div class="bigok">✅</div>
+<b class="fx" style="font-size:17px">تم حجز مبلغك في خزنة ضمين!</b>
+<p class="hint mt" style="line-height:1.9">رقم طلبك <b style="color:var(--grn)">#${ar(CK.oid)}</b><br>أُرسلت طلباتك إلى ${ar(CK.gcount)} متجر — كل شحنة ببوليصة مستقلة.<br>📄 أُصدرت ${ar(CK.wb||0)} بوليصة شحن آلية وأُرسلت طلبات الاستلام للمناديب · فُتحت محادثة الطلب مع كل متجر (بلا أرقام ولا روابط).${og&&og.groups.some(g=>g.digi)?'<br>⚡ مشترياتك الرقمية سُلّمت فوراً إلى «مكتبتك الرقمية».':''}<br>💡 للعميل: يمكنك فتح نزاع خلال نافذة الحماية قبل التحرير التلقائي.</p>
+${g0?`<button class="btn wide mt" onclick="closeModal();openOChat(${CK.oid},${CK.chatG})">💬 دردشة التنسيق/التعديلات مع ${esc(ST(g0.store).name)}</button>`:''}
+${og&&og.groups.some(g=>g.digi)?`<button class="btn wide mt" onclick="closeModal();go('dlib')">📚 مكتبتي الرقمية — الكود/الملف جاهز</button>`:''}
+<button class="btn wide mt" onclick="closeModal();go('orders')">📦 تتبع طلبي</button>
+<button class="btn gray wide mt" onclick="closeModal();go('home')">مواصلة التسوق</button></div>`;
+}
+function ckRefresh(){const b=$('#ckbody');if(!b)return;const scroll=window.scrollY;b.innerHTML=`<div class="cksteps">${['الحساب','الموقع','الدفع'].map((s,i)=>`<div class="ckstep ${CK.step===i?'on':(CK.step>i||(i===0&&SES)?'done':'')}"><div class="b"></div>${s}</div>`).join('')}</div>`+ckBody()}
+function ckLogin(){doLogin();if(SES&&SES.role==='customer'){CK.step=1;CK.addr=me().addrs&&me().addrs.length?0:-1;ckRefresh()}}
+function ckQuick(r){quickLogin(r);if(SES&&SES.role==='customer'){CK.step=1;CK.addr=me().addrs&&me().addrs.length?0:-1;ckRefresh()}}
+function ckNext(){if(CK.addr<0){toast('اختر عنواناً أو أضف عنواناً جديداً','err');return}CK.step=2;ckRefresh()}
+function ckBack(){CK.step=Math.max(SES?1:0,CK.step-1);ckRefresh()}
+function addrTxt(){const u=me();return u&&u.addrs&&u.addrs[CK.addr]?u.addrs[CK.addr].a:''}
+function useGeo(){
+if(!navigator.geolocation){toast('تحديد الموقع غير مدعوم — أضف العنوان يدوياً','amb');return}
+toast('جارٍ تحديد موقعك…');
+navigator.geolocation.getCurrentPosition(
+p=>{CK.geo={lat:+p.coords.latitude.toFixed(4),lng:+p.coords.longitude.toFixed(4)};toast('تم تحديد موقعك ✓','ok');ckRefresh()},
+()=>toast('تعذر تحديد الموقع — أضف العنوان يدوياً','amb'),{timeout:8000});
+}
+function ckSaveAddr(){
+const t=($('#na-t')||{value:''}).value.trim(),c=($('#na-c')||{value:''}).value.trim(),a=($('#na-a')||{value:''}).value.trim();
+if(!t||!a){toast('اكتب الاسم المختصر والعنوان التفصيلي','err');return}
+const u=me();u.addrs=u.addrs||[];u.addrs.push({t,a:(c?c+'، ':'')+a});
+CK.addr=u.addrs.length-1;toast('حُفظ العنوان ✓','ok');ckRefresh();
+}
+/* ===== خيارات التسليم الخاصة لكل شحنة ===== */
+function ckSetAns(sid,i,v){(CK.ans[sid]=CK.ans[sid]||[])[i]=v}
+function ckSetBook(sid,k,v){(CK.book[sid]=CK.book[sid]||{});CK.book[sid][k]=v}
+function ckSetGift(sid,k,v){(CK.gift[sid]=CK.gift[sid]||{on:false,name:'',phone:'',city:''});CK.gift[sid][k]=v}
+function ckGiftTog(sid){const g=CK.gift[sid]||{on:false,name:'',phone:'',city:''};g.on=!g.on;CK.gift[sid]=g;ckRefresh()}
+function ckEventGeo(sid){
+if(!navigator.geolocation){toast('تحديد الموقع غير مدعوم — اكتب ملاحظة الموقع بدلاً منه','amb');return}
+toast('جارٍ تحديد موقع المناسبة…');
+navigator.geolocation.getCurrentPosition(
+p=>{(CK.book[sid]=CK.book[sid]||{});CK.book[sid].geo={lat:+p.coords.latitude.toFixed(4),lng:+p.coords.longitude.toFixed(4)};toast('وصل موقع المناسبة لفريق التنسيق ✓','ok');ckRefresh()},
+()=>toast('تعذر تحديد الموقع — جرّب مرة أخرى','amb'),{timeout:8000});
+}
+function ckExtras(){
+const c=cartCalc();let out='';
+Object.entries(c.groups).forEach(([sid,its])=>{
+const st=ST(sid),sec=SEC(st.sec),q=c.quotes[sid];const blocks=[];
+if(sec.id==='family'&&(st.qs||[]).length){
+blocks.push(`<b style="font-size:11.5px">❓ أسئلة «${esc(st.name)}» قبل إعداد طلبك</b>`+
+st.qs.map((qq,i)=>`<div class="fld" style="margin-top:7px"><label>${esc(qq)}</label><input class="inp" style="font-size:12px" value="${esc(((CK.ans[sid]||[])[i])||'')}" oninput="ckSetAns('${sid}',${i},this.value)"></div>`).join('')+`<p class="hint" style="margin-top:5px">تصلك إجاباتك مع الطلب مباشرة — أسئلة يحددها المتجر لقسم المأكولات والضيافة.</p>`);
+}
+if(q.mode==='chilled')blocks.push(`<div class="hint" style="line-height:1.8">🧊 هذه الشحنة تضم منتجات حساسة للحرارة — ${c.city===(st.city||'')?'سيُرسل مندوب مجهز بحافظة برودة (Cooling Box) داخل المدينة نفسها':'ستُشحن مبردة بين المدن عبر شركات الشحن المبرد المتعاقدة عبر بوابة OTO/Torod'} بعد تأكيد الطلب.</div>`);
+if(q.mode==='instant'&&!q.blocked)blocks.push(`<div class="hint" style="line-height:1.8">🛵 أطباق طازجة — سيبحث النظام عن مندوب فوري فور تأكيد طلبك داخل ${esc(c.city)} فقط (نطاق ${ar(st.rangeKm||20)} كم حول مدينة المتجر «${esc(st.city)}»)، ووقت التوصيل المتوقع ٤٥ دقيقة.</div>`);
+if(q.blocked)blocks.push(`<div class="hint" style="line-height:1.8;color:var(--red);font-weight:700">⛔ ${esc(q.blocked)}</div>`);
+if(q.mode==='digital')blocks.push(`<div class="hint" style="line-height:1.8">⚡ منتجات رقمية — يُسلّم الكود/الملف فور الدفع إلى «مكتبتك الرقمية» عبر رابط مؤقت آمن (S3 Signed) صالح ١٠ دقائق، بدون شحن وبدون انتظار.</div>`);
+if(q.fragile)blocks.push(`<div class="hint" style="line-height:1.8">⚠️ شحنة قابلة للكسر — تُنقل العلامة آلياً لشركة الشحن (OTO/Torod) مع تنبيه تغليف خاص إلزامي في البوليصة، ورسوم حماية ١٥ ر.س مدرجة ضمن الشحن.</div>`);
+if(its.some(x=>x.p.customOk))blocks.push(`<div class="hint" style="line-height:1.8">✏️ هذا المتجر يقبل التعديلات حسب طلبك — بعد الدفع تفتح دردشة التعديلات مباشرة مع التاجر، ويقدر يطلب مبلغاً إضافياً لأي إضافة (يُحجز بضمان ضمين).</div>`);
+if(sec.id==='deco'&&its.some(x=>x.p.giftOk)){
+const g=CK.gift[sid]||{on:false,name:'',phone:'',city:''};
+blocks.push(`<div class="spread"><b style="font-size:11.5px">🎁 إهداء لشخص آخر</b><button class="sw ${g.on?'on':''}" onclick="ckGiftTog('${sid}')"></button></div>
+${g.on?`<div class="fgrid" style="margin-top:7px"><div class="fld"><label>جوال المستلم (١٠ أرقام يبدأ بـ 05)</label><input class="inp" style="font-size:12px" value="${esc(g.phone||'')}" oninput="ckSetGift('${sid}','phone',this.value)"></div><div class="fld"><label>مدينة المستلم</label><input class="inp" style="font-size:12px" placeholder="مثال: الرياض" value="${esc(g.city||'')}" oninput="ckSetGift('${sid}','city',this.value)"></div></div>
+<div class="fld" style="margin-top:7px"><label>اسم المستلم (اختياري — يُطبع على بطاقة الإهداء)</label><input class="inp" style="font-size:12px" value="${esc(g.name||'')}" oninput="ckSetGift('${sid}','name',this.value)"></div>
+<p class="hint" style="margin-top:5px">يكفي جوال المستلم ومدينته — تصدر البوليصة باسمه فتوصله الهدية مباشرة، وكل التواصل عبر ضمين فقط.</p>`:'<p class="hint" style="margin-top:4px">فعّل الخيار لإرسال هديتك لشخص غيرك — يُطلب جواله ومدينته فقط.</p>'}`);
+}
+if(q.mode==='field'){
+const b=CK.book[sid]||{};
+blocks.push(`<b style="font-size:11.5px">🎪 حجز موعد المناسبة (إلزامي لخدمة التنسيق الميداني)</b>
+<div class="fld" style="margin-top:7px"><label>🚚 طريقة تسليم المناسبة</label><select class="inp" style="font-size:12px" onchange="ckSetBook('${sid}','dl',this.value)">
+<option value="field" ${(b.dl||'field')==='field'?'selected':''}>فريق المتجر يوصل ويركّب في موقع المناسبة</option>
+<option value="pickup" ${b.dl==='pickup'?'selected':''}>استلام من مقر المتجر — بلا توصيل (التنسيق عبر دردشة ضمين بعد الدفع)</option></select></div>
+<div class="fgrid" style="margin-top:7px">
+<div class="fld"><label>تاريخ المناسبة</label><input type="date" class="inp" style="font-size:12px" value="${esc(b.date||'')}" onchange="ckSetBook('${sid}','date',this.value)"></div>
+<div class="fld"><label>وقت التركيب</label><input type="time" class="inp" style="font-size:12px" value="${esc(b.setup||'')}" onchange="ckSetBook('${sid}','setup',this.value)"></div>
+<div class="fld"><label>وقت الفك / الاسترجاع</label><input type="time" class="inp" style="font-size:12px" value="${esc(b.tear||'')}" onchange="ckSetBook('${sid}','tear',this.value)"></div>
+<div class="fld"><label>ملاحظة لفريق التنسيق</label><input class="inp" style="font-size:12px" placeholder="مثال: الدخول من البوابة الشمالية" value="${esc(b.note||'')}" oninput="ckSetBook('${sid}','note',this.value)"></div>
+</div>
+<div style="display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap">
+<button class="btn soft sm" onclick="ckEventGeo('${sid}')">📍 مشاركة موقع المناسبة (GPS)</button>
+${b.geo?`<span class="tag grn">✓ وصل الموقع لفريق التنسيق (${ard(b.geo.lat)}، ${ard(b.geo.lng)})</span>`:'<span class="hint">لتوجيه فريق التنسيق بدقة يوم المناسبة</span>'}
+</div>`);
+}
+if(blocks.length)out+=`<div class="acard" style="padding:12px;margin-top:10px;border-color:${st.color}55"><div class="spread" style="margin-bottom:5px"><b class="fx" style="font-size:12px">🚚 خيارات التسليم — ${esc(st.name)}</b><span class="tag" style="background:${st.color}18;color:${st.color}">${q.label}</span></div>${blocks.join('<div class="hr" style="margin:9px 0"></div>')}</div>`;
+});
+return out;
+}
+function placeOrder(){
+const u=me();const c=cartCalc();
+if(CK.addr<0||!u.addrs[CK.addr]){toast('حدد عنوان التسليم أولاً','err');CK.step=1;ckRefresh();return}
+if(CK.pay==='bal'&&u.bal<c.total){toast('رصيد المحفظة لا يكفي','err');return}
+for(const [sid,its] of Object.entries(c.groups)){
+const q=c.quotes[sid];
+if(q.blocked){toast(q.blocked,'err');CK.step=1;ckRefresh();return}
+if(q.mode==='field'){const b=CK.book[sid]||{};if(!b.date||!b.setup){toast('أكمل حجز موعد المناسبة (التاريخ ووقت التركيب) لشحنة '+ST(sid).name,'err');CK.step=1;ckRefresh();return}}
+const gft=CK.gift[sid];
+if(gft&&gft.on&&(!/^05\d{8}$/.test((gft.phone||'').replace(/\s/g,''))||!((gft.city||'').trim()))){toast('أكمل بيانات الإهداء — جوال مستلم يبدأ بـ 05 + مدينته','err');CK.step=1;ckRefresh();return}
+}
+CK.addrTxt=u.addrs[CK.addr].a;
+CK.step=3;CK.oid=OID;CK.gcount=Object.keys(c.groups).length;CK.wb=0;
+const o={id:OID++,customer:SES.phone,at:Date.now(),pay:CK.pay,addr:CK.addrTxt,city:c.city,
+coupon:{code:CPN,amt:c.cpn},ptsUsed:c.ptsUse,ptsAmt:c.ptsAmt,freeDl:c.fd,net:c.net,tax:c.tax,total:c.total,
+groups:Object.entries(c.groups).map(([sid,its])=>{const st=ST(sid),q=c.quotes[sid];
+const bk=CK.book[sid]||{};
+const pans=[];its.forEach(x=>{if(x.ans&&x.ans.length)pans.push({pn:x.p.name,ans:x.ans.map(y=>({q:y.q,a:y.a}))})});
+const grp={store:sid,
+items:its.map(x=>({pid:x.pid,qty:x.qty,price:eff(x.p)})),
+sub:r2(its.reduce((a,x)=>a+eff(x.p)*x.qty,0)),dl:q.charge,status:'pending',
+ship:{mode:q.mode,cost:q.cost,charge:q.charge,subsidy:q.subsidy,source:q.source,why:q.why,label:q.label,fragile:q.fragile},
+logi:q.mode==='field'?{wb:null,courier:bk.dl==='pickup'?'استلام من مقر المتجر — بلا توصيل':'توصيل وتركيب فريق المتجر',mode:'field',events:[{t:bk.dl==='pickup'?'استلام من المقر — بلا بوليصة شحن، والتنسيق عبر دردشة ضمين بعد الدفع':'خدمة ميدانية — بلا بوليصة آلية، الحجز بموعد المناسبة',at:Date.now()}]}:
+q.mode==='digital'?{wb:null,courier:'تسليم رقمي فوري (ضمين ديجيتال)',mode:'digital',events:[{t:'سُلّم المحتوى الرقمي فور الدفع إلى مكتبة العميل — عبر رابط مؤقت موقّع (S3 Signed URL)',at:Date.now()}]}:
+mkLogi(q.mode,sid+OID),
+chat:[{r:'sys',t:'فُتحت محادثة الطلب — للتفاصيل والطلبات الخاصة فقط. ممنوع تبادل الأرقام أو الروابط أو أي وسيلة تواصل خارج ضمين (الإدارة تُتابع تلقائياً وحجب المخالف فوري).',at:Date.now()}],
+viol:{customer:0,merchant:0}};
+if(q.fragile&&grp.logi)grp.logi.events.unshift({t:'⚠️ علامة «قابل للكسر» نُقلت آلياً لشركة الشحن ('+grp.logi.courier+') — تغليف خاص إلزامي في البوليصة + رسوم حماية ١٥ ر.س ضمن الشحن',at:Date.now()});
+if(q.mode==='field')grp.booking=CK.book[sid];
+if(q.mode==='digital'){
+grp.status='received';grp.digi=true;grp.complaintUntil=Date.now()+secOf(sid).winMin*60e3;
+grp.chat.push({r:'sys',t:'⚡ سُلّم المحتوى الرقمي فوراً — الكود/الملف في «مكتبتك الرقمية»، ومبلغك محجوز بضمان ضمين حتى نهاية نافذة الحماية.',at:Date.now()});
+u.dlib=u.dlib||[];
+its.filter(x=>x.p.ptype==='digital'&&x.p.digi).forEach(x=>u.dlib.unshift({pid:x.p.id,name:x.p.name,store:sid,kind:x.p.digi.kind,val:x.p.digi.val,size:x.p.digi.size||'',at:Date.now(),oid:OID-1}));}
+if(its.some(x=>x.p.customOk)){grp.custom=true;grp.chat.push({r:'sys',t:'✏️ دردشة التعديلات مفتوحة — حدد طلبك بدقة، ويقدر التاجر يطلب مبلغاً إضافياً لأي تعديل يتفقان عليه (يُحجز بضمان ضمين حتى الاستلام).',at:Date.now()})}
+if(CK.gift[sid]&&CK.gift[sid].on)grp.gift={name:(CK.gift[sid].name||'').trim(),phone:(CK.gift[sid].phone||'').trim(),city:(CK.gift[sid].city||'').trim()};
+if(st.qs&&st.qs.length)grp.ans=st.qs.map((qq,i)=>({q:qq,a:(((CK.ans[sid]||[])[i])||'').trim()})).filter(x=>x.a);
+if(pans.length)grp.pans=pans;
+if(q.mode!=='field'&&q.mode!=='digital')CK.wb++;
+return grp})};
+if(c.fd)o.freeDl=true;
+if(CK.pay==='bal'){u.bal=r2((u.bal||0)-c.total);o.paidBy='محفظة ضمين'}
+if(CK.pay==='tabby')o.inst={by:'تابي',n:4,each:r2(c.total/4)};
+if(CK.pay==='tamara')o.inst={by:'تمارا',n:3,each:r2(c.total/3)};
+DB.vat=r2((DB.vat||0)+c.tax);
+if(CPN&&DB.coupons[CPN])DB.coupons[CPN].uses=(DB.coupons[CPN].uses||0)+1;
+if(c.fd){u.pts=(u.pts||0)-c.fdN;u.ptsLog.unshift({t:'استبدال نقاط بتوصيل مجاني في الطلب #'+(OID-1),v:-c.fdN,at:Date.now()})}
+if(c.ptsUse){u.pts=(u.pts||0)-c.ptsUse;u.ptsLog.unshift({t:'استبدال نقاط في الطلب #'+(OID-1),v:-c.ptsUse,at:Date.now()})}
+DB.orders.unshift(o);
+let chatG=-1;
+o.groups.forEach((g,gi)=>{const own=ST(g.store).owner;
+if(own&&USERS[own])pushNotif(own,g.digi?'⚡':'📦','طلب جديد'+(g.digi?' رقمي — سُلّم فوراً للعميل':' بانتظار قبولك'),'عميل جديد أرسل طلباً بقيمة '+money(g.sub),['m-orders']);
+if(chatG<0&&(g.custom||(g.ship&&g.ship.mode==='field')))chatG=gi});
+pushNotif(SES.phone,'🔒','تم حجز مبلغ طلبك','مبلغ '+money(c.total)+' محجوز بأمان في خزنة ضمين',['orders']);
+if(o.groups.some(g=>g.digi))pushNotif(SES.phone,'⚡','مشترياتك الرقمية جاهزة','الكود/الملف في «مكتبتك الرقمية» — تسليم فوري بضمان ضمين',['dlib']);
+if(chatG>=0){CK.chatG=chatG;const g=o.groups[chatG];
+pushNotif(SES.phone,'💬','فُتحت دردشة مع '+ST(g.store).name,'شارك تفاصيلك وموقعك عبر الدردشة — التواصل داخل ضمين فقط',['orders']);
+toast('💬 فُتحت دردشة التنسيق/التعديلات مع '+esc(ST(g.store).name),'ok')}
+CART=[];CPN=null;PTS=0;FREE_DL=false;
+ckRefresh();
+if(chatG>=0)setTimeout(()=>{if($('#ckbody')&&$('#modals').innerHTML)openOChat(CK.oid,chatG)},1500);
+}
+/* ================= الطلبات ================= */
+const GLBL={pending:'بانتظار القبول',preparing:'قيد التحضير',shipped:'تم الشحن',received:'استُلم — قيد الفحص',released:'حُرر المبلغ',disputed:'قيد التحكيم',refunded:'استُرجع المبلغ'};
+const GSTEPS=['القبول','التحضير','الشحن','الاستلام','التحرير'];
+function gstep(g){return{pending:0,preparing:1,shipped:2,received:3,released:4}[g.status]}
+function pgOrders(){
+if(!SES)return `<div class="pghead"><h1>🧾 طلباتي</h1></div><div class="empty"><div class="em">🔐</div><b>سجّل دخولك لمتابعة طلباتك</b><span>ستجد هنا كل شحنة بحالتها وعدّاد الحماية</span><button class="btn mt" onclick="openAuth()">تسجيل الدخول</button></div>`;
+const os=DB.orders.filter(o=>o.customer===SES.phone);
+if(!os.length)return `<div class="pghead"><h1>🧾 طلباتي</h1></div><div class="empty"><div class="em">📦</div><b>لا طلبات بعد</b><span>أول طلب لك سيظهر هنا بحالاته المباشرة</span><button class="btn mt" onclick="go('home')">ابدأ التسوق</button></div>`;
+return `<div class="pghead"><h1>🧾 طلباتي</h1><span class="tag grn">${ar(os.length)} طلبات</span></div>`+
+os.map(o=>`<div class="ocard">
+<div class="spread" style="flex-wrap:wrap">
+<div><b class="fx" style="font-size:14px">طلب #${ar(o.id)}</b><div class="hint">${dt(o.at)} · ${({mada:'مدى',visa:'فيزا/ماستركارد',apple:'Apple Pay',tabby:'تقسيط تابي',tamara:'تقسيط تمارا',bal:'محفظة ضمين'}[o.pay])||'دفع إلكتروني'}${o.paidBy?' ('+o.paidBy+')':''}${o.inst?' — '+ar(o.inst.n)+' دفعات × '+ard(o.inst.each)+' ر.س':''}</div></div>
+${o.coupon&&o.coupon.amt?`<span class="tag amb">كوبون −${money(o.coupon.amt)}</span>`:''}
+${o.ptsUsed?`<span class="tag amb">نقاط −${money(o.ptsAmt)}</span>`:''}
+${o.freeDl?`<span class="tag grn">🚚 توصيل مجاني (نقاط)</span>`:''}
+${o.tax?`<span class="tag gry">ض.ق.م ١٥٪: ${money(o.tax)}</span>`:''}
+</div>
+<div class="hint">📍 ${esc(o.addr)}</div>
+${o.groups.map((g,gi)=>ogroup(o,g,gi)).join('')}
+</div>`).join('');
+}
+function ogroup(o,g,gi){
+const s=ST(g.store),sec=SEC(s.sec);
+const st=g.status;
+const dis=DB.disputes.find(d=>d.order===o.id&&d.store===g.store);
+const archived=g.chat&&(g.chatArchived||['received','released','refunded','disputed'].includes(st));
+return `<div class="ogroup">
+<div class="spread" style="flex-wrap:wrap">
+<div style="display:flex;align-items:center;gap:9px">
+<div class="cghead" style="--c:${s.color};background:${s.color}14;border:0;padding:4px 12px 4px 9px;border-radius:11px"><div class="lg" style="width:24px;height:24px;font-size:11px">${s.name[0]}</div></div>
+<div><b style="font-size:12.5px;color:${s.color}">${esc(s.name)}</b><div class="hint">شحنة مستقلة · حماية ${sec.win}</div></div>
+</div>
+${st==='disputed'?`<span class="tag red">⚖️ قيد التحكيم</span>`:st==='refunded'?`<span class="tag gry">💸 استُرجع المبلغ</span>`:`<span class="tag ${st==='released'?'grn':'amb'}">${GLBL[st]}</span>`}
+</div>
+<div class="oitems">${g.items.map(it=>{const p=P(it.pid);return `<span class="oitag" onclick="go('product','${it.pid}')">${p?imgTag(p.imgs[0],'',''):''} ${ar(it.qty)}× ${p?esc(p.name):'—'}</span>`}).join('')}</div>
+${g.logi?logiStrip(o,g):''}
+${g.booking?`<div class="hint" style="margin-top:7px;background:#A45A3A12;border:1px dashed #A45A3A55;border-radius:11px;padding:8px 11px;line-height:1.8">🎪 <b>حجز مناسبتك:</b> ${esc(g.booking.date)} · التركيب ${esc(g.booking.setup)}${g.booking.tear?' · الفك '+esc(g.booking.tear):''}${g.booking.dl==='pickup'?' · 🚶 استلام من مقر المتجر بلا توصيل':' · 🚚 فريق المتجر يوصل ويركّب'}${g.booking.geo?' · 📍 موقع المناسبة محدد لفريق التنسيق':''}${g.booking.note?' · '+esc(g.booking.note):''}</div>`:''}
+${g.gift?`<div class="giftrow">🎁 إهداء إلى: <b>${esc(g.gift.name||'مستلم')}</b> · ${ar(g.gift.phone)} · ${esc(g.gift.city||'—')} — صدرت البوليصة باسم المستلم فتوصله الهدية مباشرة</div>`:''}
+${g.digi?`<div class="giftrow" style="background:#50489E12;border-color:#50489E66">⚡ طلب رقمي — سُلّم فوراً إلى <a style="color:#50489E;font-weight:800;cursor:pointer" onclick="go('dlib')">مكتبتك الرقمية</a> والكود/الملف جاهز للعرض والتحميل</div>`:''}
+${g.custom?`<div class="giftrow" style="background:#A45A3A12;border-color:#A45A3A66">✏️ طلب قابل للتعديل — راسل متجرك عبر محادثة الطلب بأي تعديل (أي مبلغ إضافي يُحجز بضمان ضمين حتى الاستلام)</div>`:''}
+${g.extra?`<div class="giftrow" style="background:#1D44320d;border-color:#1D443255">💰 أُضيف للشحنة مبلغ تعديلات محجوز بالخزنة: <b>${money(g.extra)}</b></div>`:''}
+${g.ans&&g.ans.length?`<div class="hint" style="margin-top:6px">❓ إجاباتك للمتجر: ${g.ans.map(x=>esc(x.q)+' ← <b>'+esc(x.a)+'</b>').join(' · ')}</div>`:''}
+${g.pans&&g.pans.length?`<div class="hint" style="margin-top:6px">❓ إجاباتك على أسئلة المنتجات: ${g.pans.map(x=>esc(x.pn)+' — '+x.ans.map(y=>esc(y.q)+' ← <b>'+esc(y.a)+'</b>').join(' · ')).join(' · ')}</div>`:''}
+${g.chat?`<div class="mt" style="display:flex;gap:7px;flex-wrap:wrap;align-items:center"><button class="btn soft sm" onclick="openOChat(${o.id},${gi})">💬 محادثة الطلب${g.chatDeleted?' — محذوفة لمخالفة':(g.chatArchived||['received','released','refunded','disputed'].includes(st))?' — مؤرشفة':' ('+ar(g.chat.length)+' رسالة)'}</button>${g.viol&&(g.viol.customer+g.viol.merchant)?`<span class="tag red">${ar(g.viol.customer+g.viol.merchant)} رسالة محجوبة أمنياً</span>`:''}</div>`:''}
+${st!=='disputed'&&st!=='refunded'?`<div class="osteps">${GSTEPS.map((l,i)=>`<div class="st ${i<gstep(g)?'on':i===gstep(g)?(st==='received'?'cur on':'on'):''}"><i></i>${l}</div>`).join('')}</div>`:''}
+${st==='received'?`<div class="spread mt" style="flex-wrap:wrap">
+<span class="cd" data-cd="${g.complaintUntil}"><b>⏳ ${clock(g.complaintUntil-Date.now())}</b> متبقٍ من نافذة الحماية — بعدها يُحرر المبلغ تلقائياً</span></div>
+<div class="spread mt" style="gap:8px;flex-wrap:wrap">
+<button class="btn sm" onclick="openRate(${o.id},${gi})">⭐ قيّم وحرر فوراً</button>
+<button class="btn red sm" onclick="openComplaint(${o.id},${gi})">⚠️ فتح نزاع</button>
+</div>`:''}
+${st==='shipped'?(g.ship&&g.ship.mode==='field'?otpBox(o,g,gi):`<button class="btn sm mt" onclick="confirmReceive(${o.id},${gi})">📦 استلمت الشحنة — ابدأ الفحص</button>`):''}
+${st==='pending'?`<div class="hint mt">بانتظار قبول المتجر للطلب…</div>`:''}
+${st==='preparing'?`<div class="hint mt">🧵 المتجر يحضّر طلبك الآن</div>`:''}
+${st==='disputed'&&dis?`<button class="btn red sm mt" onclick="openDispute('${dis.id}')">💬 متابعة النزاع والدردشة</button>`:''}
+${st==='refunded'?`<div class="hint mt">💸 استُرجع كامل مبلغ الشحنة (${money(g.sub)}) إلى محفظة ضمين — استخدمه في طلبك القادم.</div>`:''}
+${st==='released'&&g.payout?`<div class="mt" style="background:#1D443208;border:1px dashed #1D443233;border-radius:12px;padding:9px 13px;font-size:11.5px">
+<b style="color:var(--grn)">🔓 تفصيل التحرير</b> — إجمالي الشحنة ${money(g.payout.sub)} · عمولة ضمين: ${money(g.payout.comm)} · صافي التاجر: ${money(g.payout.net)}${g.rated?` · تقييمك: ${STARS(g.rated.stars)}`:''}</div>`:''}
+<div class="hint" style="margin-top:7px">إجمالي الشحنة: <b>${money(r2(g.sub+g.dl))}</b>${g.dl?` (شحن ${money(g.dl)})`:''}</div>
+</div>`;
+}
+function confirmReceive(oid,gi){
+const o=DB.orders.find(x=>x.id===oid);const g=o.groups[gi];
+g.status='received';g.complaintUntil=Date.now()+secOf(g.store).winMin*60e3;
+if(g.logi)g.logi.events.push({t:'أكّد العميل التسليم — تحديث حالة تلقائي عبر Webhook',at:Date.now()});
+if(g.chat&&!g.chatArchived&&!g.chatDeleted){g.chatArchived=true;g.chat.push({r:'sys',t:'🗄️ أُرشفت المحادثة فور تسليم الشحنة — للاعتراض على الشحنة افتح نزاعاً خلال نافذة الحماية.',at:Date.now()})}
+pushNotif(o.customer,'🛡️','بدأت نافذة الحماية','افحص طلبك #'+ar(oid)+' — لديك '+secOf(g.store).win,['orders']);
+const own=ST(g.store).owner;if(own)pushNotif(own,'📦','أكّد العميل الاستلام','بدأت نافذة حماية طلب #'+ar(oid)+' — يُحرر المبلغ تلقائياً بانتهائها',['m-orders']);
+toast('بدأت نافذة الفحص — '+secOf(g.store).win+' 🛡️','ok');render();
+}
+/* ===== شريط البوليصة والتتبع بالحالات ===== */
+function logiStrip(o,g){
+const l=g.logi,s=ST(g.store);
+const modeTxt=l.mode==='chilled'?'🧊 جارٍ جدولة توصيل مبرد مع أقرب شركة توصيل مبرد متعاقدة (موعد مسبق)':l.mode==='instant'?'🛵 جارٍ البحث عن مندوب فوري — وقت التوصيل المتوقع: ٤٥ دقيقة':'🚚 تتبع بالحالات فقط — بلا خريطة مباشرة حفاظاً على خصوصية الطرفين';
+return `<div class="lgstrip">
+<div class="spread" style="flex-wrap:wrap"><b>${l.wb?'📄 بوليصة '+ar(l.wb)+' · ':''}${esc(l.courier)}</b><span class="hint">من ${esc(s.city||'—')} إلى ${esc(o.city||'مدينتك')}</span></div>
+${modeTxt}
+${g.ship&&g.ship.charge?`<div class="hint">رسوم الشحن المدفوعة: ${money(g.ship.charge)} ← تُحوّل لحساب الشريك اللوجستي</div>`:(g.ship&&g.ship.source==='merchant'?'<div class="hint">الشحن على حساب المتجر 🎁 — وما يتحمله يُقتطع من صافيه ولا يمس العمولة</div>':'')}
+${g.ship&&g.ship.fragile?`<div class="hint" style="color:#B3541E;font-weight:700">⚠️ قابل للكسر — العلامة منقولة آلياً لشركة الشحن: تغليف خاص إلزامي (رسوم حماية ١٥ ر.س ضمن الشحن)</div>`:''}
+${l.events.slice(-3).map(e=>`<div class="lgev">⚡ ${esc(e.t)} · ${ago(e.at)}</div>`).join('')}
+</div>`;
+}
+/* ===== محادثة الطلب (عميل × تاجر) — مراقبة وفلترة أمنية ===== */
+let OCHAT=null;
+function openOChat(oid,gi){
+const o=DB.orders.find(x=>x.id===oid);if(!o)return;const g=o.groups[gi];if(!g.chat)return;
+OCHAT={oid,gi};openModal(ochatHTML(o,g),'lg');
+setTimeout(()=>{const l=$('#chatlog');if(l)l.scrollTop=l.scrollHeight},50);
+}
+function myORole(o,g){
+if(!SES)return null;
+if(SES.role==='admin')return 'admin';
+if(SES.role==='customer'&&o.customer===SES.phone)return 'customer';
+if(SES.role==='merchant'&&g.store===SES.store)return 'merchant';
+return null;
+}
+function ochatHTML(o,g){
+const s=ST(g.store),cust=USERS[o.customer];
+const r=myORole(o,g);
+const archived=g.chatArchived||['received','released','refunded','disputed'].includes(g.status);
+const canWrite=(r==='customer'||r==='merchant')&&!g.chatDeleted&&!archived;
+return `<div class="mhead"><b>💬 محادثة الطلب #${ar(o.id)} — ${esc(s.name)}</b>
+${g.chatDeleted?'<span class="tag red">محذوفة لمخالفة</span>':archived?'<span class="tag gry">🗄️ مؤرشفة</span>':'<span class="tag grn">نشطة</span>'}
+<button class="x" onclick="OCHAT=null;closeModal()">✕</button></div>
+<div class="parties">
+<span class="party" style="--pc:var(--grn)"><i></i> 👩 ${cust?esc(cust.name):'العميل'}</span>
+<span class="party" style="--pc:${s.color}"><i></i> 🏪 ${esc(s.name)}</span>
+<span class="party" style="--pc:var(--navy)"><i></i> 🛡️ الإدارة تُتابع تلقائياً</span>
+</div>
+<div class="cwrap">
+<div class="chatlog" id="chatlog">
+${g.chat.map((m,i)=>omsgHTML(m,g,i)).join('')}
+</div>
+${canWrite?`<div class="chatbar">${r==='customer'?`<button class="btn soft xs" onclick="sendMyLoc()">📍 مشاركة موقعي مع المتجر</button>`:''}${r==='merchant'?`<button class="btn amb xs" onclick="mAskExtra()">💰 طلب مبلغ إضافي (تعديل)</button>`:''}</div>
+<div class="composer">
+<textarea id="omsg" placeholder="اكتب تفاصيل طلبك أو استفسارك… (محادثة مراقبة: تُحجب الأرقام والروابط ووسائل التواصل الخارجية تلقائياً)"></textarea>
+<button class="btn" onclick="sendOMsg()">إرسال ➤</button>
+</div>`:`<div class="composer"><div class="hint" style="padding:8px;line-height:1.8">${g.chatDeleted?'🚫 حُذفت المحادثة نهائياً بعد رصد ٣ مخالفات لسياسة التواصل خارج التطبيق — للاعتراض راسل دعم ضمين.':archived?'🗄️ أُرشفت المحادثة فور تسليم الشحنة — للاعتراض افتح نزاعاً خلال نافذة الحماية.':r==='admin'?'🛡️ أنت بوضع المراقبة — الإدارة تطلع ولا تشارك':'🔒 سجّل دخولك كأحد طرفي الطلب للمشاركة'}</div></div>`}
+</div>`;
+}
+function omsgHTML(m,g,mi){
+if(m.r==='sys')return `<div class="msg r-s">🔔 ${esc(m.t)}<div style="font-size:9px;margin-top:2px">${ago(m.at)}</div></div>`;
+const o=DB.orders.find(x=>x.id===OCHAT.oid);
+const who=m.r==='customer'?(USERS[o.customer]?USERS[o.customer].name.split(' ')[0]:'العميل'):ST(g.store).name;
+const mine=SES&&((m.r==='customer'&&SES.role==='customer'&&o.customer===SES.phone)||(m.r==='merchant'&&SES.role==='merchant'&&g.store===SES.store));
+const stamp=`<div style="font-size:9px;margin-top:3px;opacity:.7">${ago(m.at)}</div>`;
+if(m.loc)return `<div class="msg ${mine?'me':'them'} ${m.r==='customer'?'r-c':'r-m'}" ${m.r==='merchant'?`style="--mc:${ST(g.store).color}"`:''}><span class="who">${m.r==='customer'?'👩 '+who:'🏪 '+who} · 📍 مشاركة موقع</span><span class="locpin">📍 ${esc(m.loc.txt)}${m.loc.geo?` (${ard(m.loc.geo.lat)}، ${ard(m.loc.geo.lng)})`:''}</span>${stamp}</div>`;
+if(m.payreq){const custSide=SES&&SES.role==='customer';
+return `<div class="msg ${mine?'me':'them'} ${m.r==='merchant'?'r-m':'r-c'}" ${m.r==='merchant'?`style="--mc:${ST(g.store).color}"`:''}><span class="who">${m.r==='merchant'?'🏪 '+who:'👩 '+who} · 💰 طلب مبلغ إضافي</span>
+<div class="payreq"><b>تعديل بـ ${money(m.payreq.amt)}</b>${m.payreq.note?`<span class="hint">${esc(m.payreq.note)}</span>`:''}
+${m.payreq.paid?`<span class="tag grn">✓ سُدد وحُجز في الخزنة — ${esc(m.payreq.via||'محفظة ضمين')}</span>`:custSide?`<button class="btn amb xs" onclick="payExtra(${o.id},${OCHAT.gi},${mi})">🔒 ادفع ${money(m.payreq.amt)} بضمان ضمين</button>`:`<span class="tag amb">بانتظار دفع العميل</span>`}
+</div>${stamp}</div>`}
+return `<div class="msg ${mine?'me':'them'} ${m.r==='customer'?'r-c':'r-m'}" ${m.r==='merchant'?`style="--mc:${ST(g.store).color}"`:''}><span class="who">${m.r==='customer'?'👩 '+who:'🏪 '+who}</span>${esc(m.t)}${stamp}</div>`;
+}
+function ochatRefresh(){
+if(!OCHAT)return;
+const o=DB.orders.find(x=>x.id===OCHAT.oid);const g=o&&o.groups[OCHAT.gi];
+if(!g||!g.chat){OCHAT=null;return}
+$('.mcard').innerHTML=ochatHTML(o,g);
+const l=$('#chatlog');if(l)l.scrollTop=l.scrollHeight;
+}
+function sendOMsg(){
+const o=DB.orders.find(x=>x.id===OCHAT.oid);const g=o.groups[OCHAT.gi];
+const r=myORole(o,g);
+if(r!=='customer'&&r!=='merchant'){toast('الإدارة تتابع المحادثة ولا تشارك فيها','amb');return}
+const txt=($('#omsg').value||'').trim();
+if(!txt){toast('اكتب رسالتك أولاً','err');return}
+const v=chatGuard(txt);
+if(!v.ok){
+g.viol[r]=(g.viol[r]||0)+1;
+const n=g.viol[r];
+g.chat.push({r:'sys',t:'🚫 حُجبت رسالة ('+v.why+') — تحذير '+ar(n)+' من ٣: التواصل خارج ضمين ممنوع، وأي رقم أو رابط أو وسيلة تواصل تُحجب تلقائياً.',at:Date.now()});
+pushNotif('0500000003','🛡️','محاولة تواصل خارج التطبيق','رُصدت رسالة محجوبة ('+v.why+') في محادثة طلب #'+ar(o.id)+' — '+ST(g.store).name,['a-over']);
+const other=r==='customer'?ST(g.store).owner:o.customer;
+if(other)pushNotif(other,'🚫','تنبيه أمني','رُصدت محاولة مشاركة بيانات تواصل في محادثة طلب #'+ar(o.id)+' — يُمنع التواصل خارج ضمين حمايةً للطرفين',['orders']);
+$('#omsg').value='';
+if(n>=3){
+g.chatDeleted=true;
+g.chat=[{r:'sys',t:'حُذفت المحادثة نهائياً — رُصدت ٣ محاولات لمخالفة سياسة التواصل خارج التطبيق. للاعتراض راسل دعم ضمين.',at:Date.now()}];
+pushNotif('0500000003','⛔','حُذفت محادثة طلب','تجاوز أحد الطرفين ٣ مخالفات في طلب #'+ar(o.id)+' — '+ST(g.store).name,['a-over']);
+toast('حُذفت المحادثة بعد ٣ مخالفات ⛔','err');
+}else toast('حُجبت رسالتك ('+v.why+') — التواصل خارج ضمين ممنوع ⚠️','err');
+ochatRefresh();render();return;
+}
+g.chat.push({r,t:txt,at:Date.now()});
+const other=r==='customer'?ST(g.store).owner:o.customer;
+if(other)pushNotif(other,'💬','رسالة جديدة في طلب #'+ar(o.id),(r==='customer'?(USERS[o.customer]?USERS[o.customer].name.split(' ')[0]:'العميل'):ST(g.store).name)+' راسلك بخصوص طلبك',['orders']);
+$('#omsg').value='';ochatRefresh();
+}
+/* تقييم + تحرير فوري */
+let ORATE={stars:0,gi:0,oid:0};
+function openRate(oid,gi){ORATE={stars:0,oid,gi};
+openModal(`<div class="mhead"><b>⭐ التقييم والتحرير الفوري</b><button class="x" onclick="closeModal()">✕</button></div>
+<div class="mbody">
+<p class="hint mb">تقييمك يحرر المبلغ للتاجر فوراً ويمنحك <b>+١٠ نقاط</b> إضافية — يمكنك أيضاً الانتظار حتى تنتهي نافذة الحماية تلقائياً.</p>
+<div class="starin" id="ostars">${[1,2,3,4,5].map(i=>`<span onclick="oStarPick(${i})">★</span>`).join('')}</div>
+<textarea class="inp" id="ortxt" placeholder="كيف كانت تجربتك مع المنتج والتغليف والسرعة؟" style="min-height:74px;margin:10px 0"></textarea>
+<button class="btn amb wide" onclick="submitOrderRate()">🚀 أرسل التقييم وحرر المبلغ</button>
+</div>`);}
+function oStarPick(n){ORATE.stars=n;document.querySelectorAll('#ostars span').forEach((s,i)=>s.classList.toggle('on',i<n))}
+function submitOrderRate(){
+if(!ORATE.stars){toast('اختر النجوم أولاً','err');return}
+const o=DB.orders.find(x=>x.id===ORATE.oid);const g=o.groups[ORATE.gi];
+g.rated={stars:ORATE.stars,txt:($('#ortxt').value||'').trim()};
+doRelease(o,g,'تقييم العميل',true);
+closeModal();toast('شكراً! حُرر المبلغ للتاجر وكسبت نقاطك ⭐','ok');render();
+}
+/* ================= محرك ضمين ================= */
+function doRelease(o,g,by,bonus){
+if(g.status!=='received')return;
+g.status='released';g.releasedAt=Date.now();g.releasedBy=by;
+const comm=r2(g.items.reduce((a,it)=>{const pd=P(it.pid);return a+it.price*it.qty*catComm(ST(g.store).sec,pd?pd.cat:'')/100},0));
+const sh=g.ship||{mode:'std',cost:(g.dl||0),charge:(g.dl||0),subsidy:0,source:'customer'};
+const mShip=sh.source==='merchant'?r2(sh.subsidy||0):0;
+const ptsShip=sh.source==='pts'?r2(sh.cost||0):0;
+let net=r2(g.sub-comm-mShip);if(net<0)net=0;
+DB.aRevenue=r2(DB.aRevenue+comm);
+const rm=DB.revMonths[DB.revMonths.length-1];rm.v=r2(rm.v+comm);
+DB.logiWallet=r2((DB.logiWallet||0)+(sh.charge||0)+mShip+ptsShip);
+if(ptsShip)DB.aPtsWallet=r2((DB.aPtsWallet||0)-ptsShip);
+DB.storeWallets[g.store]=r2((DB.storeWallets[g.store]||0)+net);
+g.payout={sub:g.sub,comm,net,ship:{charge:sh.charge||0,merchant:mShip,pts:ptsShip}};
+const u=USERS[o.customer];
+const giftPts=g.items.reduce((a,it)=>{const pd=P(it.pid);return a+((pd&&pd.pts)||0)*it.qty},0);
+const pts=Math.floor(net/10)+(bonus?10:0);
+if(u){u.pts=(u.pts||0)+pts+giftPts;
+u.ptsLog.unshift({t:'تحرير طلب #'+o.id+(bonus?' + مكافأة تقييم':''),v:pts,at:Date.now()});
+if(giftPts)u.ptsLog.unshift({t:'نقاط هدية على منتجات الطلب #'+o.id,v:giftPts,at:Date.now()})}
+pushNotif(o.customer,'🔓','تم تحرير مبلغ طلبك','صافي '+money(net)+' حُوِّل إلى '+ST(g.store).name+' — كسبت '+ar(pts)+' نقطة ولاء',['orders']);
+const own=ST(g.store).owner;if(own)pushNotif(own,'💰','تحرير دفعة جديدة','استلمت '+money(net)+' صافي الطلب #'+ar(o.id)+' (عمولة ضمين '+money(comm)+(mShip?' + دعمك للشحن '+money(mShip):'')+')',['m-wallet']);
+}
+function doRefund(o,g,by){
+g.status='refunded';g.refundedAt=Date.now();g.refundedBy=by;
+const back=r2(g.sub+((g.ship&&g.ship.charge)||(g.dl||0)));
+const u=USERS[o.customer];if(u){u.bal=r2((u.bal||0)+back)}
+pushNotif(o.customer,'💸','استُرجع مبلغ طلبك','أُعيد '+money(back)+' إلى محفظة ضمين الخاصة بك (المنتجات + الشحن)',['account']);
+const own=ST(g.store).owner;if(own)pushNotif(own,'↩️','استرجاع مبلغ شحنة','حكم التحكيم لطلب #'+ar(o.id)+': استرجاع كامل المبلغ للعميل',['m-disputes']);
+}
+setInterval(()=>{
+let changed=false;
+DB.orders.forEach(o=>o.groups.forEach(g=>{
+if(g.status==='received'&&g.complaintUntil&&Date.now()>=g.complaintUntil){doRelease(o,g,'انتهاء نافذة الحماية');changed=true}}));
+document.querySelectorAll('[data-cd]').forEach(el=>{
+const t=+el.dataset.cd-Date.now();const b=el.querySelector('b');
+if(b)b.textContent='⏳ '+clock(t)+' ';else el.textContent='⏳ '+clock(t);
+if(t<=0)changed=true});
+if(changed)render();
+},1000);
+/* ================= نافذة الشكوى المتغيّرة ================= */
+const COMPS={damaged:'المنتج وصل تالفاً',notmatch:'لا يطابق الوصف',missing:'عناصر ناقصة',late:'تأخر شديد في الوصول',other:'سبب آخر'};
+function openComplaint(oid,gi){
+COMP={sub:'damaged',img:null};COMP.oid=oid;COMP.gi=gi;
+openModal(`<div class="mhead"><b>⚠️ فتح نزاع على الشحنة</b><button class="x" onclick="closeModal()">✕</button></div>
+<div class="mbody" id="compbody">${compBody()}</div>`);}
+function compBody(){
+return `<div class="demo mb"><b style="font-size:12.5px">🛡️ لا تقلق — مبلغك ما زال محجوزاً</b>
+<p class="hint" style="margin-top:2px">افتح النزاع خلال نافذة الحماية وسيبقى المبلغ معلقاً حتى تصدر الإدارة حكمها بدردشة ثلاثية الأطراف.</p></div>
+<div class="fld"><label>سبب النزاع</label>
+<select class="inp" onchange="COMP.sub=this.value;COMP.img=null;compRefresh()">
+${Object.entries(COMPS).map(([k,v])=>`<option value="${k}" ${COMP.sub===k?'selected':''}>${v}</option>`).join('')}</select></div>
+<div class="mt" id="compx">${compExtra()}</div>
+<div class="spread mt">
+<button class="btn gray sm" onclick="closeModal()">إلغاء</button>
+<button class="btn red" onclick="submitComplaint()">⚖️ افتح النزاع</button>
+</div>`;
+}
+function compExtra(){
+if(COMP.sub==='damaged')return `
+<div class="fld"><label>صف الضرر بدقة</label><textarea class="inp" id="cp-txt" style="min-height:64px" placeholder="مثال: شد واضح عند الطرف الأيسر مع خيط مقطوع…"></textarea></div>
+<div class="mt"><button class="btn soft sm" onclick="pickCompImg()">📎 إرفاق صورة الضرر (مطلوبة)</button>
+${COMP.img?`<span class="tag red" style="margin-inline-start:6px">✓ مرفقة</span>`:'<span class="hint"> — ستظهر كدليل في الدردشة</span>'}</div>`;
+if(COMP.sub==='notmatch')return `
+<div class="fgrid">
+<div class="fld"><label>ماذا طلبت؟</label><input class="inp" id="cp-want" placeholder="مثال: بوكس أخضر زيتي"></div>
+<div class="fld"><label>ماذا وصلك؟</label><input class="inp" id="cp-got" placeholder="مثال: كحلي غامق"></div>
+</div>
+<div class="fld mt"><label>تفاصيل إضافية</label><textarea class="inp" id="cp-txt" style="min-height:54px"></textarea></div>
+<div class="mt"><button class="btn soft sm" onclick="pickCompImg()">📎 إرفاق صورة للمقارنة (اختياري)</button>
+${COMP.img?`<span class="tag red" style="margin-inline-start:6px">✓ مرفقة</span>`:''}</div>`;
+return `
+<div class="fld"><label>اشرح ما حدث بدقة</label><textarea class="inp" id="cp-txt" style="min-height:74px" placeholder="كل التفاصيل تساعد الإدارة على الحكم العادل…"></textarea></div>
+<div class="mt"><button class="btn soft sm" onclick="pickCompImg()">📎 إرفاق صورة (اختياري)</button>
+${COMP.img?`<span class="tag red" style="margin-inline-start:6px">✓ مرفقة</span>`:''}</div>`;
+}
+function compRefresh(){const b=$('#compbody');if(b)b.innerHTML=compBody()}
+function pickCompImg(){
+$('#fup').onchange=e=>{const f=e.target.files[0];if(!f)return;
+const rd=new FileReader();rd.onload=()=>{COMP.img=rd.result;$('#fup').value='';compRefresh();toast('أُرفقت الصورة ✓','ok')};rd.readAsDataURL(f)};
+$('#fup').click();
+}
+function submitComplaint(){
+const o=DB.orders.find(x=>x.id===COMP.oid);const g=o.groups[COMP.gi];
+let txt='';
+if(COMP.sub==='notmatch'){
+const w=($('#cp-want')||{value:''}).value.trim(),gt=($('#cp-got')||{value:''}).value.trim();
+if(!w||!gt){toast('أكمل حقلَي «ماذا طلبت / ماذا وصلك»','err');return}
+txt='طلبت: '+w+' — لكن وصلني: '+gt+'. '+(($('#cp-txt')||{value:''}).value.trim());
+}else{
+txt=($('#cp-txt')||{value:''}).value.trim();
+if(!txt){toast('اكتب شرحاً للسبب أولاً','err');return}
+}
+if(COMP.sub==='damaged'&&!COMP.img){toast('إرفاق صورة الضرر إلزامي لهذا السبب','err');return}
+const d={id:'d'+(DB.disputes.length+10),order:o.id,store:g.store,customer:SES.phone,subject:COMPS[COMP.sub],openedAt:Date.now(),status:'open',ruling:null,
+messages:[{r:'sys',t:'فتح العميل نزاعاً على الطلب #'+ar(o.id)+' ('+ST(g.store).name+') بسبب: '+COMPS[COMP.sub],at:Date.now()},
+{r:'customer',t:txt,at:Date.now()+1000,img:COMP.img||undefined}]};
+DB.disputes.unshift(d);
+g.status='disputed';
+const own=ST(g.store).owner;
+if(own)pushNotif(own,'⚖️','نزاع جديد على طلبك','فتح العميل نزاعاً بسبب: '+COMPS[COMP.sub],['m-disputes']);
+pushNotif('0500000003','⚖️','نزاع جديد بانتظار التحكيم',ST(g.store).name+' · '+COMPS[COMP.sub],['a-disputes']);
+toast('فُتح النزاع — المبلغ معلق حتى الحكم ⚖️','ok');
+closeModal();render();openDispute(d.id);
+}
+/* ================= النزاعات ================= */
+function pgDisputes(){
+if(!SES)return `<div class="pghead"><h1>⚖️ نزاعاتي</h1></div><div class="empty"><div class="em">⚖️</div><b>سجّل دخولك لمتابعة نزاعاتك</b><span>دردشة ثلاثية الأطراف مع المتجر والإدارة حتى يصدر الحكم</span><button class="btn mt" onclick="openAuth()">تسجيل الدخول</button></div>`;
+const mine=DB.disputes.filter(d=>d.customer===SES.phone);
+if(!mine.length)return `<div class="pghead"><h1>⚖️ نزاعاتي</h1></div><div class="empty"><div class="em">🕊️</div><b>لا نزاعات — وهذا ممتاز</b><span>عند وجود أي مشكلة مع شحنة، افتح النزاع من صفحة طلباتك خلال نافذة الحماية</span><button class="btn mt" onclick="go('orders')">ذهاب إلى طلباتي</button></div>`;
+const open=mine.filter(d=>d.status==='open'),done=mine.filter(d=>d.status==='resolved');
+const tab=VIEW.dtab||'open';
+return `<div class="pghead"><h1>⚖️ نزاعاتي</h1>
+<span class="tag ${open.length?'red':'grn'}">${ar(open.length)} جارٍ · ${ar(done.length)} منتهٍ</span></div>
+<div class="chiprow"><button class="chip ${tab==='open'?'on':''}" onclick="VIEW.dtab='open';render()">⏳ النزاعات الجارية (${ar(open.length)})</button>
+<button class="chip ${tab==='done'?'on':''}" style="--acc:var(--grn)" onclick="VIEW.dtab='done';render()">📁 النزاعات السابقة (${ar(done.length)})</button></div>
+${ (tab==='open'?open:done).map(dispCard).join('') || `<div class="empty" style="padding:30px"><div class="em">${tab==='open'?'⏳':'📁'}</div><b>${tab==='open'?'لا نزاعات جارية':'لا نزاعات سابقة'}</b></div>` }`;
+}
+function dispCard(d){
+const s=ST(d.store),o=DB.orders.find(x=>x.id===d.order);
+const last=[...d.messages].reverse().find(m=>m.r!=='sys');
+return `<div class="ocard" style="border-inline-start:4px solid ${d.status==='open'?'var(--red)':'var(--grn)'}">
+<div class="spread" style="flex-wrap:wrap">
+<div><b class="fx" style="font-size:13.5px">⚖️ ${esc(d.subject)}</b>
+<div class="hint">طلب #${ar(d.order)} · ${esc(s.name)} · فُتح ${ago(d.openedAt)}</div></div>
+${d.status==='open'?`<span class="tag red">قيد التحكيم — المبلغ معلق</span>`:`<span class="tag grn">أُصدر الحكم</span>`}
+</div>
+${d.status==='resolved'&&d.ruling?`<div class="verd ${d.ruling.act==='release'?'rel':'ref'}" style="margin:10px 0 4px">
+<h4>${d.ruling.act==='release'?'🔓 نتيجة النزاع: إفراج المبلغ للتاجر':'💸 نتيجة النزاع: استرجاع المبلغ لك'}</h4>
+<div class="why">${esc(d.ruling.text)}</div>
+<div class="hint" style="margin-top:5px">${esc(d.ruling.by)} · ${dt(d.ruling.at)}</div></div>`:''}
+${last?`<div class="hint" style="margin-top:8px;background:var(--card2);border-radius:11px;padding:8px 12px">💬 آخر رسالة (${last.r==='customer'?'أنت':last.r==='merchant'?'المتجر':'الإدارة'}): ${esc(last.t.slice(0,90))}${last.t.length>90?'…':''}</div>`:''}
+<div class="spread mt" style="gap:8px">
+<button class="btn sm ${d.status==='open'?'red':''}" onclick="openDispute('${d.id}')">💬 ${d.status==='open'?'متابعة الدردشة وإضافة أدلة':'عرض المحادثة والحكم'}</button>
+<span class="hint">${ar(d.messages.length)} رسالة</span>
+</div></div>`;
+}
+let OPEN_DID=null;
+function openDispute(id){
+const d=DB.disputes.find(x=>x.id===id);if(!d)return;
+OPEN_DID=id;EVP=[];
+openModal(dispModalHTML(d),'lg');
+setTimeout(()=>{const l=$('#chatlog');if(l)l.scrollTop=l.scrollHeight},50);
+}
+function dispModalHTML(d){
+const s=ST(d.store),cust=USERS[d.customer],o=DB.orders.find(x=>x.id===d.order);
+const g=o.groups.find(x=>x.store===d.store);
+const canChat=SES&&((d.customer===SES.phone&&SES.role==='customer')||(d.store===SES.store&&SES.role==='merchant')||(SES.role==='admin'));
+const isAdmin=SES&&SES.role==='admin'&&d.status==='open';
+return `<div class="mhead"><b>⚖️ ${esc(d.subject)} — طلب #${ar(d.order)}</b>
+${d.status==='open'?'<span class="tag red">قيد التحكيم</span>':'<span class="tag grn">منتهٍ</span>'}
+<button class="x" onclick="OPEN_DID=null;closeModal()">✕</button></div>
+<div class="parties">
+<span class="party" style="--pc:var(--grn)"><i></i> 👩 ${esc(cust?cust.name:'العميل')}</span>
+<span class="party" style="--pc:${s.color}"><i></i> 🏪 ${esc(s.name)}</span>
+<span class="party" style="--pc:var(--navy)"><i></i> 🛡️ الإدارة (محكّم)</span>
+<span class="party" style="--pc:var(--amb)"><i></i> 💰 معلق: ${money(g.sub)}</span>
+</div>
+<div class="cwrap" id="dispwrap">
+<div class="chatlog" id="chatlog">
+${d.ruling?verdCard(d):''}
+${d.messages.map(m=>msgHTML(m,d)).join('')}
+</div>
+${EVP.length?`<div class="evpill">📎 ${EVP.map((e,i)=>`<img src="${e}" onclick="zoomImg('${e}')"><button class="btn gray xs" onclick="EVP.splice(${i},1);dispSelfRefresh()">✕</button>`).join('')}<span>صورة جاهزة للإرسال كدليل</span></div>`:''}
+${d.status==='resolved'?'':canChat?`<div class="composer">
+<textarea id="msgtxt" placeholder="اكتب حجتك أو ردك هنا… سيظهر للأطراف الثلاثة"></textarea>
+<button class="iconbtn" onclick="attachEv()" title="إرفاق صورة دليل">📎</button>
+<button class="btn" onclick="sendMsg('${d.id}')">إرسال ➤</button>
+</div>`:`<div class="composer"><div class="hint" style="padding:8px">🔒 سجّل دخولك بحساب أحد الأطراف للمشاركة في الدردشة</div></div>`}
+${isAdmin?`<div class="rulebar">
+<b style="font-size:12px" class="fx">🛡️ إصدار الحكم — اقرأ الحجج ثم اكتب تسبيبك (يظهر للطرفين)</b>
+<textarea id="ruletxt" placeholder="مثال: بعد الاطلاع على الصور وتقرير التغليف، تبيّن أن الضرر وقع أثناء الشحن…"></textarea>
+<div class="spread" style="gap:8px">
+<button class="btn sm" onclick="ruleAct('${d.id}','release')">🔓 حكم: إفراج للتاجر</button>
+<button class="btn red sm" onclick="ruleAct('${d.id}','refund')">💸 حكم: استرجاع للعميل</button>
+</div></div>`:''}
+</div>`;
+}
+function msgHTML(m,d){
+const cust=USERS[d.customer];
+if(m.r==='sys')return `<div class="msg r-s">⚖️ ${esc(m.t)}<div style="font-size:9px;margin-top:2px">${ago(m.at)}</div></div>`;
+const who={customer:cust?'👩 '+cust.name.split(' ')[0]:'العميل',merchant:'🏪 '+ST(d.store).name,admin:'🛡️ الإدارة'}[m.r];
+const mine=SES&&((m.r==='customer'&&d.customer===SES.phone&&SES.role==='customer')||(m.r==='merchant'&&d.store===SES.store&&SES.role==='merchant')||(m.r==='admin'&&SES.role==='admin'));
+const rcls=m.r==='customer'?'r-c':m.r==='merchant'?'r-m':'r-a';
+const mst=m.r==='merchant'?`style="--mc:${ST(d.store).color}"`:'';
+return `<div class="msg ${mine?'me':'them'} ${rcls}" ${mst}>
+<span class="who">${who}</span>${esc(m.t)}
+${m.img?`<img class="ev" src="${m.img}" onclick="zoomImg('${m.img}')">`:''}
+<div style="font-size:9px;margin-top:3px;opacity:.7">${ago(m.at)}</div></div>`;
+}
+function verdCard(d){
+const r=d.ruling,rel=r.act==='release';
+return `<div class="verd ${rel?'rel':'ref'}">
+<h4>${rel?'🔓 الحكم النهائي: إفراج المبلغ للتاجر':'💸 الحكم النهائي: استرجاع المبلغ للعميل'}</h4>
+<div class="why">${esc(r.text)}</div>
+<div class="hint" style="margin-top:5px">أصدره ${esc(r.by)} · ${dt(r.at)} — نُفذ تلقائياً على الشحنة</div></div>`;
+}
+function myRoleIn(d){
+if(!SES)return null;
+if(SES.role==='customer'&&d.customer===SES.phone)return 'customer';
+if(SES.role==='merchant'&&d.store===SES.store)return 'merchant';
+if(SES.role==='admin')return 'admin';
+return null;
+}
+function sendMsg(id){
+const d=DB.disputes.find(x=>x.id===id);
+const r=myRoleIn(d);
+if(!r){toast('سجّل دخولك كأحد الأطراف أولاً','amb');openAuth();return}
+const txt=($('#msgtxt')||{value:''}).value.trim();
+const img=EVP[0];
+if(!txt&&!img){toast('اكتب رسالة أو أرفق صورة','err');return}
+d.messages.push({r,t:txt||'(صورة دليل)',at:Date.now(),img});
+if(r==='customer'){const own=ST(d.store).owner;if(own)pushNotif(own,'💬','رسالة جديدة في النزاع',custName(d)+' أضاف رداً/دلياً جديداً',['m-disputes']);pushNotif('0500000003','💬','رسالة جديدة في النزاع','نزاع طلب #'+ar(d.order)+' — '+custName(d),['a-disputes'])}
+else if(r==='merchant'){pushNotif(d.customer,'💬','رد من المتجر على نزاعك',ST(d.store).name+' رد على نزاع طلب #'+ar(d.order),['disputes']);pushNotif('0500000003','💬','رسالة من التاجر في النزاع','نزاع طلب #'+ar(d.order)+' — '+ST(d.store).name,['a-disputes'])}
+else{pushNotif(d.customer,'💬','مداخلة من الإدارة','الإدارة علّقت على نزاع طلب #'+ar(d.order),['disputes']);const own=ST(d.store).owner;if(own)pushNotif(own,'💬','مداخلة من الإدارة','الإدارة علّقت على نزاع طلب #'+ar(d.order),['m-disputes'])}
+EVP=[];
+dispSelfRefresh();render();
+}
+const custName=d=>{const u=USERS[d.customer];return u?u.name.split(' ')[0]:'العميل'};
+function dispSelfRefresh(){
+if(!OPEN_DID)return;
+const d=DB.disputes.find(x=>x.id===OPEN_DID);if(!d)return;
+$('.mcard').innerHTML=dispModalHTML(d);
+const l=$('#chatlog');if(l)l.scrollTop=l.scrollHeight;
+}
+function attachEv(){
+$('#fup').onchange=e=>{const f=e.target.files[0];if(!f)return;
+const rd=new FileReader();rd.onload=()=>{EVP.push(rd.result);$('#fup').value='';dispSelfRefresh();toast('أُرفقت الصورة — اضغط إرسال لتظهر كدليل','ok')};rd.readAsDataURL(f)};
+$('#fup').click();
+}
+function ruleAct(id,act){
+const d=DB.disputes.find(x=>x.id===id);
+const txt=($('#ruletxt')||{value:''}).value.trim();
+if(!txt){toast('اكتب تسبيب الحكم — يظهر للطرفين','err');return}
+d.ruling={act,by:'الإدارة',text:txt,at:Date.now()};d.status='resolved';
+d.messages.push({r:'sys',t:'أصدرت الإدارة حكمها: '+(act==='release'?'إفراج المبلغ للتاجر — التسبيب: ':'استرجاع المبلغ للعميلة — التسبيب: ')+txt,at:Date.now()});
+const o=DB.orders.find(x=>x.id===d.order);const g=o.groups.find(x=>x.store===d.store);
+if(act==='release')doRelease(o,g,'حكم التحكيم');else doRefund(o,g,'حكم التحكيم');
+toast('أُصدر الحكم ونُفذ على الشحنة ⚖️','ok');
+OPEN_DID=null;closeModal();render();
+}
+/* ================= حسابي + الإعدادات ================= */
+function pgAccount(){
+if(!SES)return `<div class="pghead"><h1>👤 حسابي</h1></div><div class="empty"><div class="em">👤</div><b>سجّل دخولك للوصول لحسابك</b><span>النقاط، العناوين، الإشعارات والإعدادات كلها هنا</span><button class="btn mt" onclick="openAuth()">تسجيل الدخول</button></div>`;
+if(SES.role!=='customer')return `<div class="pghead"><h1>👤 حسابي</h1></div><div class="empty"><div class="em">🛍️</div><b>صفحة الحساب لعملاء ضمين</b><span>أنت الآن بدور ${SES.role==='merchant'?'التاجر':'الإدارة'}</span><button class="btn mt" onclick="switchRole('customer')">العودة للتسوق كعميل</button></div>`;
+const u=me();
+const ordersN=DB.orders.filter(o=>o.customer===SES.phone).length;
+const disOpen=DB.disputes.filter(d=>d.customer===SES.phone&&d.status==='open').length;
+const favN=(u.favs||[]).length;
+const nextHund=(100-(u.pts%100))%100;
+return `<div class="pghead"><h1>👤 حسابي وإعداداتي</h1></div>
+<div class="accgrid">
+<div>
+<div class="acard" style="display:flex;gap:13px;align-items:center">
+<div class="avat" style="width:54px;height:54px;border-radius:17px;font-size:21px">${u.name[0]}</div>
+<div style="flex:1"><b class="fx" style="font-size:15px">${esc(u.name)}</b>
+<div class="hint">${ar(SES.phone)}${u.email?' · '+esc(u.email):''}</div>
+<div class="hint">عضو منذ ${MONTHS[new Date(u.since).getMonth()]} ${ar(new Date(u.since).getFullYear())}</div></div>
+<button class="btn soft sm" onclick="profileForm()">تعديل</button>
+</div>
+<div class="ptshero">
+<div class="spread"><b class="fx" style="font-size:14px">🌟 نقاط الولاء</b><span class="tag wht">كل ١٠٠ نقطة = ${money(100*ptsVal())}</span></div>
+<div style="display:flex;align-items:baseline;gap:9px;margin-top:6px">
+<span class="fx" style="font-size:34px;font-weight:800">${ar(u.pts||0)}</span><span style="font-size:12px;opacity:.9">نقطة</span></div>
+<div class="pbar"><i style="width:${(u.pts%100)||100}%"></i></div>
+<div style="font-size:10.5px;opacity:.92">${nextHund?`تبقّى ${ar(nextHund)} نقطة لخصم ١٠ ريال القادم`:'أنت عند حد خصم جاهز — استخدمه في السلة! 🎉'}</div>
+<div class="hr" style="background:#ffffff30"></div>
+<div style="font-size:10.5px;opacity:.95;line-height:1.9">✦ نقطة عن كل ١٠ ريال عند تحرير أي شحنة<br>✦ +١٠ نقاط مكافأة عند تقييمك للطلب<br>✦ استبدلها بخصم مباشر من ملخص السلة<br>✦ ${ar(fdPts())} نقطة = 🚚 توصيل مجاني لطلباتك</div>
+${(u.ptsLog&&u.ptsLog.length)?`<div class="hr" style="background:#ffffff30"></div><b style="font-size:11px">سجل النقاط</b>
+${u.ptsLog.slice(0,4).map(l=>`<div class="spread" style="font-size:10.5px;padding:2.5px 0"><span style="opacity:.92">${esc(l.t)}</span><b>${l.v>0?'+':''}${ar(l.v)}</b></div>`).join('')}`:''}
+</div>
+<div class="qtiles">
+<div class="qtile" onclick="go('orders')"><i>🧾</i><b>طلباتي</b><span>${ar(ordersN)} طلبات</span></div>
+<div class="qtile" onclick="go('disputes')"><i>⚖️</i><b>نزاعاتي</b><span>${ar(disOpen)} جارٍ</span></div>
+<div class="qtile" onclick="go('favs')"><i>❤️</i><b>مفضلتي</b><span>${ar(favN)} منتج</span></div>
+<div class="qtile" onclick="walletInfo()"><i>🌟</i><b>محفظة ضمين</b><span>${money(u.bal||0)}</span></div>
+</div>
+</div>
+<div>
+<div class="acard"><h3>👤 الملف الشخصي</h3>
+<div class="setrow"><div class="ic">🏷️</div><div class="tx"><b>الاسم</b><span>${esc(u.name)}</span></div><button class="btn soft xs" onclick="profileForm()">تعديل</button></div>
+<div class="setrow"><div class="ic">📱</div><div class="tx"><b>رقم الجوال (معرّف حسابك)</b><span>${ar(SES.phone)}</span></div><span class="tag grn">موثّق</span></div>
+<div class="setrow"><div class="ic">✉️</div><div class="tx"><b>البريد الإلكتروني</b><span>${u.email?esc(u.email):'غير مضاف'}</span></div><button class="btn soft xs" onclick="emailForm()">${u.email?'تعديل':'إضافة'}</button></div>
+</div>
+<div class="acard"><h3>🔐 كلمة المرور والأمان</h3>
+<div class="setrow"><div class="ic">🔑</div><div class="tx"><b>كلمة المرور</b><span>آخر تحديث غير محدد — ننصح بالتغيير الدوري</span></div><button class="btn soft xs" onclick="passForm()">تغيير</button></div>
+<div class="setrow"><div class="ic">💻</div><div class="tx"><b>تسجيل الخروج من كل الأجهزة</b><span>إنهاء جميع الجلسات النشطة باستثناء الحالية</span></div><button class="btn soft xs" onclick="logoutAll()">تنفيذ</button></div>
+</div>
+<div class="acard"><h3>📍 عناويني المحفوظة</h3>
+${(u.addrs||[]).map((a,i)=>`<div class="setrow"><div class="ic">🏠</div><div class="tx"><b>${esc(a.t)} ${a.def?'<span class="tag grn" style="font-size:9px">افتراضي</span>':''}</b><span>${esc(a.a)}</span></div>
+<div style="display:flex;gap:5px">${a.def?'':`<button class="btn soft xs" onclick="setDefAddr(${i})">افتراضي</button>`}<button class="btn gray xs" onclick="delAddr(${i})">حذف</button></div></div>`).join('')}
+<div class="setrow"><div class="ic">➕</div><div class="tx"><b>إضافة عنوان جديد</b><span>مع إمكانية تحديد موقعك تلقائياً</span></div><button class="btn soft xs" onclick="addrForm()">إضافة</button></div>
+</div>
+<div class="acard"><h3>🔔 الإشعارات</h3>
+${[['ord','تحديثات الطلبات','قبول، شحن، استلام وتحرير المبلغ'],['off','العروض والخصومات','عروض الأقسام والكوبونات الجديدة'],['dis','النزاعات','ردود المتجر ومداخلات الإدارة'],['rev','التقييمات','تذكير بتقييم طلباتك المستلمة']].map(([k,t,s])=>`
+<div class="setrow"><div class="ic">🔔</div><div class="tx"><b>${t}</b><span>${s}</span></div>
+<button class="sw ${u.notif&&u.notif[k]?'on':''}" onclick="notifTog('${k}')"></button></div>`).join('')}
+</div>
+<div class="acard"><h3>🛡️ الخصوصية</h3>
+<div class="setrow"><div class="ic">🙈</div><div class="tx"><b>إخفاء رقم جوالي عن التجار</b><span>يظهر للتاجر كـ«عميل ضمين موثّق» فقط</span></div>
+<button class="sw ${u.hidePhone?'on':''}" onclick="privacyTog()"></button></div>
+<div class="setrow"><div class="ic">📜</div><div class="tx"><b>شفافية استخدام البيانات</b><span>لا نشارك بياناتك مع طرف ثالث — تُستخدم للطلبات والنزاعات فقط</span></div><span class="tag grn">مفعّل دائماً</span></div>
+</div>
+<div class="acard"><h3>💬 الدعم والمساعدة</h3>
+<div class="setrow"><div class="ic">🎧</div><div class="tx"><b>تواصل معنا</b><span>فريق ضمين يجيب خلال ساعات العمل</span></div><button class="btn soft xs" onclick="supportOpen()">مراسلة</button></div>
+<div class="setrow"><div class="ic">❓</div><div class="tx"><b>الأسئلة الشائعة</b><span>كيف يعمل الحجز والتحرير والتحكيم؟</span></div><button class="btn soft xs" onclick="faqOpen()">عرض</button></div>
+</div>
+<div class="acard" style="border-color:#A63A2E44"><h3 style="color:var(--red)">⏻ منطقة الخروج</h3>
+<div class="setrow"><div class="ic" style="background:#A63A2E10">🚪</div><div class="tx"><b>تسجيل الخروج</b><span>تبقى سلتك ومفضلتك محفوظة لجولتك القادمة</span></div><button class="btn red xs" onclick="logout()">خروج</button></div>
+</div>
+</div></div>`;
+}
+function notifTog(k){const u=me();u.notif=u.notif||{};u.notif[k]=!u.notif[k];toast(u.notif[k]?'✓ فُعّل الإشعار':'أُوقف الإشعار');render()}
+function privacyTog(){const u=me();u.hidePhone=!u.hidePhone;toast(u.hidePhone?'رقمك مخفي عن التجار الآن ✓':'أُلغي إخفاء الرقم');render()}
+function setDefAddr(i){const u=me();u.addrs.forEach((a,j)=>a.def=j===i);toast('صار «'+u.addrs[i].t+'» العنوان الافتراضي ✓','ok');render()}
+function delAddr(i){const u=me();const t=u.addrs[i].t;u.addrs.splice(i,1);toast('حُذف عنوان «'+t+'»');render()}
+function logoutAll(){toast('تم إنهاء الجلسات من كل الأجهزة ✓','ok')}
+function walletInfo(){toast('رصيد محفظة ضمين: '+money(me().bal||0)+' — يُستخدم تلقائياً كوسيلة دفع','amb')}
+function profileForm(){const u=me();
+openModal(`<div class="mhead"><b>تعديل الملف الشخصي</b><button class="x" onclick="closeModal()">✕</button></div><div class="mbody">
+<div class="fld"><label>الاسم الكامل</label><input class="inp" id="pf-nm" value="${esc(u.name)}"></div>
+<button class="btn wide mt" onclick="saveProfile()">حفظ التغييرات</button></div>`)}
+function saveProfile(){const nm=($('#pf-nm').value||'').trim();
+if(nm.length<3){toast('اكتب اسماً صحيحاً','err');return}
+me().name=nm;closeModal();toast('حُفظ اسمك ✓','ok');render()}
+function emailForm(){const u=me();
+openModal(`<div class="mhead"><b>البريد الإلكتروني</b><button class="x" onclick="closeModal()">✕</button></div><div class="mbody">
+<div class="fld"><label>البريد (لإشعارات الفواتير والعروض)</label><input class="inp" id="pf-em" value="${esc(u.email||'')}" placeholder="name@mail.com"></div>
+<button class="btn wide mt" onclick="saveEmail()">حفظ</button></div>`)}
+function saveEmail(){const em=($('#pf-em').value||'').trim();
+if(em&&!em.includes('@')){toast('صيغة بريد غير صحيحة','err');return}
+me().email=em;closeModal();toast('حُفظ البريد ✓','ok');render()}
+function passForm(){
+openModal(`<div class="mhead"><b>🔑 تغيير كلمة المرور</b><button class="x" onclick="closeModal()">✕</button></div><div class="mbody">
+<div class="fld"><label>كلمة المرور الحالية</label><input class="inp" type="password" id="pw-o"></div>
+<div class="fgrid mt">
+<div class="fld"><label>الجديدة</label><input class="inp" type="password" id="pw-n"></div>
+<div class="fld"><label>تأكيد الجديدة</label><input class="inp" type="password" id="pw-c"></div>
+</div>
+<button class="btn wide mt" onclick="savePass()">تحديث كلمة المرور</button></div>`)}
+function savePass(){const u=me();
+const o=$('#pw-o').value,n=$('#pw-n').value,c=$('#pw-c').value;
+if(o!==u.pass){toast('كلمة المرور الحالية غير صحيحة','err');return}
+if(n.length<4){toast('الجديدة ٤ محارف فأكثر','err');return}
+if(n!==c){toast('التأكيد لاطابق الجديدة','err');return}
+u.pass=n;closeModal();toast('حُدثت كلمة المرور ✓','ok')}
+function addrForm(){
+openModal(`<div class="mhead"><b>📍 عنوان جديد</b><button class="x" onclick="closeModal()">✕</button></div><div class="mbody">
+<button class="btn soft wide mb" onclick="useGeo()">🛰️ تحديد موقعي تلقائياً</button>
+<div class="fgrid">
+<div class="fld"><label>الاسم المختصر</label><input class="inp" id="ad-t" placeholder="المنزل / العمل / الاستراحة"></div>
+<div class="fld"><label>المدينة</label><input class="inp" id="ad-c" placeholder="الرياض"></div>
+</div>
+<div class="fld mt"><label>العنوان التفصيلي</label><input class="inp" id="ad-a" placeholder="الحي، الشارع، رقم المبنى"></div>
+<div class="fld mt"><label>ملاحظة للمندوب (اختياري)</label><input class="inp" id="ad-n" placeholder="مثال: الاتصال قبل الوصول"></div>
+<button class="btn wide mt" onclick="saveAddr()">حفظ العنوان</button></div>`)}
+function saveAddr(){
+const t=($('#ad-t').value||'').trim(),c=($('#ad-c').value||'').trim(),a=($('#ad-a').value||'').trim(),n=($('#ad-n').value||'').trim();
+if(!t||!a){toast('الاسم المختصر والعنوان التفصيلي مطلوبان','err');return}
+const u=me();u.addrs=u.addrs||[];
+u.addrs.push({t,a:(c?c+'، ':'')+a+(n?' — '+n:'')});
+closeModal();toast('أُضيف العنوان ✓','ok');render()}
+function supportOpen(){
+openModal(`<div class="mhead"><b>🎧 تواصل معنا</b><button class="x" onclick="closeModal()">✕</button></div><div class="mbody">
+<div class="fld"><label>موضوع الرسالة</label><select class="inp" id="sp-s"><option>استفسار عن طلب</option><option>مشكلة في الدفع</option><option>اقتراح تحسين</option><option>شكوى على متجر</option></select></div>
+<div class="fld mt"><label>نص الرسالة</label><textarea class="inp" id="sp-b" style="min-height:90px" placeholder="نحن نسمعك…"></textarea></div>
+<button class="btn wide mt" onclick="(function(){if(!$('#sp-b').value.trim()){toast('اكتب رسالتك أولاً','err');return}closeModal();toast('وصلت رسالتك — سنرد خلال ٢٤ ساعة 🎧','ok')})()">إرسال</button>
+<div class="hint mt" style="text-align:center">أو واتساب الدعم: ${ar('0590000000')} · من ٩ ص إلى ٩ م</div></div>`)}
+function faqOpen(){
+const F=[['متى يستلم التاجر المبلغ؟','عند استلامك وتقييمك، أو تلقائياً بانتهاء نافذة حماية القسم (من ٣٠ دقيقة حتى ٢٤ ساعة حسب القسم).'],
+['ماذا لو كان المنتج تالفاً؟','افتح نزاعاً خلال نافذة الحماية — يبقى مبلغك معلقاً وتحكم الإدارة بعد دردشة ثلاثية مع الأدلة.'],
+['كم عمولة ضمين؟','تحددها الإدارة لكل تصنيف على حدة (٢٫٥٪ افتراضياً) — تُحسم من التاجر لحظة التحرير فقط ولا تُضاف على العميل أبداً.'],
+['كيف أكسب النقاط؟',`نقطة عن كل ١٠ ريال عند تحرير أي شحنة + ١٠ نقاط مع كل تقييم + نقاط هدية على منتجات مختارة — وكل ١٠٠ نقطة تساوي ${money(100*ptsVal())} خصم، أو ${ar(fdPts())} نقطة مقابل توصيل مجاني.`],
+['هل يمكن الدفع من المحفظة؟','نعم — مبالغ الاسترجاع تضاف لمحفظة ضمين وتستخدمها كوسيلة دفع مباشرة.'],
+['كيف تُحسب رسوم الشحن؟','ديناميكياً من مدينة كل متجر إلى مدينتك عبر شركاء ضمين اللوجستيين (OTO/Torod) — ولكل متجر خياراته: توصيل على العميل أو مناصفة أو مجاني، مع سقف شحن مجاني لكل متجر يظهر كشريط تقدم في السلة.'],
+['هل يوجد استلام شخصي «يد بيد» من المتجر؟','لا — ملغي كلياً في ضمين: كل شحنة تُصدر لها بوليصة آلية ويُتابع الطلب بالحالات فقط (بلا خريطة مباشرة) حفاظاً على خصوصية الطرفين.'],
+['لماذا أرى مدينة المتجر فقط دون حيّه؟','حمايةً من التواصل خارج التطبيق: يظهر للمتاجر مدينة نشاطها فقط، والعنوان التفصيلي يبقى في السيرفر ويُرسل للشريك اللوجستي لإصدار البوليصة دون أن يظهر لك.'],
+['كيف أراسل المتجر؟','من صفحة طلباتي — محادثة مرتبطة بالطلب تخضع لفلترة أمنية: أي رقم جوال أو رابط أو وسيلة تواصل خارجية (واتساب/سناب/انستقرام…) تُحجب فوراً مع تنبيه الطرفين والإدارة، وتُحذف المحادثة بعد ٣ مخالفات.'],
+['ما طرق الدفع والتقسيط؟','مدى وApple Pay والفيزا/ماستركارد عبر بوابات معتمدة (Moyasar/HyperPay)، والتقسيط عبر تابي (٤ دفعات) وتمارا (٣ دفعات) على إجمالي الفاتورة: المنتجات + الشحن + الضريبة ١٥٪.']];
+openModal(`<div class="mhead"><b>❓ الأسئلة الشائعة</b><button class="x" onclick="closeModal()">✕</button></div><div class="mbody">
+${F.map(([q,a])=>`<div style="border-bottom:1px dashed var(--line);padding:9px 2px"><b style="font-size:12.5px">${q}</b><p class="hint" style="margin-top:2px">${a}</p></div>`).join('')}</div>`)}
+/* ================= صفحات التاجر ================= */
+const myStore=()=>ST(SES.store);
+function myGroups(){const out=[];
+DB.orders.forEach(o=>o.groups.forEach((g,gi)=>{if(g.store===SES.store)out.push({o,g,gi})}));
+return out.sort((a,b)=>b.o.at-a.o.at)}
+function heldFor(sid){return r2(DB.orders.reduce((a,o)=>a+o.groups.filter(g=>g.store===sid&&['pending','preparing','shipped','received','disputed'].includes(g.status)).reduce((x,g)=>x+g.sub,0),0))}
+function pgMDash(){
+const s=myStore(),sec=SEC(s.sec);
+const gs=myGroups();
+const active=gs.filter(x=>['pending','preparing','shipped','received'].includes(x.g.status));
+const held=heldFor(s.id);
+const top=[...PRODUCTS.filter(p=>p.store===s.id)].sort((a,b)=>b.sold-a.sold).slice(0,5);
+return `<div class="pghead"><h1>📊 لوحة تحكم ${esc(s.name)}</h1><span class="tag" style="background:${s.color}18;color:${s.color}">${sec.name} · 🛡️ حماية ${sec.win}</span></div>
+<div class="kpis">
+<div class="kpi grn"><i>💰</i><b>${money(DB.storeWallets[s.id]||0)}</b><span>صافي محرَّر (المحفظة)</span></div>
+<div class="kpi amb"><i>🔒</i><b>${money(held)}</b><span>مبالغ محجوزة لصالحك</span></div>
+<div class="kpi nvy"><i>📦</i><b>${ar(active.length)}</b><span>طلبات نشطة الآن</span></div>
+<div class="kpi"><i>🧺</i><b>${ar(PRODUCTS.filter(p=>p.store===s.id).length)}</b><span>منتجات معروضة</span></div>
+<div class="kpi grn"><i>⭐</i><b>${ard(s.rt)}</b><span>تقييم المتجر (${ar(s.sales)} عملية)</span></div>
+</div>
+<div class="grid2 mt">
+<div class="acard"><h3>🔥 الأكثر مبيعاً لديك</h3>
+<div class="rows">${top.map(p=>`<div class="row" style="cursor:pointer" onclick="go('product','${p.id}')">
+<div style="width:38px;height:38px;border-radius:11px;overflow:hidden;flex-shrink:0">${imgTag(p.imgs[0],'','')}</div>
+<div style="flex:1"><b>${esc(p.name)}</b><div class="hint">${money(eff(p))} · مخزون ${ar(p.stock)}</div></div>
+<b class="fx" style="color:var(--grn)">${ar(p.sold)}</b></div>`).join('')}</div></div>
+<div class="acard"><h3>🕒 آخر الطلبات</h3>
+<div class="rows">${active.slice(0,4).map(x=>`<div class="row">
+<div style="flex:1"><b>طلب #${ar(x.o.id)}</b><div class="hint">${USERS[x.o.customer]?esc(USERS[x.o.customer].name.split(' ')[0]):'عميل'} · ${ago(x.o.at)}</div></div>
+<span class="tag ${x.g.status==='pending'?'amb':'grn'}">${GLBL[x.g.status]}</span></div>`).join('')||'<div class="hint">لا طلبات نشطة</div>'}</div>
+<button class="btn soft wide mt" onclick="go('m-orders')">إدارة كل الطلبات ←</button></div>
+</div>`;
+}
+function pgMProds(){
+const s=myStore(),sec=SEC(s.sec);
+const ps=PRODUCTS.filter(p=>p.store===s.id);
+return `<div class="pghead"><h1>🧺 منتجاتي (${ar(ps.length)})</h1><button class="btn sm" onclick="mProdForm()">＋ منتج جديد</button></div>
+<div class="kpis mb">
+<div class="kpi nvy"><i>🧺</i><b>${ar(ps.length)}</b><span>منتج معروض</span></div>
+<div class="kpi amb"><i>🏷️</i><b>${ar(ps.filter(p=>p.off>0).length)}</b><span>عليه عرض نشط</span></div>
+<div class="kpi grn"><i>🌟</i><b>${ar(ps.filter(p=>(p.pts||0)>0).length)}</b><span>منتج يمنح نقاطاً</span></div>
+<div class="kpi red"><i>⚠️</i><b>${ar(ps.filter(p=>!p.stock).length)}</b><span>نفد مخزونه</span></div>
+</div>
+<div class="mpgrid">
+${ps.map(p=>{const e=eff(p);return `<div class="mpcard" style="--acc:${s.color}">
+<div class="mph" onclick="go('product','${p.id}')">${p.off?`<span class="offb">خصم ${ar(p.off)}٪</span>`:''}${(p.pts||0)>0?`<span class="ptsb">🌟 ${ar(p.pts)} نقطة</span>`:''}<span class="secb" style="--c:${sec.color}">${esc(p.cat)}</span>${imgTag(p.imgs[0],'','')}</div>
+<div class="mpb">
+<div onclick="go('product','${p.id}')" style="cursor:pointer"><b style="font-size:12.8px;display:block;line-height:1.5">${esc(p.name)}</b></div>
+<div style="display:flex;align-items:baseline;gap:7px"><b class="fx" style="font-size:15px;color:var(--grn)">${money(e)}</b>${p.off?`<s class="mut" style="font-size:10.5px">${money(p.price)}</s>`:''}</div>
+<div class="mpstats">
+<span class="mpstat">📦 مخزون ${ar(p.stock)}</span>
+<span class="mpstat">🛒 بيع ${ar(p.sold)}</span>
+<span class="mpstat" style="color:var(--amb2)">★ ${ard(p.rt)}</span>
+${p.ptype==='chilled'?'<span class="mpstat" style="color:#2E6B8A">🧊 مبرد</span>':p.ptype==='instant'?'<span class="mpstat" style="color:var(--amb2)">🛵 فوري</span>':p.ptype==='field'?'<span class="mpstat" style="color:#A45A3A">🎪 ميداني</span>':p.ptype==='digital'?'<span class="mpstat" style="color:#50489E">⚡ رقمي فوري</span>':p.ptype==='ship'?'<span class="mpstat">📦 شحن</span>':''}${p.fragile?'<span class="mpstat" style="color:#B3541E">⚠️ قابل للكسر</span>':''}${p.customOk?'<span class="mpstat" style="color:#A45A3A">✏️ تعديلات</span>':''}${p.giftOk?'<span class="mpstat" style="color:var(--red)">🎁 إهداء</span>':''}
+</div>
+<div class="mpacts">
+<button class="btn soft xs" onclick="mOfferForm('${p.id}')">🏷️ عروض</button>
+<button class="btn ${(p.rc?'soft':'gray')} xs" onclick="mProdRevs('${p.id}')">⭐ التقييمات${p.rc?' ('+ar(p.rc)+')':''}</button>
+<button class="btn gray xs" onclick="mProdForm('${p.id}')">✏️ تعديل</button>
+<button class="btn red xs" onclick="mDelProd('${p.id}')">🗑️</button>
+</div></div></div>`}).join('')||`<div class="empty" style="grid-column:1/-1"><div class="em">🧺</div><b>لا منتجات بعد</b><span>أضف منتجك الأول وزوّده بنقاط ولاء تجذب العملاء</span><button class="btn mt" onclick="mProdForm()">＋ منتج جديد</button></div>`}
+</div>`;
+}
+function mProdForm(pid){
+MPID=pid||null;
+const s=myStore(),sec=SEC(s.sec);
+const p=pid?P(pid):null;
+MPQ=p&&p.qs?JSON.parse(JSON.stringify(p.qs)):[];
+MPQOPEN=false;
+openModal(`<div class="mhead"><b>${p?'تعديل منتج':'منتج جديد'}</b><button class="x" onclick="closeModal()">✕</button></div>
+<div class="mbody">
+<div class="fld"><label>اسم المنتج</label><input class="inp" id="mp-nm" value="${p?esc(p.name):''}" placeholder="مثال: عباية كتان مطرزة"></div>
+<div class="fgrid mt">
+<div class="fld"><label>التصنيف (وعمولة ضمين عليه)</label><select class="inp" id="mp-cat">${CATS[sec.id].map(c=>`<option value="${esc(c.n)}" ${p&&p.cat===c.n?'selected':''}>${esc(c.n)} — عمولة ${ard(c.comm)}٪</option>`).join('')}</select></div>
+<div class="fld"><label>السعر (ر.س)</label><input class="inp" id="mp-pr" type="number" min="1" value="${p?p.price:''}"></div>
+</div>
+<div class="fgrid mt">
+<div class="fld"><label>خصم ٪ (0 = بلا عرض)</label><input class="inp" id="mp-off" type="number" min="0" max="90" value="${p?p.off:0}"></div>
+<div class="fld"><label>المخزون</label><input class="inp" id="mp-st" type="number" min="0" value="${p?p.stock:10}"></div>
+</div>
+${sec.id==='family'?`<div class="fld mt"><label>🚚 طريقة التوصيل — تحدد سلوك الشحن تلقائياً</label>
+<select class="inp" id="mp-ptype">
+<option value="std" ${!p||!p.ptype||p.ptype==='std'?'selected':''}>شحن عادي عبر شركاء ضمين (OTO/Torod)</option>
+<option value="chilled" ${p&&p.ptype==='chilled'?'selected':''}>🧊 حساس للحرارة — توصيل مبرد مجدول (كيك، ألبان، كريمات)</option>
+<option value="instant" ${p&&p.ptype==='instant'?'selected':''}>🛵 طازج — توصيل فوري بمناديب خلال ٤٥ دقيقة (أطباق مطبخ)</option>
+</select></div>`:''}
+${sec.id==='deco'?`<div class="fld mt"><label>🚚 طبيعة الشحن والاحتياجات الخاصة — تحدد مسار التسليم</label>
+<select class="inp" id="mp-ptype">
+<option value="ship" ${!p||!p.ptype||p.ptype==='ship'?'selected':''}>منتج قابل للشحن — بوليصة آلية (هدايا، شوكولاتة، ورد)</option>
+<option value="field" ${p&&p.ptype==='field'?'selected':''}>خدمة ديكور وتنسيق ميداني — فريقك يوصل ويركّب (أو استلام من مقرك) + حجز مواعيد المناسبات</option>
+</select>
+<div class="mt" style="display:flex;flex-direction:column;gap:7px">
+<label style="display:flex;gap:8px;align-items:center;font-size:11.5px;font-weight:700;cursor:pointer"><input type="checkbox" id="mp-gift" ${p&&p.giftOk?'checked':''} style="width:17px;height:17px"> 🎁 تفعيل «إهداء لشخص آخر» — يُطلب جوال المستلم ومدينته فقط عند الطلب</label>
+<label style="display:flex;gap:8px;align-items:center;font-size:11.5px;font-weight:700;cursor:pointer"><input type="checkbox" id="mp-frag" ${p&&p.fragile?'checked':''} style="width:17px;height:17px"> ⚠️ قابل للكسر — تنبيه تلقائي في بوليصة الشحن + رسوم حماية ١٥ ر.س تُضاف لسعر الشحن</label>
+<label style="display:flex;gap:8px;align-items:center;font-size:11.5px;font-weight:700;cursor:pointer"><input type="checkbox" id="mp-custom" ${p&&p.customOk?'checked':''} style="width:17px;height:17px"> ✏️ يقبل التعديل حسب طلب العميل — تفتح دردشة تعديلات بعد الدفع مع طلب مبالغ إضافية</label>
+</div></div>`:''}
+${sec.id==='gaming'?`<div class="fld mt"><label>🎮 طبيعة المنتج والشحن — تُبرمج آلية التسليم تلقائياً</label>
+<select class="inp" id="mp-ptype" onchange="mPtypePrev()">
+<option value="std" ${!p||((p.ptype||'std')==='std'&&!p.fragile)?'selected':''}>📦 جهاز أو ملحق ملموس — شحن قياسي عبر شركاء ضمين (OTO/Torod)</option>
+<option value="fragile" ${p&&p.fragile?'selected':''}>⚠️ جهاز ملموس قابل للكسر — تغليف خاص إلزامي + رسوم حماية ١٥ ر.س تُضاف للشحن</option>
+<option value="digital" ${p&&p.ptype==='digital'?'selected':''}>⚡ أصل رقمي (كود/ملف) — تسليم فوري بلا شحن إلى «مكتبة العميل الرقمية»</option>
+</select></div>
+<div id="mp-dextra"></div>`:''}
+<div class="fld mt"><label>🌟 نقاط ولاء يمنحها المنتج للعميل (إجبارية)</label>
+<input class="inp" id="mp-pts" type="number" min="0" max="500" step="5" value="${p?(p.pts||0):0}" oninput="ptsCostPrev()" placeholder="مثال: 50">
+<div class="hint" id="ptscost" style="margin-top:7px;background:#B07E2B12;border:1px dashed #B07E2B66;border-radius:11px;padding:8px 12px"></div>
+<p class="hint" style="margin-top:5px">الإدارة تحدد قيمة النقطة حالياً <b>${money(ptsVal())}</b> — تكلفة النقاط تُخصم من محفظة متجرك وتُحوَّل لمحفظة الإدارة، والعميل يستلمها عند تحرير طلبه.</p></div>
+<div class="fld mt"><label>الوصف</label><textarea class="inp" id="mp-ds" style="min-height:70px" placeholder="وصف تسويقي جاذب ب٣ أسطر…">${p?esc(p.desc):''}</textarea></div>
+<div class="fld mt"><label>المواصفات (كل سطر: المفتاح: القيمة)</label><textarea class="inp" id="mp-sp" style="min-height:60px" placeholder="الخامة: كتان&#10;اللون: كحلي">${p?esc(Object.entries(p.specs).map(([k,v])=>k+': '+v).join('\n')):''}</textarea></div>
+<div class="fld mt"><label>❓ أسئلة تظهر للعميل وقت تصفح المنتج (اختيارية)</label>
+<div class="hint" style="margin:2px 0 7px">سؤال باختيارات جاهزة أو سؤال يكتب العميل جوابه — الإجابة إجبارية قبل الإضافة للسلة وتصلك مع الطلب.</div>
+<div id="mpqbox">${mpqHTML()}</div>
+<button class="btn soft sm mt" onclick="mAddQ2()">＋ إضافة سؤال للمنتج</button>
+</div>
+<div class="mt" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+<button class="btn soft sm" onclick="mPickImg()">📷 رفع صورة من جهازي</button>
+<button class="btn gray sm" onclick="mAutoImg()">🎲 صورة تلقائية</button>
+<img id="mp-prev" src="${p?p.imgs[0]:''}" style="width:54px;height:54px;border-radius:12px;object-fit:cover;border:1px solid var(--line);${p?'':'display:none'}">
+</div>
+<button class="btn wide mt" onclick="mSaveProd('${pid||''}')">${p?'حفظ التعديلات':'إضافة المنتج'}</button>
+</div>`,'lg');
+MIMG=p?p.imgs[0]:'';
+ptsCostPrev();
+mPtypePrev();
+}
+let MPID=null,MPQ=[],MPQOPEN=false;
+function ptsCostPrev(){
+const el=$('#ptscost');if(!el)return;
+const pv=ptsVal();
+const np=Math.max(0,Math.min(500,Math.round(+((($('#mp-pts')||{value:0}).value)||0))));
+const old=(MPID&&P(MPID))?(P(MPID).pts||0):0;
+const d=r2((np-old)*pv);
+if(!np&&!old){el.innerHTML='أدخل نقاطاً (١ فأكثر) — إجبارية لحفظ المنتج وتُمنح للعميل عند تحرير طلبه';return}
+if(d===0){el.innerHTML='لا تغيير على تمويل النقاط ('+ar(np)+' نقطة للعميل)';return}
+el.innerHTML=d>0?`تُخصم من محفظتك <b style="color:var(--amb2)">− ${money(d)}</b> وتُحوَّل لمحفظة الإدارة (${ar(np-old)} نقطة × ${money(pv)})`:`يُسترجع لمحفظتك <b style="color:var(--grn)">+ ${money(-d)}</b> (${ar(old-np)} نقطة × ${money(pv)})`;
+}
+let MIMG='';
+function mPickImg(){
+$('#fup').onchange=e=>{const f=e.target.files[0];if(!f)return;
+const rd=new FileReader();rd.onload=()=>{MIMG=rd.result;$('#fup').value='';
+const pv=$('#mp-prev');pv.src=MIMG;pv.style.display='block';toast('جهزت الصورة ✓','ok')};rd.readAsDataURL(f)};
+$('#fup').click();}
+function mAutoImg(){MIMG=ZPOOL[Math.floor(Math.random()*ZPOOL.length)];const pv=$('#mp-prev');pv.src=MIMG;pv.style.display='block';toast('اختيرت صورة تلقائية','ok')}
+/* منشئ أسئلة المنتج — اختيارات أو كتابة حرة */
+function mpqHTML(){
+let h='';
+if(MPQ.length)h=`<div class="rows" style="margin-bottom:${MPQOPEN?'8px':'0'}">${MPQ.map((q,i)=>`<div class="row" style="flex-wrap:wrap;gap:8px"><div style="flex:1;min-width:150px"><b style="font-size:12px">${esc(q.q)}</b><div class="hint">${q.t==='opts'?'اختيارات: '+q.o.map(x=>esc(x)).join(' · '):'العميل يكتب جوابه'}</div></div><button class="btn gray xs" onclick="mpqDel(${i})">🗑 حذف</button></div>`).join('')}</div>`;
+if(MPQOPEN){h+=`<div class="acard" style="padding:12px;margin-top:8px;background:#1D443208">
+<div class="fld"><label>نوع السؤال</label><select class="inp" id="mqq-t" style="font-size:12px" onchange="mpqType()"><option value="opts">اختيارات — العميل يختار جواباً جاهزاً</option><option value="txt">كتابة — العميل يكتب جوابه بنفسه</option></select></div>
+<div class="fld mt"><label>نص السؤال</label><input class="inp" id="mqq-q" style="font-size:12px" placeholder="مثال: ما اللون المطلوب للتطريز؟"></div>
+<div id="mqq-opts">${mpqOpts()}</div>
+<div class="spread mt"><button class="btn gray xs" onclick="MPQOPEN=false;mpqRefresh()">إلغاء</button><button class="btn sm" onclick="mpqPush()">＋ إضافة السؤال ✓</button></div></div>`}
+if(!MPQ.length&&!MPQOPEN)h=`<div class="hint" style="padding:2px 0 4px">لا أسئلة بعد — أضف سؤالاً (لون، مقاس، اسم تطريز، ملاحظة تغليف…).</div>`;
+return h}
+function mpqOpts(){const t=($('#mqq-t')||{value:'opts'}).value;
+if(t!=='opts')return `<div class="hint" style="margin-top:4px">سيظهر للعميل حقل كتابة حرّة يجيب فيه بنفسه.</div>`;
+return `<div class="fgrid mt"><div class="fld"><label>الخيار ١ (إلزامي)</label><input class="inp" id="mqq-o0" style="font-size:12px" placeholder="أسود"></div><div class="fld"><label>الخيار ٢ (إلزامي)</label><input class="inp" id="mqq-o1" style="font-size:12px" placeholder="بيج"></div></div>
+<div class="fgrid mt"><div class="fld"><label>الخيار ٣ (اختياري)</label><input class="inp" id="mqq-o2" style="font-size:12px"></div><div class="fld"><label>الخيار ٤ (اختياري)</label><input class="inp" id="mqq-o3" style="font-size:12px"></div></div>`}
+function mpqType(){const el=$('#mqq-opts');if(el)el.innerHTML=mpqOpts()}
+function mAddQ2(){MPQOPEN=true;mpqRefresh()}
+function mpqRefresh(){const el=$('#mpqbox');if(el)el.innerHTML=mpqHTML()}
+function mpqDel(i){MPQ.splice(i,1);mpqRefresh()}
+function mpqPush(){
+const t=($('#mqq-t')||{value:'opts'}).value;
+const q=($('#mqq-q').value||'').trim();
+if(q.length<3){toast('اكتب نص السؤال (٣ أحرف فأكثر)','err');return}
+let o=[];
+if(t==='opts'){o=[0,1,2,3].map(i=>(($('#mqq-o'+i)||{}).value||'').trim()).filter(Boolean);
+if(o.length<2){toast('للأسئلة الاختيارية أدخل خيارين على الأقل','err');return}
+if(new Set(o).size!==o.length){toast('لا تكرر نفس الخيار','err');return}}
+MPQ.push({q,t,o});MPQOPEN=false;mpqRefresh();toast('أُضيف السؤال — سيظهر للعميل في صفحة المنتج ✓','ok')}
+function mSaveProd(pid){
+const s=myStore(),sec=SEC(s.sec);
+const nm=($('#mp-nm').value||'').trim(),pr=+($('#mp-pr').value||0),st=+($('#mp-st').value||0);
+if(!nm||pr<1){toast('أكمل الاسم والسعر','err');return}
+const specs={};($('#mp-sp').value||'').split('\n').forEach(l=>{const i=l.indexOf(':');if(i>0)specs[l.slice(0,i).trim()]=l.slice(i+1).trim()});
+const off=Math.min(90,Math.max(0,+($('#mp-off').value||0)));
+const pts=Math.max(0,Math.min(500,Math.round(+($('#mp-pts').value||0)||0)));
+if(!(pts>=1)){toast('🌟 نقاط الولاء إجبارية — حدد نقاطاً (١ فأكثر) يمنحها المنتج للعميل عند التحرير','err');$('#mp-pts').focus();return}
+const pv=ptsVal();const old=pid?(P(pid).pts||0):0;const dPts=pts-old;const cost=r2(dPts*pv);
+if(cost>0&&(DB.storeWallets[s.id]||0)<cost){toast('محفظتك لا تكفي لتمويل '+ar(pts)+' نقطة ('+money(cost)+') — قلّل النقاط أو راجع محفظتك','err');return}
+let ptypeVal=(($('#mp-ptype')||{}).value)||'';
+let fragile=false,customOk=false,digi=null,ipOK=false;
+if(sec.id==='gaming'){
+if(ptypeVal==='digital'){
+ipOK=!!$('#mp-ip')&&$('#mp-ip').checked;
+if(!ipOK){toast('⚖️ إقرار الملكية الفكرية إلزامي قبل رفع الملفات والأكواد الرقمية','err');return}
+const dv=($('#mp-dval').value||'').trim();
+if(dv.length<3){toast('أدخل قيمة الكود أو اسم الملف الرقمي','err');return}
+digi={kind:$('#mp-dkind').value,val:dv,size:($('#df-hint')&&$('#df-hint').dataset.size)||''};}
+fragile=(ptypeVal==='fragile');
+ptypeVal=digi?'digital':'std';
+}else if(sec.id==='deco'){
+if(!['ship','field'].includes(ptypeVal))ptypeVal='ship';
+fragile=!!$('#mp-frag')&&$('#mp-frag').checked;
+customOk=!!$('#mp-custom')&&$('#mp-custom').checked;
+}else{
+if(!['chilled','instant'].includes(ptypeVal))ptypeVal='std';
+}
+if(dPts!==0){DB.storeWallets[s.id]=r2((DB.storeWallets[s.id]||0)-cost);
+DB.aPtsWallet=r2((DB.aPtsWallet||0)+cost);
+DB.ptsFunding.unshift({store:s.id,amt:cost,pts:dPts,pname:nm,at:Date.now()})}
+if(pid){const p=P(pid);Object.assign(p,{name:nm,cat:$('#mp-cat').value,price:pr,off,stock:st,desc:$('#mp-ds').value.trim(),specs,pts,ptype:ptypeVal||p.ptype||'std',giftOk:$('#mp-gift')?$('#mp-gift').checked:!!p.giftOk,fragile,customOk,qs:MPQ.map(x=>({...x}))});
+if(digi)p.digi=digi;if(ipOK)p.ipOK=true;
+if(MIMG)p.imgs=[MIMG,...p.imgs.slice(1)];
+toast('حُفظ تعديل المنتج ✓'+(dPts?` — ${dPts>0?'خُصمت':'استُرجعت'} ${money(Math.abs(cost))} تمويل نقاط`:''),'ok')}
+else{PRODUCTS.unshift({id:'p'+(Date.now()%100000),store:s.id,name:nm,cat:$('#mp-cat').value,price:pr,off,stock:st,pts,ptype:ptypeVal||'std',giftOk:$('#mp-gift')?$('#mp-gift').checked:false,fragile,customOk,digi,ipOK,sold:0,rt:0,rc:0,imgs:[MIMG||ZPOOL[Math.floor(Math.random()*ZPOOL.length)]],desc:$('#mp-ds').value.trim()||nm,specs,specsFallback:{},ratings:[],qs:MPQ.map(x=>({...x}))});
+toast('أُضيف المنتج لمتجرك ✓'+(pts?` — خُصمت ${money(cost)} تمويل ${ar(pts)} نقطة`:''),'ok')}
+MPID=null;closeModal();render();
+}
+/* ===== العروض بنسبة حرة ===== */
+let OFFPID=null;
+const offVal=()=>Math.min(90,Math.max(0,Math.round(+((($('#mp-off2')||{value:0}).value)||0))));
+function mOfferForm(pid){
+const p=P(pid);OFFPID=pid;
+openModal(`<div class="mhead"><b>🏷️ عرض «${esc(p.name)}»</b><button class="x" onclick="closeModal()">✕</button></div>
+<div class="mbody">
+<div class="demo mb"><b style="font-size:12.5px">ضع خصماً على كيفك</b>
+<p class="hint" style="margin-top:2px">اختر نسبة جاهزة أو اكتب أي نسبة تريدها من ١ إلى ٩٠٪ — يُحدّث السعر للعملاء فوراً.</p></div>
+<div class="chiprow">${[5,10,15,20,25,30,40,50,60].map(v=>`<button class="chip" style="--acc:${ST(p.store).color}" onclick="$('#mp-off2').value=${v};offPrev()">${ar(v)}٪</button>`).join('')}<button class="chip" style="--acc:var(--red)" onclick="$('#mp-off2').value=0;offPrev()">إلغاء العرض</button></div>
+<div class="fld mt"><label>نسبة الخصم (٪) — ٠ يعني بلا عرض</label><input class="inp" id="mp-off2" type="number" min="0" max="90" value="${p.off||0}" oninput="offPrev()"></div>
+<div class="acard" style="padding:12px" id="offprev"></div>
+<div class="spread mt"><button class="btn gray" onclick="closeModal()">تراجع</button>
+<button class="btn" onclick="mOfferSet2()">حفظ العرض</button></div>
+</div>`);
+offPrev();
+}
+function offPrev(){
+const el=$('#offprev');if(!el)return;
+const p=P(OFFPID);const v=offVal();const e=r2(p.price*(1-v/100));
+el.innerHTML=`<div class="spread"><span class="hint">السعر الحالي</span><b>${money(p.off?r2(p.price*(1-p.off/100)):p.price)}</b></div>
+<div class="spread" style="margin-top:5px"><span class="hint">${v?'السعر بعد الخصم الجديد':'بلا خصم — السعر الأصلي'}</span><b class="fx" style="font-size:16px;color:${v?'var(--grn)':'var(--ink)'}">${money(e)}</b></div>
+${v?`<div class="hint" style="margin-top:5px">العميل يوفّر <b style="color:var(--red)">${money(r2(p.price-e))}</b> (${ar(v)}٪)</div>`:''}`;
+}
+function mOfferSet2(){
+const p=P(OFFPID);const v=offVal();p.off=v;
+closeModal();toast(v?'فُعّل خصم '+ar(v)+'٪ على «'+p.name+'» — السعر الجديد '+money(eff(p)):'أُلغي العرض على «'+p.name+'»','ok');render();
+}
+/* ===== تقييمات وتعليقات العملاء على المنتج ===== */
+function mProdRevs(pid){
+const p=P(pid);
+const dist=[5,4,3,2,1].map(n=>p.ratings.filter(r=>r.stars===n).length);
+const mx=Math.max(1,...dist);
+openModal(`<div class="mhead"><b>⭐ تقييمات «${esc(p.name)}»</b><button class="x" onclick="closeModal()">✕</button></div>
+<div class="mbody">
+<div class="acard" style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+<div style="text-align:center;min-width:92px"><b class="fx" style="font-size:31px;color:var(--amb2)">${ard(p.rt)}</b><div>${STARS(p.rt)}</div><div class="hint">${ar(p.rc)} تقييم · ${ar(p.sold)} عملية بيع</div></div>
+<div style="flex:1;min-width:170px">${dist.map((n,i)=>{const st=5-i;return `<div style="display:flex;align-items:center;gap:7px;font-size:10.5px;margin:3px 0"><span style="width:26px">${ar(st)}★</span><div style="flex:1;height:7px;background:#EFE9DA;border-radius:8px;overflow:hidden"><i style="display:block;height:100%;width:${n/mx*100}%;background:var(--amb)"></i></div><span class="mut" style="width:20px">${ar(n)}</span></div>`}).join('')}</div>
+</div>
+${p.ratings.length?[...p.ratings].reverse().map(r=>`<div class="mprev"><div class="spread" style="flex-wrap:wrap"><div style="display:flex;gap:8px;align-items:center"><div class="avat" style="width:30px;height:30px;border-radius:10px;font-size:12px">${esc((r.name||'ع')[0])}</div><b style="font-size:12px">${esc(r.name||'عميل')}</b>${STARS(r.stars)}</div><span class="hint">${ago(r.at)}</span></div><p>${esc(r.txt)||'<i class="mut">قيّم بالنجوم دون تعليق نصي</i>'}</p></div>`).join(''):`<div class="empty" style="padding:26px"><div class="em">💬</div><b>لا تعليقات بعد</b><span>سيظهر هنا كل تعليق وتقييم يكتبه عملاؤك عن هذا المنتج</span></div>`}
+</div>`,'lg');
+}
+function mDelProd(pid){
+openModal(`<div class="mhead"><b>حذف منتج</b><button class="x" onclick="closeModal()">✕</button></div><div class="mbody">
+<p style="font-size:13.5px">هل تريد حذف «${esc(P(pid).name)}» من متجرك؟ لا يمكن التراجع.</p>
+<div class="spread mt"><button class="btn gray" onclick="closeModal()">تراجع</button>
+<button class="btn red" onclick="PRODUCTS=PRODUCTS.filter(p=>p.pid!=='${pid}'&&p.id!=='${pid}');closeModal();toast('حُذف المنتج');render()">تأكيد الحذف</button></div></div>`)}
+function pgMOrders(){
+const gs=myGroups();
+const NR=['pending','preparing','shipped'],RC=['received','released'];
+const stat=x=>x.g.status;
+const C={all:gs.length,
+nr:gs.filter(x=>NR.includes(stat(x))).length,
+rcv:gs.filter(x=>RC.includes(stat(x))).length,
+pnd:gs.filter(x=>stat(x)==='pending').length,
+prep:gs.filter(x=>stat(x)==='preparing').length,
+ship:gs.filter(x=>stat(x)==='shipped').length,
+recv:gs.filter(x=>stat(x)==='received').length,
+rel:gs.filter(x=>stat(x)==='released').length,
+bad:gs.filter(x=>['disputed','refunded'].includes(stat(x))).length};
+const relVal=r2(gs.filter(x=>stat(x)==='released').reduce((a,x)=>a+x.g.sub,0));
+const f=VIEW.mof||'all';
+const PRED={all:()=>true,pnd:x=>stat(x)==='pending',prep:x=>stat(x)==='preparing',ship:x=>stat(x)==='shipped',recv:x=>stat(x)==='received',rel:x=>stat(x)==='released',bad:x=>['disputed','refunded'].includes(stat(x)),nr:x=>NR.includes(stat(x)),rcv:x=>RC.includes(stat(x))};
+const FILTS=[['all','📦 الكل'],['nr','⏳ لم تُستلم بعد'],['rcv','📥 تم استلامها'],['pnd','بانتظار القبول'],['prep','قيد التحضير'],['ship','تم شحنها'],['recv','قيد الفحص'],['rel','🔓 محررة'],['bad','⚖️ نزاعات واسترجاعات']];
+const list=gs.filter(PRED[f]);
+return `<div class="pghead"><h1>📦 طلبات متجري (${ar(gs.length)})</h1></div>
+<div class="kpis mb">
+<div class="kpi nvy"><i>📦</i><b>${ar(C.all)}</b><span>إجمالي الطلبات</span></div>
+<div class="kpi amb"><i>⏳</i><b>${ar(C.nr)}</b><span>لم تُستلم بعد</span></div>
+<div class="kpi grn"><i>📥</i><b>${ar(C.rcv)}</b><span>استلمها العميل</span></div>
+<div class="kpi grn"><i>🔓</i><b>${ar(C.rel)}</b><span>محررة (مكتملة)</span></div>
+<div class="kpi red"><i>⚖️</i><b>${ar(C.bad)}</b><span>نزاعات واسترجاعات</span></div>
+<div class="kpi"><i>💰</i><b>${money(relVal)}</b><span>قيمة الشحنات المحررة</span></div>
+</div>
+<div class="chiprow">${FILTS.map(([k,l])=>`<button class="chip ${f===k?'on':''}" onclick="VIEW.mof='${k}';render()">${l} (${ar(C[k])})</button>`).join('')}</div>
+<div class="mt">
+${list.map(({o,g,gi})=>{
+const cust=USERS[o.customer];
+const dis=DB.disputes.find(d=>d.order===o.id&&d.store===SES.store);
+return `<div class="ocard">
+<div class="spread" style="flex-wrap:wrap">
+<div><b class="fx" style="font-size:13.5px">طلب #${ar(o.id)}</b>
+<div class="hint">${cust?esc(cust.name.split(' ')[0]):'عميل'} ${cust&&cust.hidePhone?'· رقمه مخفي بطلبه':'· '+ar(o.customer)} · ${dt(o.at)}</div></div>
+<span class="tag ${g.status==='pending'?'amb':g.status==='released'?'grn':g.status==='disputed'?'red':'gry'}">${GLBL[g.status]}</span>
+</div>
+${o.freeDl?'<span class="tag grn" style="margin-top:6px">🚚 توصيل مجاني — استبدلها العميل بالنقاط</span>':''}
+<div class="oitems">${g.items.map(it=>{const p=P(it.pid);return `<span class="oitag">${p?imgTag(p.imgs[0],'',''):''} ${ar(it.qty)}× ${p?esc(p.name):'—'}${p&&(p.pts||0)>0?` <span style="color:var(--amb2)">🌟${ar(p.pts*it.qty)}</span>`:''}</span>`}).join('')}</div>
+${g.logi?`<div class="hint" style="margin-top:6px">📄 ${g.logi.wb?'بوليصة '+ar(g.logi.wb)+' · ':''}${esc(g.logi.courier)}${g.logi.wb?` · <a style="color:var(--grn);font-weight:700;cursor:pointer" onclick="toast('أُرسلت البوليصة للطباعة 🖨️','ok')">طباعة البوليصة 🖨️</a>`:' — بلا بوليصة (خدمة ميدانية)'} · من ${esc(ST(g.store).city||'—')} إلى ${esc(o.city||'—')}</div>`:''}
+${g.booking?`<div class="bkcard"><b style="font-size:11.5px">🎪 مناسبة العميل — حجز مؤكد</b>
+<div class="hint" style="line-height:1.8;margin-top:4px">📅 ${esc(g.booking.date)} · التركيب ${esc(g.booking.setup)}${g.booking.tear?' · الفك '+esc(g.booking.tear):''}${g.booking.dl==='pickup'?' · 🚶 يستلمها العميل من مقرك بلا توصيل':' · 🚚 فريقك يوصل ويركّب في الموقع'}${g.booking.geo?' · 📍 موقع محدد ('+ard(g.booking.geo.lat)+'، '+ard(g.booking.geo.lng)+')':''}${g.booking.note?' · '+esc(g.booking.note):''}</div></div>`:''}
+${g.custom?`<div class="giftrow" style="background:#A45A3A12;border-color:#A45A3A66">✏️ طلب قابل للتعديل — ناقش العميل في المحادثة واطلب مبلغ أي إضافة من زر «طلب مبلغ إضافي» داخل الدردشة (يُحجز بضمان ضمين)</div>`:''}
+${g.digi?`<div class="giftrow" style="background:#50489E12;border-color:#50489E66">⚡ طلب رقمي — سُلّم فوراً للعميل عند الدفع في مكتبته الرقمية، والمبلغ محجوز حتى نهاية نافذة الحماية (${secOf(g.store).win})</div>`:''}
+${g.ship&&g.ship.fragile?`<div class="giftrow" style="background:#8A4B080f;border-color:#8A4B0866">⚠️ شحنة قابلة للكسر — نُقلت العلامة لشركة الشحن آلياً: تغليف خاص إلزامي + رسوم حماية ١٥ ر.س ضمن الشحن</div>`:''}
+${g.gift?`<div class="giftrow">🎁 إهداء — المستلم: <b>${esc(g.gift.name)}</b> · ${ar(g.gift.phone)} (يُطبع على البوليصة كمتسلم)</div>`:''}
+${g.ans&&g.ans.length?`<div class="hint" style="margin-top:6px">❓ إجابات العميل على أسئلتك: ${g.ans.map(x=>esc(x.q)+' ← <b>'+esc(x.a)+'</b>').join(' · ')}</div>`:''}
+${g.pans&&g.pans.length?`<div class="hint" style="margin-top:6px">❓ إجابات العميل على أسئلة المنتجات: ${g.pans.map(x=>esc(x.pn)+' — '+x.ans.map(y=>esc(y.q)+' ← <b>'+esc(y.a)+'</b>').join(' · ')).join(' · ')}</div>`:''}
+${g.chat?`<button class="btn soft xs" style="margin-top:7px" onclick="openOChat(${o.id},${gi})">💬 محادثة الطلب${g.chatDeleted?' — محذوفة لمخالفة':(g.chatArchived||['received','released','refunded','disputed'].includes(g.status))?' — مؤرشفة':''}</button>`:''}
+${['disputed','refunded'].includes(g.status)?'':`<div class="osteps">${GSTEPS.map((l,i)=>`<div class="st ${i<gstep(g)?'on':i===gstep(g)?'on':''}"><i></i>${l}</div>`).join('')}</div>`}
+${g.status==='received'?`<div class="hint">⏳ العميل يفحص الشحنة — يُحرر المبلغ تلقائياً بعد <b class="cd" style="border:0;background:none;padding:0" data-cd="${g.complaintUntil}">${clock(g.complaintUntil-Date.now())}</b></div>`:''}
+${g.status==='pending'?`<button class="btn sm mt" onclick="mAccept(${o.id},${gi})">✅ اقبل الطلب وابدأ التحضير</button>`:''}
+${g.status==='preparing'?`<button class="btn amb sm mt" onclick="mShip(${o.id},${gi})">${g.logi&&g.logi.wb?'🚚 سلّم الشحنة للمندوب — بوليصة '+ar(g.logi.wb):(g.ship&&g.ship.mode==='field'?(g.booking&&g.booking.dl==='pickup'?'🚶 جهّز الطلب — العميل سيستلمه من مقرك':'🎪 انطلق الفريق إلى موقع المناسبة'):'🚚 حدّث حالة الشحن')}</button>`:''}
+${g.status==='shipped'&&g.ship&&g.ship.mode==='field'?(g.otp?`<div class="bkcard" style="border-color:#1D443255;background:#1D44320a"><b style="font-size:11.5px">🎯 كود تأكيد إتمام الخدمة: <b class="fx" style="letter-spacing:3px;font-size:15px">${ar(g.otp)}</b></b><div class="hint" style="margin-top:4px;line-height:1.7">أظهره للعميل في موقع المناسبة — تُحرر مستحقاتك فور إدخاله من تطبيق العميل (لا تُصرف إلا بهذا الكود).</div></div>`:`<button class="btn amb sm mt" onclick="mSendOTP(${o.id},${gi})">🎯 اكتمل التركيب — أرسل كود التأكيد للعميل</button>`):''}
+${g.status==='disputed'&&dis?`<button class="btn red sm mt" onclick="openDispute('${dis.id}')">⚖️ متابعة النزاع والرد على العميل</button>`:''}
+${g.status==='released'&&g.payout?`<div class="hint mt" style="background:#1D443208;border-radius:10px;padding:7px 11px">🔓 حُرر ${money(g.payout.net)} صافياً (عمولة ضمين ${money(g.payout.comm)})${g.rated?' · تقييم العميل '+STARS(g.rated.stars):''}</div>`:''}
+<div class="hint" style="margin-top:6px">قيمة الشحنة: <b>${money(g.sub)}</b> → صافيك عند التحرير: <b style="color:var(--grn)">${money(r2(g.sub*0.975-((g.ship&&g.ship.source==='merchant')?g.ship.subsidy:0)))}</b>${g.ship&&g.ship.source==='merchant'?` <span class="tag amb" style="font-size:9px">شمل ${money(g.ship.subsidy)} دعمك للشحن — لا يمس العمولة</span>`:''}</div>
+</div>`}).join('')||`<div class="empty"><div class="em">📦</div><b>لا طلبات في هذا التصنيف</b><span>غيّر الفلتر أو تابع كل الطلبات</span></div>`}
+</div>`;
+}
+function mAccept(oid,gi){const o=DB.orders.find(x=>x.id===oid);const g=o.groups[gi];
+g.status='preparing';
+if(g.logi)g.logi.events.push({t:'قَبِل المتجر الطلب وبدأ التحضير — تحديث Webhook',at:Date.now()});
+pushNotif(o.customer,'🧵','متجرك بدأ التحضير',ST(g.store).name+' قبلت طلبك #'+ar(oid)+' وقيد التحضير الآن',['orders']);
+toast('قُبل الطلب — بدأ التحضير ✅','ok');render()}
+function mShip(oid,gi){const o=DB.orders.find(x=>x.id===oid);const g=o.groups[gi];
+g.status='shipped';
+if(g.logi&&g.logi.wb)g.logi.events.push({t:'استلم المندوب الشحنة من المتجر (Pickup مؤكد) — تحديث Webhook',at:Date.now()});
+else if(g.logi&&g.logi.mode==='field'&&g.booking&&g.booking.dl==='pickup')g.logi.events.push({t:'جُهّز الطلب لاستلام العميل من مقر المتجر — بلا توصيل',at:Date.now()});
+else if(g.logi)g.logi.events.push({t:'انطلق فريق المتجر للتركيب في موعد المناسبة',at:Date.now()});
+pushNotif(o.customer,'🚚','تحديث على طلبك',ST(g.store).name+' حدّثت طلبك #'+ar(oid)+(g.ship&&g.ship.mode==='field'?' — الفريق في موقع المناسبة، وبعد اكتمال التركيب يصلك كود التأكيد':' — أكّد الاستلام عند وصوله'),['orders']);
+toast('سُجل التحديث 🚚','ok');render()}
+function pgMWallet(){
+const s=myStore();
+const tx=[];DB.orders.forEach(o=>o.groups.forEach(g=>{if(g.store===s.id&&g.payout&&g.payout.net>0)tx.push({o,g})}));
+tx.sort((a,b)=>b.g.releasedAt-a.g.releasedAt);
+const totalIn=tx.reduce((a,x)=>a+x.g.payout.net,0);
+const totalComm=tx.reduce((a,x)=>a+x.g.payout.comm,0);
+const myLogi=r2(DB.orders.reduce((a,o)=>a+o.groups.filter(g=>g.store===s.id&&g.payout).reduce((x,g)=>x+((g.ship&&g.ship.charge)||0)+((g.payout.ship&&g.payout.ship.merchant)||0),0),0));
+const fund=DB.ptsFunding.filter(x=>x.store===s.id);
+const fundNet=r2(fund.reduce((a,x)=>a+x.amt,0));
+return `<div class="pghead"><h1>💰 محفظة ${esc(s.name)}</h1><button class="btn amb sm" onclick="toast('أُرسل طلب السحب — يُحوَّل خلال ٢٤ ساعة 🏦','ok')">🏦 طلب سحب الرصيد</button></div>
+<div class="kpis">
+<div class="kpi grn"><i>💵</i><b>${money(DB.storeWallets[s.id]||0)}</b><span>رصيدك المتاح للسحب</span></div>
+<div class="kpi amb"><i>🔒</i><b>${money(heldFor(s.id))}</b><span>محجوز لحظة تحرير الطلبات</span></div>
+<div class="kpi nvy"><i>📈</i><b>${money(totalIn)}</b><span>صافي التحريرات بعد العمولة</span></div>
+<div class="kpi red"><i>🧾</i><b>${money(totalComm)}</b><span>عمولات الإدارة (حسب التصنيف)</span></div>
+<div class="kpi nvy"><i>🚚</i><b>${money(myLogi)}</b><span>حُوّل للشريك اللوجستي (OTO/Torod)</span></div>
+</div>
+<div class="acard mt"><h3>⚙️ كيف يتوزع كل مبلغ محرَّر؟ (توزيع ثلاثي لحظي)</h3>
+<div class="splitbar"><i class="net"></i><i class="comm"></i></div>
+<div class="splitrow"><span><b style="color:var(--grn)">■</b> صافي المتجر (بعد عمولة تصنيفاته) ← محفظتك مباشرة</span><span><b style="color:var(--amb)">■</b> عمولة الإدارة ← حساب التطبيق</span><span><b style="color:var(--navy)">■</b> رسوم الشحن ← حساب الشريك اللوجستي</span></div>
+<p class="hint mt" style="line-height:1.9">عند تحرير أي شحنة يتوزع المبلغ ثلاثياً لحظياً: <b>صافي حقك</b> يدخل رصيدك المتاح، و<b>عمولة ضمين (حسب تصنيف كل منتج)</b> تتحول لحساب التطبيق، و<b>رسوم الشحن</b> (ما دفعه العميل + ما تدعمه أنت من توصيل مجاني أو مناصفة أو سقف مجاني) تتحول لحساب الشريك اللوجستي (OTO/Torod) — ودعمك للشحن يُقتطع من صافيك فقط ولا يمس العمولة أبداً.</p></div>
+<div class="acard mt"><h3>🔓 سجل التحريرات (كل تحرير بتوزيعه: صافيك + العمولة + الشحن)</h3>
+<div class="rows">${tx.map(({o,g})=>`<div class="row" style="cursor:pointer;flex-wrap:wrap" onclick="go('m-orders')">
+<div style="flex:1;min-width:150px"><b>طلب #${ar(o.id)} · ${USERS[o.customer]?esc(USERS[o.customer].name.split(' ')[0]):'عميل'}</b>
+<div class="hint">${dt(g.releasedAt)} · بواسطة ${esc(g.releasedBy||'—')}</div></div>
+<div style="text-align:left">
+<div class="hint">قيمة الشحنة ${money(g.payout.sub)}</div>
+<b class="fx" style="color:var(--grn)">+ ${money(g.payout.net)} صافيك</b>
+<div class="hint" style="color:var(--amb2)">− ${money(g.payout.comm)} عمولة الإدارة ← مباشرة</div>
+${g.payout.ship&&(g.payout.ship.charge||g.payout.ship.merchant)?`<div class="hint" style="color:var(--navy)">🚚 شحن: ${money(g.payout.ship.charge||0)} من العميل${g.payout.ship.merchant?' + '+money(g.payout.ship.merchant)+' دعمك':''} ← اللوجستي</div>`:''}
+</div></div>`).join('')||'<div class="hint">لا تحريرات بعد — تُحرر الشحنات بعد استلام العميل</div>'}</div></div>
+${fund.length?`<div class="acard mt"><h3>🌟 تمويلات نقاط الولاء</h3>
+<p class="hint mb" style="line-height:1.8">كل نقطة تضيفها لمنتجاتك تُخصم من محفظتك فوراً وتُحوَّل لمحفظة الإدارة، ويستلمها العميل نقاط ولاء عند تحرير طلبه.</p>
+<div class="rows">${fund.map(f=>`<div class="row">
+<div style="flex:1"><b>${f.pts>0?'تمويل '+ar(f.pts)+' نقطة':'استرجاع '+ar(-f.pts)+' نقطة'} — ${esc(f.pname)}</b>
+<div class="hint">${dt(f.at)}</div></div>
+<b class="fx" style="color:${f.amt>=0?'var(--amb2)':'var(--grn)'}">${f.amt>=0?'−':'+'} ${money(Math.abs(f.amt))}</b></div>`).join('')}</div>
+<div class="hint mt">إجمالي تمويلك للنقاط: <b>${money(fundNet)}</b> — تجدها في محفظة الإدارة</div></div>`:''}
+<button class="btn amb wide mt" onclick="toast('أُرسل طلب السحب — يُحوَّل خلال ٢٤ ساعة 🏦','ok')">🏦 طلب سحب الرصيد المتاح</button>`;
+}
+function pgMDisputes(){
+const ds=DB.disputes.filter(d=>d.store===SES.store);
+return `<div class="pghead"><h1>⚖️ نزاعات متجري (${ar(ds.length)})</h1></div>
+${ds.length?ds.map(d=>{const o=DB.orders.find(x=>x.id===d.order);
+return `<div class="ocard" style="border-inline-start:4px solid ${d.status==='open'?'var(--red)':'var(--grn)'}">
+<div class="spread" style="flex-wrap:wrap">
+<div><b class="fx" style="font-size:13px">⚖️ ${esc(d.subject)}</b><div class="hint">طلب #${ar(d.order)} · ${USERS[d.customer]?esc(USERS[d.customer].name.split(' ')[0]):'عميل'} · ${ago(d.openedAt)}</div></div>
+${d.status==='open'?'<span class="tag red">بانتظار حكم الإدارة — المبلغ معلق</span>':`<span class="tag ${d.ruling.act==='release'?'grn':'gry'}">${d.ruling.act==='release'?'حُكم لصالحك':'استُرجع للعميل'}</span>`}</div>
+${d.ruling?`<div class="verd ${d.ruling.act==='release'?'rel':'ref'}" style="margin:9px 0 2px"><h4>تسبيب الحكم</h4><div class="why">${esc(d.ruling.text)}</div></div>`:''}
+<button class="btn sm ${d.status==='open'?'red':''} mt" onclick="openDispute('${d.id}')">💬 ${d.status==='open'?'الرد على العميل وإضافة أدلتك':'عرض المحادثة'}</button>
+</div>`}).join(''):'<div class="empty"><div class="em">🕊️</div><b>لا نزاعات على متجرك</b><span>استمر في الجودة والسرعة 🌟</span></div>'}`;
+}
+function pgMSet(){
+const s=myStore(),sec=SEC(s.sec);
+const own=USERS[s.owner];
+const ps=PRODUCTS.filter(p=>p.store===s.id);
+const myFund=DB.ptsFunding.filter(x=>x.store===s.id);
+const myCats=[...new Set(ps.map(p=>p.cat))].map(cn=>({n:cn,c:catComm(s.sec,cn)}));
+const ccs=myCats.map(c=>c.c);const ccTxt=ccs.length?(Math.min(...ccs)===Math.max(...ccs)?ard(ccs[0])+'٪':ard(Math.min(...ccs))+'–'+ard(Math.max(...ccs))+'٪'):'—';
+return `<div class="pghead"><h1>⚙️ إعدادات المتجر</h1><span class="tag" style="background:${s.color}18;color:${s.color}">${sec.name}</span></div>
+<div class="grid2">
+<div>
+<div class="acard"><h3>🏪 ملف المتجر الكامل</h3>
+<div class="setrow"><div class="ic">🏷️</div><div class="tx"><b>اسم المتجر</b><span>${esc(s.name)}</span></div><span class="tag grn">معروض للعملاء</span></div>
+<div class="setrow"><div class="ic">🗂️</div><div class="tx"><b>القسم</b><span>${sec.name} — نافذة حماية ${sec.win} بعد الاستلام</span></div><span class="tag" style="background:${s.color}18;color:${s.color}">ثابت</span></div>
+<div class="setrow"><div class="ic">👤</div><div class="tx"><b>المالك</b><span>${own?esc(own.name)+' · '+ar(s.owner):'—'}</span></div><span class="tag grn">عضو ضمين</span></div>
+<div class="setrow"><div class="ic">🆔</div><div class="tx"><b>معرّف المتجر</b><span>${s.id.toUpperCase()} · عضوية المالك ${own?'منذ '+MONTHS[new Date(own.since).getMonth()]+' '+ar(new Date(own.since).getFullYear()):'—'}</span></div></div>
+${s.cr?`<div class="setrow"><div class="ic">🧾</div><div class="tx"><b>السجل التجاري / الوثيقة</b><span>${esc(s.cr)}${s.crDoc?` · مرفق: ${esc(s.crDoc)}`:''}</span></div><span class="tag grn">موثّق لدى الإدارة</span></div>`:''}
+${s.iban?`<div class="setrow"><div class="ic">🏦</div><div class="tx"><b>الآيبان — تحويل أرباحك</b><span>يُحوَّل إليه صافي محفظتك عند طلب السحب خلال ٢٤ ساعة</span></div><span class="tag nvy" style="font-size:10px;letter-spacing:.5px">${esc(String(s.iban).slice(0,10))}••</span></div>`:''}
+<div class="setrow"><div class="ic">⭐</div><div class="tx"><b>تقييم المتجر</b><span>${ard(s.rt)} من ٥ — ${ar(s.sales)} عملية بيع مكتملة</span></div>${STARS(s.rt)}</div>
+<div class="setrow"><div class="ic">🧺</div><div class="tx"><b>المنتجات المعروضة</b><span>${ar(ps.length)} منتج · ${ar(ps.filter(p=>p.off>0).length)} عليه عرض · ${ar(ps.filter(p=>(p.pts||0)>0).length)} يمنح نقاطاً</span></div></div>
+<div class="setrow"><div class="ic">💰</div><div class="tx"><b>المحفظة</b><span>متاح ${money(DB.storeWallets[s.id]||0)} · محجوز ${money(heldFor(s.id))}</span></div><button class="btn soft xs" onclick="go('m-wallet')">عرض</button></div>
+</div>
+<div class="acard"><h3>🖼️ هوية المتجر — اللوقو والصورة</h3>
+<div class="storeid" style="--c:${s.color}">
+<div class="big">${s.logo?`<img src="${s.logo}">`:s.name[0]}</div>
+<b>${esc(s.name)}</b>
+<div class="hint">اللوقو يظهر مكان الحرف في بطاقة متجرك وصفحته لكل العملاء</div>
+<div class="cov">${s.cover?`<img src="${s.cover}">`:'صورة غلاف متجرك (بانر صفحة المتجر)'}</div>
+</div>
+<div class="spread mt" style="gap:8px;flex-wrap:wrap">
+<button class="btn soft sm" onclick="pickStoreImg('logo')">📷 رفع/تغيير اللوقو</button>
+${s.logo?`<button class="btn gray xs" onclick="rmStoreImg('logo')">إزالة اللوقو</button>`:''}
+</div>
+<div class="spread mt" style="gap:8px;flex-wrap:wrap">
+<button class="btn soft sm" onclick="pickStoreImg('cover')">🖼️ رفع/تغيير صورة الغلاف</button>
+${s.cover?`<button class="btn gray xs" onclick="rmStoreImg('cover')">إزالة الغلاف</button>`:''}
+</div>
+<p class="hint mt" style="line-height:1.8">تظهر هوية متجرك لكل عملاء ضمين: اللوقو في بطاقات المتجر والبحث والأقسام، والغلاف كبانر لصفحة متجرك.</p>
+</div>
+${mcouponCard()}
+</div>
+<div>
+<div class="acard"><h3>✏️ بيانات قابلة للتعديل</h3>
+<div class="fld"><label>اسم المتجر</label><input class="inp" id="ms-nm" value="${esc(s.name)}"></div>
+<div class="fld mt"><label>وصف المتجر (يظهر لكل العملاء)</label><textarea class="inp" id="ms-ds" style="min-height:80px">${esc(s.desc)}</textarea></div>
+<button class="btn mt" onclick="mSaveStore()">حفظ البيانات</button>
+</div>
+<div class="acard"><h3>🚦 حالة التشغيل</h3>
+<div class="setrow"><div class="ic">${s.open?'🟢':'🔴'}</div><div class="tx"><b>استقبال الطلبات</b><span>${s.open?'متجرك مفتوح ويستقبل الطلبات':'مغلق مؤقتاً — منتجاتك تظهر دون زر شراء'}</span></div>
+<button class="sw ${s.open?'on':''}" onclick="myStore().open=!myStore().open;render()"></button></div>
+<div class="setrow"><div class="ic">🛡️</div><div class="tx"><b>نافذة حماية قسمك</b><span>${sec.name}: ${sec.win} بعد استلام العميل — ثابتة بسياسة ضمين</span></div><span class="tag grn">إلزامية</span></div>
+<div class="setrow"><div class="ic">⛔</div><div class="tx"><b>حالة المتجر</b><span>${s.susp?'متجرك موقوف مؤقتاً من الإدارة — راجع فريق الامتثال':'متجرك يعمل بكامل صلاحياته ومعروض للعملاء'}</span></div><span class="tag ${s.susp?'red':'grn'}">${s.susp?'موقوف':'سليم'}</span></div>
+</div>
+<div class="acard"><h3>🧾 العمولة ونظام النقاط</h3>
+<div class="setrow"><div class="ic">🧾</div><div class="tx"><b>عمولة ضمين على تصنيفاتك</b><span>${myCats.length?myCats.map(c=>esc(c.n)+' '+ard(c.c)+'٪').join(' · '):'لم تضف منتجات بعد'} — تحددها الإدارة لكل تصنيف، وتُقتطع لحظة التحرير فقط وتتحول مباشرة لمحفظة الإدارة ولا تُضاف على العميل</span></div><span class="tag amb">${ccTxt}</span></div>
+<div class="setrow"><div class="ic">🌟</div><div class="tx"><b>قيمة النقطة (تحددها الإدارة)</b><span>${money(ptsVal())} للنقطة — تُخصم من محفظتك عند إضافة نقاط لأي منتج وتُحوَّل لمحفظة الإدارة</span></div><span class="tag amb">${money(ptsVal())}</span></div>
+<div class="setrow"><div class="ic">📊</div><div class="tx"><b>تمويلك للنقاط حتى الآن</b><span>${ar(myFund.reduce((a,x)=>a+x.pts,0))} نقطة تمّولها · ${money(r2(myFund.reduce((a,x)=>a+x.amt,0)))}</span></div><button class="btn soft xs" onclick="go('m-wallet')">السجل</button></div>
+</div>
+<div class="acard"><h3>📍 موقع المتجر — حماية من الالتفاف</h3>
+<div class="fld"><label>مدينة النشاط (الوحيدة الظاهرة للعملاء)</label>
+<select class="inp" id="ms-city">${CITIES.map(c=>`<option ${s.city===c?'selected':''}>${c}</option>`).join('')}</select></div>
+<div class="fld mt"><label>الحي والشارع (محجوب دائماً عن العملاء)</label><input class="inp" id="ms-area" value="${esc(s.area||'')}" placeholder="مثال: حي الياسمين، شارع الأمير سلطان"></div>
+<p class="hint mt" style="line-height:1.8">🔒 ما يراه العميل: <b>📍 ${esc(s.city)}</b> فقط — العنوان التفصيلي يُنقل داخل السيرفر إلى شريك الشحن لإصدار البوليصة دون أن يظهر في أي واجهة، ولا يوجد استلام شخصي «يد بيد» في ضمين، والتتبع بالحالات فقط.</p>
+<button class="btn mt sm" onclick="mSaveLoc()">حفظ الموقع</button>
+</div>
+<div class="acard"><h3>🚚 خيارات التوصيل وسقف الشحن المجاني</h3>
+<div class="fld"><label>من يتحمل رسوم التوصيل؟</label>
+<select class="inp" id="ms-dlm">
+<option value="customer" ${s.dlMode==='customer'?'selected':''}>توصيل على العميل (١٠٠٪)</option>
+<option value="half" ${s.dlMode==='half'?'selected':''}>توصيل مناصفة (٥٠٪ عليك / ٥٠٪ على العميل)</option>
+<option value="free" ${s.dlMode==='free'?'selected':''}>توصيل مجاني (١٠٠٪ عليك)</option>
+</select></div>
+<div class="fld mt"><label>سقف الشحن المجاني — أدنى قيمة طلب (ر.س، 0 = معطَّل)</label><input class="inp" id="ms-fmin" type="number" min="0" value="${s.freeMin||0}"></div>
+${sec.id==='family'?`<div class="fld mt"><label>🛵 نطاق التوصيل الفوري (كم داخل «${esc(s.city)}» فقط)</label><input class="inp" id="ms-range" type="number" min="1" max="60" value="${s.rangeKm||20}">
+<p class="hint" style="margin-top:5px;line-height:1.8">الأطباق الطازجة تُوصل بمناديب فوريين داخل مدينتك فقط — يُمنع أي طلب من خارج النطاق تلقائياً حفاظاً على حرارة الوجبة (مثال: داخل الرياض أو على بعد ٢٠ كم).</p></div>`:''}
+<p class="hint mt" style="line-height:1.8">⚖️ ما تتحمله من رسوم الشحن يُقتطع من <b>صافيك فقط</b> لحظة التحرير — ولا يمس عمولة المنصة (٢٫٥٪) أبداً، ويُحوَّل كاملاً لحساب الشريك اللوجستي. ويرى العميل شريط تقدم في سلة التسوق يشجعه على بلوغ سقفك.</p>
+<button class="btn mt sm" onclick="mSaveShip()">حفظ خيارات التوصيل</button>
+</div>
+${sec.id==='family'?`<div class="acard"><h3>❓ أسئلة متجري عند الطلب</h3>
+<p class="hint mb" style="line-height:1.8">أضف أسئلة تناسب مطبخك — تظهر للعميل عند إتمام الطلب وتصلك إجاباته مع الشحنة (متاحة لقسم المأكولات والضيافة).</p>
+${(s.qs||[]).map((q,i)=>`<div class="setrow"><div class="ic">❓</div><div class="tx"><b>${esc(q)}</b><span>سؤال رقم ${ar(i+1)} — يظهر للعميل عند الطلب</span></div><button class="btn gray xs" onclick="mDelQ(${i})">حذف</button></div>`).join('')||'<div class="hint mb">لا أسئلة بعد</div>'}
+<div class="fld mt"><label>سؤال جديد</label><input class="inp" id="ms-q" placeholder="مثال: هل تريد الكيكة بالكريمة أم بالتمر؟"></div>
+<button class="btn soft sm mt" onclick="mAddQ()">＋ إضافة السؤال</button>
+</div>`:''}</div>
+</div>`;
+}
+function pickStoreImg(kind){
+$('#fup').onchange=e=>{const f=e.target.files[0];if(!f)return;
+const rd=new FileReader();rd.onload=()=>{myStore()[kind]=rd.result;$('#fup').value='';
+toast(kind==='logo'?'حُدّث لوقو متجرك — يظهر الآن لكل العملاء ✓':'حُدّثت صورة غلاف متجرك ✓','ok');render()};rd.readAsDataURL(f)};
+$('#fup').click();}
+function rmStoreImg(kind){delete myStore()[kind];toast(kind==='logo'?'أُزيل اللوقو وعاد الحرف الافتراضي':'أُزيلت صورة الغلاف وعاد اللون الافتراضي');render()}
+function mSaveStore(){const s=myStore();
+const nm=($('#ms-nm').value||'').trim();
+if(nm.length<2){toast('اسم المتجر قصير','err');return}
+s.name=nm;s.desc=($('#ms-ds').value||'').trim();
+toast('حُفظت بيانات متجرك ✓','ok');render()}
+
+function mSaveLoc(){const s=myStore();s.city=$('#ms-city').value;s.area=($('#ms-area').value||'').trim();toast('حُفظ الموقع — يظهر للعملاء مدينة النشاط فقط ✓','ok');render()}
+function mSaveShip(){const s=myStore();s.dlMode=$('#ms-dlm').value;s.freeMin=Math.max(0,Math.round(+($('#ms-fmin').value||0)));if($('#ms-range'))s.rangeKm=Math.min(60,Math.max(1,Math.round(+($('#ms-range').value||20))));toast('حُفظت خيارات التوصيل ✓','ok');render()}
+function mAddQ(){const v=($('#ms-q').value||'').trim();if(v.length<3){toast('اكتب سؤالاً أوضح','err');return}const s=myStore();s.qs=s.qs||[];s.qs.push(v);toast('أُضيف السؤال — سيظهر للعملاء عند الطلب ✓','ok');render()}
+function mDelQ(i){const s=myStore();s.qs.splice(i,1);toast('حُذف السؤال');render()}
+/* ================= صفحات الإدارة ================= */
+/* مركز الإدارة: نظرة عامة فقط — طلبات التسجيل والمتاجر في صفحة «المتاجر» المستقلة */
+function pgAHub(){
+return `<div class="pghead"><h1>🛡️ مركز إدارة ضمين</h1><span class="tag nvy">المشرف العام</span></div>
+${pgAOver()}`;
+}
+/* صفحة المتاجر المستقلة: طلبات التسجيل + جميع المتاجر بتبويبين */
+function pgAStoresPage(){
+const t=['reqs','stores'].includes(VIEW.atab)?VIEW.atab:'stores';ASTT=t;
+const pends=DB.reqs.filter(r=>r.status==='pending').length;
+const tab=(k,l,n)=>`<button class="${t===k?'on':''}" onclick="astTab('${k}')">${l}${n?` (${ar(n)})`:''}</button>`;
+return `<div class="pghead"><h1>🏪 المتاجر</h1><span class="tag nvy">طلبات التسجيل وإدارة المتاجر</span></div>
+<div class="tabs" style="margin-top:8px">${tab('reqs','📋 طلبات التسجيل',pends)}${tab('stores','🏪 جميع المتاجر',STORES.length)}</div>
+${t==='reqs'?pgAReqs():pgAStores()}`;
+}
+function astTab(t){VIEW.atab=t;render()}
+const vaultNow=()=>r2(DB.orders.reduce((a,o)=>a+o.groups.filter(g=>['pending','preparing','shipped','received','disputed'].includes(g.status)).reduce((x,g)=>x+g.sub+((g.ship&&g.ship.charge)||(g.dl||0)),0),0));
+function pgAOver(){
+const open=DB.disputes.filter(d=>d.status==='open');
+const chats=[];DB.orders.forEach(o=>o.groups.forEach((g,gi)=>{if(g.chat&&g.chat.length)chats.push({o,g,gi})}));
+chats.sort((a,b)=>(((b.g.chat||[]).slice(-1)[0]||{}).at||0)-(((a.g.chat||[]).slice(-1)[0]||{}).at||0));
+const vTot=DB.orders.reduce((a,o)=>a+o.groups.reduce((x,g)=>x+(g.viol?g.viol.customer+g.viol.merchant:0),0),0);
+const releasedTotal=DB.orders.reduce((a,o)=>a+o.groups.reduce((x,g)=>x+(g.payout?g.payout.sub:0),0),0);
+const pends=DB.reqs.filter(r=>r.status==='pending');
+return `<div class="kpis">
+<div class="kpi grn"><i>🧾</i><b>${money(DB.aRevenue)}</b><span>إجمالي عمولات ضمين (حسب التصنيف)</span></div>
+<div class="kpi amb"><i>🔒</i><b>${money(vaultNow())}</b><span>مبالغ محجوزة حالياً</span></div>
+<div class="kpi nvy"><i>🔓</i><b>${money(releasedTotal)}</b><span>إجمالي الشحنات المحررة</span></div>
+<div class="kpi red"><i>⚖️</i><b>${ar(open.length)}</b><span>نزاعات بانتظار حكمك</span></div>
+<div class="kpi" style="cursor:pointer" onclick="go('a-stores')"><i>🏪</i><b>${ar(STORES.length)}</b><span>متجر في ضمين</span></div>
+<div class="kpi"><i>👥</i><b>${ar(Object.keys(USERS).length)}</b><span>مستخدم مسجل</span></div>
+</div>
+<div class="grid2 mt">
+<div class="acard"><h3>⚖️ طابور التحكيم</h3>
+${open.length?open.map(d=>`<div class="row" style="cursor:pointer" onclick="openDispute('${d.id}')">
+<div style="flex:1"><b>${esc(d.subject)}</b><div class="hint">${ST(d.store).name} · طلب #${ar(d.order)} · ${ago(d.openedAt)}</div></div>
+<span class="tag red">يحتاج حكماً</span></div>`).join(''):'<div class="hint mb">لا نزاعات معلقة — كل شيء تحت السيطرة 🕊️</div>'}
+<button class="btn soft wide" onclick="go('a-disputes')">كل النزاعات ←</button></div>
+<div class="acard"><h3>🏪 المتاجر وطلبات التسجيل</h3>
+<div class="rows">
+<div class="row"><div class="fx" style="font-size:13px">🏪 متاجر ضمين</div><span class="tag ${STORES.filter(s=>s.susp).length?'amb':'grn'}">${ar(STORES.length)} متجر · ${ar(STORES.filter(s=>s.susp).length)} موقوف</span></div>
+<div class="row"><div class="fx" style="font-size:13px">📋 طلبات تسجيل بانتظار البت</div><span class="tag ${pends.length?'amb':'grn'}">${ar(pends.length)} طلب</span></div>
+</div>
+<button class="btn soft wide mt" onclick="go('a-stores')">فتح صفحة المتاجر وطلبات التسجيل ←</button>
+</div></div>
+<div class="acard mt"><h3>💬 مراقبة محادثات الطلبات ${vTot?`<span class="tag red">${ar(vTot)} مخالفة محجوبة</span>`:'<span class="tag grn">بلا مخالفات</span>'}</h3>
+<p class="hint mb">محادثات العميل × التاجر مرتبطة بالطلب — تُحجب الأرقام والروابط ووسائل التواصل الخارجية تلقائياً، وتُحذف المحادثة بعد ٣ مخالفات مع تنبيه فوري للإدارة.</p>
+<div class="rows">${chats.slice(0,5).map(({o,g,gi})=>{const last=[...(g.chat||[])].reverse().find(m=>m.r!=='sys');
+const ltxt=last?(last.loc?('📍 '+last.loc.txt):(last.payreq?('💰 طلب مبلغ إضافي بـ'+money(last.payreq.amt)):String(last.t))):'';
+return `<div class="row" style="cursor:pointer" onclick="openOChat(${o.id},${gi})">
+<div style="flex:1;min-width:0"><b>طلب #${ar(o.id)} · ${ST(g.store).name} × ${USERS[o.customer]?esc(USERS[o.customer].name.split(' ')[0]):'عميل'}</b>
+<div class="hint">${last?esc(ltxt.slice(0,60))+(ltxt.length>60?'…':''):'—'} · ${ar((g.chat||[]).length)} رسالة${g.chatDeleted?' · ⛔ محذوفة لمخالفة':g.chatArchived?' · 🗄️ مؤرشفة':''}</div></div>
+${(g.viol&&(g.viol.customer+g.viol.merchant))?`<span class="tag red">${ar(g.viol.customer+g.viol.merchant)} 🚫</span>`:'<span class="tag grn">سليمة</span>'}</div>`}).join('')||'<div class="hint">لا محادثات طلبات بعد</div>'}</div></div>`;
+}
+function pgADisputes(){
+const open=DB.disputes.filter(d=>d.status==='open');
+const done=DB.disputes.filter(d=>d.status==='resolved');
+return `<div class="pghead"><h1>⚖️ التحكيم</h1><span class="tag ${open.length?'red':'grn'}">${ar(open.length)} مفتوح · ${ar(done.length)} محسوم</span></div>
+<b class="fx" style="font-size:14px;color:var(--red)">⏳ بانتظار الحكم — افتح الدردشة واطّلع على أدلة الطرفين</b>
+${open.map(d=>{const o=DB.orders.find(x=>x.id===d.order);const g=o.groups.find(x=>x.store===d.store);
+return `<div class="ocard" style="border-inline-start:4px solid var(--red)">
+<div class="spread" style="flex-wrap:wrap">
+<div><b class="fx" style="font-size:13.5px">${esc(d.subject)}</b>
+<div class="hint">${USERS[d.customer]?esc(USERS[d.customer].name):'عميل'} × ${ST(d.store).name} · طلب #${ar(d.order)} · ${money(g.sub)} معلقة</div></div>
+<span class="tag red">مبلغ معلق ${money(g.sub)}</span></div>
+<button class="btn red sm mt" onclick="openDispute('${d.id}')">🛡️ فتح القضية وإصدار الحكم</button></div>`}).join('')||'<div class="empty" style="padding:26px"><div class="em">🕊️</div><b>لا قضايا مفتوحة</b></div>'}
+<div class="hr" style="margin:20px 0"></div>
+<b class="fx" style="font-size:14px;color:var(--grn)">📁 أحكام صادرة</b>
+${done.map(d=>`<div class="ocard" style="border-inline-start:4px solid var(--grn)">
+<div class="spread" style="flex-wrap:wrap">
+<div><b class="fx" style="font-size:13px">${esc(d.subject)} — طلب #${ar(d.order)}</b>
+<div class="hint">${d.ruling.act==='release'?'إفراج للتاجر':'استرجاع للعميل'} · ${dt(d.ruling.at)}</div></div>
+<button class="btn gray xs" onclick="openDispute('${d.id}')">عرض الملف</button></div>
+<div class="verd ${d.ruling.act==='release'?'rel':'ref'}" style="margin:8px 0 0"><h4>التسبيب</h4><div class="why">${esc(d.ruling.text)}</div></div></div>`).join('')||'<div class="hint mt">لا أحكام سابقة</div>'}`;
+}
+function pgAStores(){
+return `<div class="spread" style="margin:2px 0 12px"><b class="fx" style="font-size:14.5px">🏪 إدارة المتاجر</b><span class="tag gry">${ar(STORES.length)} متجر مسجل</span></div>
+<div class="acard"><div class="rows">
+${STORES.map(s=>`<div class="row">
+<div style="width:44px;height:44px;border-radius:13px;background:${s.color};color:#fff;display:grid;place-items:center;font-family:Alexandria;font-weight:800;flex-shrink:0">${s.name[0]}</div>
+<div style="flex:1;min-width:0"><b>${esc(s.name)}</b>
+<div class="hint">${SEC(s.sec).name} · ${USERS[s.owner]?esc(USERS[s.owner].name):'—'} · ★ ${ard(s.rt)} · ${ar(s.sales)} عملية</div></div>
+<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+<span class="fx" style="font-size:12.5px;color:var(--grn)">${money(DB.storeWallets[s.id]||0)}</span>
+${s.susp?`<span class="tag red">موقوف</span><button class="btn gray xs" onclick="aSusp('${s.id}')">إلغاء الإيقاف</button>`
+:`<span class="tag grn">يعمل</span><button class="btn red xs" onclick="aSusp('${s.id}')">إيقاف</button>`}
+</div></div>`).join('')}
+</div></div>`;
+}
+function aSusp(sid){const s=ST(sid);s.susp=!s.susp;
+pushNotif(s.owner,s.susp?'⛔':'✅',s.susp?'أُوقف متجرك مؤقتاً':'أُلغي إيقاف متجرك',s.susp?'راجع فريق الامتثال في ضمين':'عاد متجرك للعمل بشكل طبيعي',['m-set']);
+toast(s.susp?'أُوقف المتجر مؤقتاً':'أُعيد تشغيل المتجر','ok');render()}
+function pgAReqs(){
+const pend=DB.reqs.filter(r=>r.status==='pending');
+const done=DB.reqs.filter(r=>r.status!=='pending');
+return `<div class="spread" style="margin:2px 0 12px"><b class="fx" style="font-size:14.5px">📋 طلبات التسجيل</b><span class="tag ${pend.length?'amb':'grn'}">${ar(pend.length)} بانتظار البت · ${ar(done.length)} منتهي</span></div>
+<p class="hint mb" style="line-height:1.8">كل من يسجّل متجراً جديداً أو يطلب الانضمام لفريق الإدارة تظهر بياناته كاملة هنا — توافق فتفتح حسابه فوراً ويُبلَّغ، أو ترفض بسببٍ يظهر لصاحب الطلب. تسجيل الدخول موحّد للجميع (جوال أو بريد + كلمة مرور).</p>
+${pend.length?pend.map(r=>reqCard(r)).join(''):'<div class="empty"><div class="em">📭</div><b>لا طلبات معلقة</b><span>ستظهر هنا طلبات فتح المتاجر والانضمام للإدارة فور ورودها</span></div>'}
+${done.length?`<div class="hr" style="margin:20px 0 10px"></div><b class="fx" style="font-size:13.5px">📁 الطلبات المنتهية</b>
+<div class="rows mt">${done.map(r=>`<div class="row" style="flex-wrap:wrap;gap:6px">
+<div style="flex:1;min-width:170px"><b>${r.kind==='store'?'🏪 '+esc(r.store):'🛡️ '+esc(r.own)}</b><div class="hint">${r.kind==='store'?esc(r.own)+' · '+SEC(r.sec).name:esc(r.role||'فريق الإدارة')} · ${ago(r.at)}</div></div>
+<span class="tag ${r.status==='approved'?'grn':'red'}">${r.status==='approved'?'مقبول ✓':'مرفوض ✗'}</span>
+${r.status==='rejected'&&r.why?`<span class="hint">السبب: ${esc(r.why)}</span>`:''}
+${r.status==='rejected'?`<button class="btn gray xs" onclick="aApproveReq('${r.id}')">إعادة فتح وقبول</button>`:''}
+</div>`).join('')}</div>`:''}`;
+}
+function reqCard(r){
+const isS=r.kind==='store';
+return `<div class="acard" style="border-inline-start:4px solid ${isS?SEC(r.sec).color:'var(--navy)'}">
+<div class="spread" style="flex-wrap:wrap;gap:8px">
+<div><b class="fx" style="font-size:14px">${isS?'🏪 '+esc(r.store)+' — طلب متجر جديد':'🛡️ '+esc(r.own)+' — طلب انضمام للإدارة'}</b>
+<div class="hint">${esc(r.own)}${isS?' · '+SEC(r.sec).name:''} · وصل ${ago(r.at)}</div></div>
+<span class="tag amb">بانتظار الموافقة</span></div>
+<div class="reqgrid">
+${isS?`<div class="reqcell"><span>اسم المتجر</span><b>${esc(r.store)}</b></div>
+<div class="reqcell"><span>العالم المختار</span><b style="color:${SEC(r.sec).color}">${SEC(r.sec).icon} ${SEC(r.sec).name}</b></div>`:`<div class="reqcell"><span>القسم الإشرافي المطلوب</span><b>${esc(r.role||'—')}</b></div>
+<div class="reqcell"><span>رمز الدعوة</span><b>${esc(r.code||'—')} ${r.code==='DMN-2026'?'<span class="tag grn">سليم ✓</span>':'<span class="tag red">غير صحيح</span>'}</b></div>`}
+<div class="reqcell"><span>الجوال (يستخدم للدخول)</span><b>${ar(r.phone)}</b></div>
+<div class="reqcell"><span>البريد الإلكتروني</span><b>${esc(r.email||'—')}</b></div>
+${isS?`<div class="reqcell"><span>السجل التجاري / الوثيقة</span><b>${esc(r.cr)}${r.crDoc?` <span class="tag grn">📎 ${esc(r.crDoc)}</span>`:''}</b></div>
+<div class="reqcell"><span>الآيبان (تحويل أرباح المتجر)</span><b>${esc(r.iban)}</b></div>`:`<div class="reqcell" style="grid-column:1/-1"><span>ملاحظة الأمان</span><b class="hint" style="font-weight:600">كلمة المرور محفوظة ولا تُعرض — تُفتح صلاحيات مركز الإدارة كاملة بعد قبولك، ويُبلَّغ صاحب الطلب بأي رفض مع سببه.</b></div>`}
+</div>
+<div class="spread mt" style="gap:8px;flex-wrap:wrap">
+<button class="btn sm" onclick="aApproveReq('${r.id}')">✓ موافقة${isS?' وفتح المتجر':' وفتح الحساب'}</button>
+<button class="btn red sm" onclick="aRejectReq('${r.id}')">✗ رفض الطلب</button></div></div>`;
+}
+function aApproveReq(id){
+const r=DB.reqs.find(x=>x.id===id);if(!r)return;
+let passInfo='';
+if(r.kind==='store'){
+let n=STORES.length+1;while(ST('s'+n))n++;const sid='s'+n;
+STORES.push({id:sid,name:r.store,sec:r.sec,owner:r.phone,color:SEC(r.sec).color,desc:'متجر جديد — بانتظار أول منتجاته وهويته',rt:0,sales:0,susp:false,open:true,city:'الرياض',dlMode:'customer',freeMin:0,iban:r.iban,cr:r.cr,crDoc:r.crDoc||''});
+DB.storeWallets[sid]=0;}
+const u=USERS[r.phone];
+if(u){u.pend=null;delete u.rejected;
+if(r.kind==='store'){const st=STORES.find(x=>x.owner===r.phone);if(st)u.store=st.id}}
+else{const st=STORES.find(x=>x.owner===r.phone);
+USERS[r.phone]=r.kind==='store'
+?{name:r.own,role:'merchant',pass:'1234',store:st?st.id:null,since:Date.now(),email:r.email||'',notif:{ord:true,dis:true}}
+:{name:r.own,role:'admin',pass:'1234',since:Date.now(),email:r.email||'',notif:{dis:true}};
+passInfo=' — كلمة المرور التجريبية 1234'}
+r.status='approved';r.at2=Date.now();
+pushNotif(r.phone,'🎉',r.kind==='store'?'اعتُمد متجرك وأصبح جاهزاً!':'مرحباً بك في فريق إدارة ضمين',r.kind==='store'?'«'+r.store+'» فُتح في '+SEC(r.sec).name+' — أضف منتجاتك من لوحة التاجر وابدأ البيع':'فُتحت لك صلاحيات مركز الإدارة كاملة — سجّل دخولك بالجوال وكلمة المرور وابدأ',r.kind==='store'?['m-dash']:['a-over']);
+toast(r.kind==='store'?'اعتُمد المتجر وأُبلغ صاحبه ✓':'قُبل طلب الإدارة وأُبلغ صاحبه'+passInfo,'ok');render();
+}
+function aRejectReq(id){
+const r=DB.reqs.find(x=>x.id===id);if(!r)return;REJ=r;
+openModal(`<div class="mhead"><b>✗ رفض طلب ${r.kind==='store'?'المتجر «'+esc(r.store)+'»':'الإدارة — '+esc(r.own)}</b><button class="x" onclick="closeModal()">✕</button></div>
+<div class="mbody">
+<div class="fld"><label>سبب الرفض (يظهر لصاحب الطلب مع إشعار)</label><textarea class="inp" id="rj-why" style="min-height:76px" placeholder="مثال: وثيقة السجل التجاري غير واضحة — أعد إرفاقها"></textarea></div>
+<div class="spread mt"><button class="btn gray sm" onclick="closeModal()">تراجع</button><button class="btn red sm" onclick="doRejectReq()">تأكيد الرفض</button></div></div>`);
+}
+function doRejectReq(){
+if(!REJ)return;
+const why=($('#rj-why').value||'').trim()||'لم يستوفِ الطلب شروط الاعتماد في ضمين';
+REJ.status='rejected';REJ.why=why;REJ.at2=Date.now();
+const u=USERS[REJ.phone];if(u){u.pend=null;u.rejected=why}
+pushNotif(REJ.phone,'✗',REJ.kind==='store'?'رُفض طلب افتتاح متجرك':'رُفض طلب انضمامك للإدارة',why,null);
+closeModal();toast('رُفض الطلب وأُبلغ صاحبه بالسبب','ok');render();
+}
+function pgACats(){
+return `<div class="pghead"><h1>🗂️ الأقسام والتصنيفات</h1><span class="tag grn">عمولة ضمين تُحدَّد لكل تصنيف</span></div>
+<p class="hint mb" style="line-height:1.8">أضف وعدّل واحذف تصنيفات العوالم الأربعة، وغيّر اسم أي قسم بزر ✏️، وحدد عمولة كل تصنيف بنفسك — تُطبَّق العمولة لحظة تحرير أي شحنة على منتجات ذلك التصنيف، وتُحسم من التاجر فقط ولا تُضاف على العميل أبداً.</p>
+<div class="grid2">
+${SECTIONS.map(sec=>`<div class="acard" style="border-top:3px solid ${sec.color}">
+<div class="spread"><h3 style="color:${sec.color}">${sec.icon} ${sec.name}</h3><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span class="tag" style="background:${sec.color}18;color:${sec.color}">${ar(CATS[sec.id].length)} تصنيف</span><button class="btn gray xs" onclick="secRename('${sec.id}')">✏️ تغيير الاسم</button></div></div>
+<div class="rows mt">
+${CATS[sec.id].map((c,i)=>{const pc=PRODUCTS.filter(p=>{const s=ST(p.store);return s&&s.sec===sec.id&&p.cat===c.n}).length;
+return `<div class="row" style="flex-wrap:wrap;gap:6px">
+<div style="flex:1;min-width:120px"><input class="inp" style="padding:7px 10px;font-size:12px" id="cn-${sec.id}-${i}" value="${esc(c.n)}"></div>
+<div style="display:flex;align-items:center;gap:5px"><span class="hint" style="white-space:nowrap;font-weight:700">عمولة</span>
+<input class="inp" style="width:72px;padding:7px 6px;font-size:12px;text-align:center" type="number" min="0" max="20" step="0.25" id="cc-${sec.id}-${i}" value="${c.comm}"><span class="hint">٪</span></div>
+<div style="display:flex;gap:5px;align-items:center;flex-wrap:wrap">
+<span class="tag ${pc?'grn':''}" ${pc?'':'style="background:#0000000a;color:var(--mut)"'}>${ar(pc)} منتج</span>
+<button class="btn sm" title="حفظ التعديلات" onclick="catSave('${sec.id}',${i})">💾</button>
+<button class="btn ${CATDEL===sec.id+'-'+i?'red':'gray'} xs" onclick="catDel('${sec.id}',${i})">${CATDEL===sec.id+'-'+i?'متأكد؟':'🗑'}</button></div></div>`}).join('')}
+</div>
+<div style="display:grid;grid-template-columns:1.7fr .7fr auto;gap:7px;align-items:end;margin-top:11px">
+<div class="fld"><label>تصنيف جديد</label><input class="inp" style="padding:8px 10px;font-size:12px" id="nc-${sec.id}" placeholder="اسم التصنيف"></div>
+<div class="fld"><label>عمولته ٪</label><input class="inp" style="padding:8px 6px;font-size:12px;text-align:center" type="number" min="0" max="20" step="0.25" id="ncc-${sec.id}" value="2.5"></div>
+<button class="btn soft sm" onclick="catAdd('${sec.id}')">＋ إضافة</button>
+</div>
+</div>`).join('')}
+</div>`;
+}
+function catSave(sec,i){
+const c=CATS[sec][i];
+const nm=($('#cn-'+sec+'-'+i).value||'').trim();
+const cm=+($('#cc-'+sec+'-'+i).value||0);
+if(nm.length<2){toast('اسم التصنيف قصير','err');return}
+if(!(cm>=0&&cm<=20)){toast('العمولة يجب أن تكون بين ٠ و ٢٠٪','err');return}
+if(CATS[sec].some((x,j)=>j!==i&&x.n===nm)){toast('يوجد تصنيف بنفس الاسم في هذا العالم','err');return}
+if(nm!==c.n){PRODUCTS.forEach(p=>{const s=ST(p.store);if(s&&s.sec===sec&&p.cat===c.n)p.cat=nm});c.n=nm}
+c.comm=+cm.toFixed(2);CATDEL=null;
+toast('حُفظ التصنيف «'+nm+'» — عمولته '+ard(c.comm)+'٪ ✓','ok');render();
+}
+function catDel(sec,i){
+if(CATDEL!==sec+'-'+i){CATDEL=sec+'-'+i;render();toast('اضغط «متأكد؟» مرة أخرى لحذف التصنيف','amb');return}
+const c=CATS[sec][i];CATDEL=null;
+const pc=PRODUCTS.filter(p=>{const s=ST(p.store);return s&&s.sec===sec&&p.cat===c.n}).length;
+if(pc){toast('لا يمكن الحذف — انقل منتجاته ('+ar(pc)+') لتصنيف آخر أولاً','err');render();return}
+CATS[sec].splice(i,1);toast('حُذف التصنيف «'+c.n+'» ✓','ok');render();
+}
+function catAdd(sec){
+const nm=($('#nc-'+sec).value||'').trim();
+const cm=+($('#ncc-'+sec).value||0);
+if(nm.length<2){toast('اكتب اسم التصنيف','err');return}
+if(!(cm>=0&&cm<=20)){toast('العمولة يجب أن تكون بين ٠ و ٢٠٪','err');return}
+if(CATS[sec].some(x=>x.n===nm)){toast('التصنيف موجود مسبقاً في هذا العالم','err');return}
+CATS[sec].push({n:nm,comm:+cm.toFixed(2)});
+toast('أُضيف التصنيف «'+nm+'» بعمولة '+ard(cm)+'٪ ✓','ok');render();
+}
+/* تغيير اسم القسم (العالم) — يُطبَّق فوراً في كل ضمين */
+function secRename(sid){
+const sec=SEC(sid);
+openModal(`<div class="mhead"><b>✏️ تغيير اسم القسم</b><button class="x" onclick="closeModal()">✕</button></div>
+<div class="mbody">
+<div class="demo mb"><b style="font-size:12px">الاسم الجديد يُطبَّق فوراً في كل ضمين</b>
+<p class="hint" style="margin-top:3px">القائمة العلوية، بطاقات الرئيسية، صفحات القسم، اختيار عالم التاجر الجديد، وبطاقات الطلبات — كلها تقرأ الاسم من هنا.</p></div>
+<div class="fld"><label>اسم القسم</label><input class="inp" id="sn-nm" value="${esc(sec.name)}"></div>
+<div class="fld mt"><label>الوصف المختصر (يظهر تحت الاسم)</label><input class="inp" id="sn-ds" value="${esc(sec.desc)}"></div>
+<div class="spread mt"><button class="btn gray sm" onclick="closeModal()">تراجع</button><button class="btn" onclick="secSaveName('${sid}')">حفظ الاسم</button></div></div>`);
+}
+function secSaveName(sid){
+const sec=SEC(sid);
+const nm=($('#sn-nm').value||'').trim(),ds=($('#sn-ds').value||'').trim();
+if(nm.length<4){toast('اسم القسم قصير جداً (٤ أحرف فأكثر)','err');return}
+const old=sec.name;
+sec.name=nm;if(ds)sec.desc=ds;
+closeModal();toast('حُفظ اسم القسم: «'+old+'» ← «'+nm+'» ✓','ok');render();
+}
+function pgARev(){
+const mx=Math.max(...DB.revMonths.map(m=>m.v));
+let gmv=0,relSub=0,relNet=0,relComm=0,shipC=0,shipM=0,shipP=0,refunds=0;
+DB.orders.forEach(o=>o.groups.forEach(g=>{
+const ch=(g.ship&&g.ship.charge)||(g.dl||0);
+gmv+=g.sub+ch;
+if(g.status==='refunded')refunds+=g.sub+ch;
+if(g.payout&&g.status==='released'){relSub+=g.payout.sub;relNet+=g.payout.net;relComm+=g.payout.comm;
+if(g.payout.ship){shipC+=g.payout.ship.charge||0;shipM+=g.payout.ship.merchant||0;shipP+=g.payout.ship.pts||0}}}));
+const held=vaultNow();
+const otpHeld=r2(DB.orders.reduce((a,o)=>a+o.groups.filter(g=>g.ship&&g.ship.mode==='field'&&g.status==='shipped').reduce((x,g)=>x+g.sub,0),0));
+const storesBal=r2(Object.values(DB.storeWallets).reduce((a,b)=>a+b,0));
+const ptsLiab=r2(Object.values(USERS).reduce((a,u)=>a+(u.pts||0),0)*ptsVal());
+const custBal=r2(Object.values(USERS).reduce((a,u)=>a+(u.bal||0),0));
+const relFlow=r2(relSub+shipC);
+const fr=[
+['🛒 إجمالي قيمة الطلبات في المنصة (منتجات + شحن دفعه العملاء)',money(gmv)],
+['🔒 المحجوز في خزنة الضمان الآن (حماية المشترين)',money(held)],
+['🎪 مستحقات خدمات ميدانية معلقة بانتظار كود تأكيد العميل (OTP)',money(otpHeld)],
+['🔓 المحرر للتجار حتى اليوم (صافي حقهم)',money(relNet)],
+['🧾 عمولات ضمين المحصلة (تحولت لحساب التطبيق)',money(relComm)],
+['🚚 رسوم شحن دفعها العملاء (تحولت للوجستيات)',money(shipC)],
+['🤝 دعم شحن تحمله التجار (مجاني / مناصفة / سقف)',money(shipM)],
+['🌟 دعم شحن من نقاط الولاء (حساب الإدارة)',money(shipP)],
+['🏦 رصيد حساب الشريك اللوجستي (OTO/Torod)',money(DB.logiWallet||0)],
+['↩️ مسترجع للعملاء (محافظ ضمين لديهم)',money(refunds)],
+['🧾 ضريبة القيمة المضافة المحصلة (١٥٪)',money(DB.vat||0)],
+['⭐ التزامات النقاط لدى العملاء (نقاطهم × قيمة النقطة)',money(ptsLiab)],
+['👛 أرصدة عملاء جاهزة للاستخدام من محافظهم',money(custBal)],
+['🏪 محافظ التجار المتاحة للسحب',money(storesBal)],
+['💰 محفظة الإدارة من تمويلات النقاط',money(DB.aPtsWallet||0)]];
+return `<div class="pghead"><h1>📈 إيرادات ضمين</h1><span class="tag grn">عمولات كل تصنيف تُحوَّل للإدارة لحظة التحرير</span></div>
+<div class="kpis mb">
+<div class="kpi grn"><i>🧾</i><b>${money(DB.aRevenue)}</b><span>إجمالي العمولات حتى اليوم</span></div>
+<div class="kpi amb"><i>🔒</i><b>${money(held)}</b><span>محجوز في الخزنة الآن</span></div>
+<div class="kpi nvy"><i>🏪</i><b>${money(storesBal)}</b><span>صافي أرصدة التجار</span></div>
+<div class="kpi amb"><i>🌟</i><b>${money(DB.aPtsWallet||0)}</b><span>محفظة الإدارة من تمويل النقاط</span></div>
+<div class="kpi nvy"><i>🚚</i><b>${money(DB.logiWallet||0)}</b><span>حساب الشريك اللوجستي (OTO/Torod)</span></div>
+<div class="kpi"><i>🧾</i><b>${money(DB.vat||0)}</b><span>ضريبة القيمة المضافة المحصلة (١٥٪)</span></div>
+</div>
+<div class="acard"><h3>📒 الملخص المالي الشامل — كل ما يخص المبالغ في ضمين</h3>
+<div class="rows">${fr.map(([l,v])=>`<div class="row" style="flex-wrap:wrap;gap:4px"><div class="tx" style="flex:1;min-width:180px">${l}</div><b class="fx" style="font-size:12.5px;white-space:nowrap">${v}</b></div>`).join('')}</div>
+<div class="hr"></div>
+<div class="demo"><b style="font-size:11.5px">⚖️ معادلة الخزنة — أين ذهب كل مبلغ؟</b>
+<p class="hint" style="margin-top:4px;line-height:2">إجمالي الطلبات <b>${money(gmv)}</b> = محجوز الآن لصالح الشحنات الجارية <b>${money(held)}</b> + محرر بضمان (منتجات <b>${money(relSub)}</b> + شحن دفعه العملاء <b>${money(shipC)}</b>) + مسترجع للعملاء <b>${money(refunds)}</b>${Math.abs(gmv-held-relFlow-refunds)<1?' — <b style="color:var(--grn)">✓ الدفاتر متوازنة</b>':''}</p>
+<p class="hint" style="line-height:1.9">عمولة المنصة تُقتطع من نصيب التاجر فقط (وتُحدَّد لكل تصنيف من صفحة الأقسام) — ولا تُضاف على العميل أبداً، بينما دعم التجار ونقاطهم للشحن (${money(r2(shipM+shipP))}) يُقتطع من صافيهم ويُحوَّل للوجستيات.</p></div>
+</div>
+<div class="acard mt"><h3>عمولات آخر ٥ أشهر (ألف ر.س)</h3>
+<div class="rvbars">${DB.revMonths.map(m=>`<div class="rv"><span>${ard(m.v)}</span><i style="height:${Math.max(8,m.v/mx*100)}%"></i><b>${m.m}</b></div>`).join('')}</div>
+</div>
+<div class="acard mt"><h3>🌟 إعدادات برنامج النقاط — أرقامك أنت</h3>
+<div class="setrow"><div class="ic">⭐</div><div class="tx"><b>قيمة النقطة الواحدة (ر.س)</b><span>يموّلها التاجر من محفظته — اختر الرقم الذي يناسبك من ٠٫٠١ إلى ١</span></div>
+<div style="display:flex;gap:6px;flex-shrink:0;align-items:center"><input class="inp" id="pv-inp" type="number" step="0.01" min="0.01" max="1" value="${ptsVal()}" style="width:84px;padding:8px;text-align:center"><button class="btn sm" onclick="setPtsVal(document.getElementById('pv-inp').value)">حفظ</button></div></div>
+<div class="setrow"><div class="ic">🚚</div><div class="tx"><b>نقاط التوصيل المجاني</b><span>النقاط التي يستبدلها العميل مقابل توصيل مجاني لكل طلبه — من ٥٠ إلى ٢٠٠٠</span></div>
+<div style="display:flex;gap:6px;flex-shrink:0;align-items:center"><input class="inp" id="fd-inp" type="number" step="10" min="50" max="2000" value="${fdPts()}" style="width:84px;padding:8px;text-align:center"><button class="btn sm" onclick="setFreeDlPts(document.getElementById('fd-inp').value)">حفظ</button></div></div>
+<div class="setrow"><div class="ic">🏦</div><div class="tx"><b>محفظة الإدارة من النقاط</b><span>رسوم تمويل النقاط المحصّلة من التجار — تُستخدم في مكافآت العملاء</span></div><b class="fx" style="color:var(--amb2)">${money(DB.aPtsWallet||0)}</b></div>
+${DB.ptsFunding.length?`<div class="hr"></div><b style="font-size:11.5px">آخر تمويلات التجار</b>
+<div class="rows">${DB.ptsFunding.slice(0,4).map(x=>`<div class="row"><div style="flex:1;min-width:0"><b>${esc(ST(x.store).name)} — ${esc(x.pname)}</b><div class="hint">${ago(x.at)}</div></div><span class="hint">${x.pts>0?'+':''}${ar(x.pts)} نقطة</span><b class="fx" style="color:var(--amb2)">${money(x.amt)}</b></div>`).join('')}</div>`:''}
+</div>
+<div class="acard mt"><h3>أرصدة تجار الضمان</h3>
+<div class="rows">${STORES.map(s=>`<div class="row">
+<div style="width:34px;height:34px;border-radius:10px;background:${s.color};color:#fff;display:grid;place-items:center;font-size:13px;font-family:Alexandria;font-weight:800;overflow:hidden">${s.logo?`<img src="${s.logo}" style="width:100%;height:100%;object-fit:cover">`:s.name[0]}</div>
+<div style="flex:1"><b>${esc(s.name)}</b><div class="hint">${SEC(s.sec).name} · محجوز لصالحه ${money(heldFor(s.id))}</div></div>
+<b class="fx" style="color:var(--grn)">${money(DB.storeWallets[s.id]||0)}</b></div>`).join('')}</div></div>`+aCouponCard();
+}
+function setPtsVal(v){v=+v;if(!(v>=0.01&&v<=1)){toast('أدخل قيمة النقطة بين ٠٫٠١ و ١ ر.س','err');return}DB.ptsVal=+v.toFixed(2);toast('صارت قيمة النقطة '+money(DB.ptsVal)+' — تسري على تمويلات التجار الجديدة','ok');render()}
+function setFreeDlPts(v){v=Math.round(+v);if(!(v>=50&&v<=2000)){toast('أدخل نقاط التوصيل بين ٥٠ و ٢٠٠٠','err');return}DB.freeDlPts=v;toast('صار استبدال التوصيل المجاني بـ'+ar(v)+' نقطة للعميل','ok');render()}
+/* ================= وضع التطبيق (PWA) ================= */
+const APPICONS={i192:'data:image/png;base64,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',i512:'data:image/png;base64,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',mask:'data:image/png;base64,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'};
+(function(){try{
+const mf={name:'ضمين — تسوّق مضمون بثقة',short_name:'ضمين',
+description:'منصة التجارة الإلكترونية السعودية بضمان مالي — مالك محجوز في خزنة مستقلة حتى ترضى',
+dir:'rtl',lang:'ar',start_url:location.href.split('#')[0],scope:location.href.split('#')[0],
+display:'standalone',orientation:'any',background_color:'#F6F2E9',theme_color:'#1D4432',
+icons:[{src:APPICONS.i192,sizes:'192x192',type:'image/png',purpose:'any'},
+{src:APPICONS.i512,sizes:'512x512',type:'image/png',purpose:'any'},
+{src:APPICONS.mask,sizes:'512x512',type:'image/png',purpose:'maskable'}]};
+const l=document.createElement('link');l.rel='manifest';
+l.href=URL.createObjectURL(new Blob([JSON.stringify(mf)],{type:'application/manifest+json'}));
+document.head.appendChild(l);
+}catch(e){}})();
+let DPROMPT=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();DPROMPT=e;if(document.querySelector('#top'))renderTop()});
+function appMode(){return matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true}
+function instChip(){return appMode()?'':'<button class="btn soft sm appchip" onclick="installApp()" title="ثبّت ضمين على جوالك">📲 التطبيق</button>'}
+async function installApp(){
+if(DPROMPT){DPROMPT.prompt();const ch=await DPROMPT.userChoice.catch(()=>null);DPROMPT=null;try{renderTop()}catch(e){}
+if(ch&&ch.outcome==='accepted')toast('تم تثبيت تطبيق ضمين 🎉','ok');return}
+const ios=/iphone|ipad|ipod/i.test(navigator.userAgent);
+toast(ios?'للتثبيت على الآيفون: زر المشاركة ⬆️ ثم «إضافة إلى الشاشة الرئيسية»':'للتثبيت على أندرويد: قائمة المتصفح ⋮ ثم «تثبيت التطبيق»','amb');
+}
+window.addEventListener('appinstalled',()=>{DPROMPT=null;toast('أهلاً بتطبيق ضمين على جهازك 📲💚','ok');try{renderTop()}catch(e){}});
+
+/* ===== حفظ الجلسة والسلة والمفضلة — تجربة تطبيق حقيقي ===== */
+function appSave(){try{localStorage.setItem('dameen_v1',JSON.stringify({ses:SES,cart:CART,gfav:GFav}))}catch(e){}}
+function appRestore(){try{
+const d=JSON.parse(localStorage.getItem('dameen_v1')||'null');if(!d)return;
+if(d.ses&&d.ses.phone&&USERS[d.ses.phone]&&!USERS[d.ses.phone].pend&&!USERS[d.ses.phone].rejected){
+const u=USERS[d.ses.phone];SES={phone:d.ses.phone,role:u.role,store:u.store||null};
+if(SES.role==='merchant'){const own=STORES.find(x=>x.owner===SES.phone);SES.store=own?own.id:SES.store}}
+CART=(d.cart||[]).filter(c=>c&&P(c.pid)&&c.qty>0).map(c=>({pid:c.pid,qty:Math.min(c.qty,P(c.pid).stock)}));
+GFav=(d.gfav||[]).filter(x=>x&&P(x));
+}catch(e){}}
+appRestore();
+
+/* ================= الإقلاع ================= */
+document.addEventListener('click',()=>document.querySelectorAll('.dd.open').forEach(d=>d.classList.remove('open')));
+render();
+if(appMode())setTimeout(()=>toast('أهلاً بك في تطبيق ضمين 👋','ok'),1200);
+window.addEventListener('beforeunload',appSave);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)appSave()});
+

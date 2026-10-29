@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import "./globals.css";
 
 export const metadata: Metadata = {
   title: "ضمين — تسوّق مضمون بثقة",
@@ -19,6 +18,7 @@ export const viewport: Viewport = {
   themeColor: "#1D4432",
   width: "device-width",
   initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
@@ -26,9 +26,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="ar" dir="rtl" suppressHydrationWarning>
-      <body className="antialiased min-h-screen flex flex-col bg-background text-foreground">
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
