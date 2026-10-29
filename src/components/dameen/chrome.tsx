@@ -3,9 +3,10 @@
 
 import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
+import { toast } from 'sonner';
 import {
   ShieldCheck, Search, Bell, ShoppingCart, Heart, Home, LayoutGrid, Package, User,
-  LogOut, Store as StoreIcon, Settings, ChevronDown, Trash2, Lock, ArrowLeft, Sparkles,
+  LogOut, Store as StoreIcon, Settings, ChevronDown, Trash2, Lock, ArrowLeft, Sparkles, Library,
 } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -15,7 +16,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { ar, CITIES, DEMO_LOGINS, PAY_METHODS, money } from './data';
-import { cartTotals, curPrice, useDameen } from './state';
+import { cartCalc, eff, useDameen, useMe, type Route } from './state';
 import { QtyStepper, WorldChip, EmptyState } from './ui';
 
 /* ============ الشعار ============ */
@@ -74,7 +75,7 @@ function InstantSearch() {
                   <span className="block text-sm font-bold truncate">{p.name}</span>
                   <span className="block text-[11px] text-muted-foreground">{st?.name} · {p.cat}</span>
                 </span>
-                <span className="text-sm font-extrabold text-brand shrink-0">{money(curPrice(p))}</span>
+                <span className="text-sm font-extrabold text-brand shrink-0">{money(eff(p))}</span>
               </button>
             ))}
             <button className="w-full p-2 text-xs font-bold text-brand bg-accent/60 hover:bg-accent" onClick={() => { go({ name: 'search', q: q.trim() }); setOpen(false); }}>
@@ -133,6 +134,7 @@ export function TopBar() {
               </DropdownMenu>
               <NavLink active={route.name === 'favorites'} onClick={() => go({ name: 'favorites' })}>المفضلة</NavLink>
               <NavLink active={route.name === 'orders'} onClick={() => go({ name: 'orders' })}>طلباتي</NavLink>
+              <NavLink active={route.name === 'dlib'} onClick={() => go({ name: 'dlib' })}>مكتبتي</NavLink>
               <NavLink active={route.name === 'disputes'} onClick={() => go({ name: 'disputes' })}>نزاعاتي</NavLink>
             </>
           )}
@@ -142,6 +144,8 @@ export function TopBar() {
               <NavLink active={route.name === 'merchant' && route.tab === 'products'} onClick={() => go({ name: 'merchant', tab: 'products' })}>منتجاتي</NavLink>
               <NavLink active={route.name === 'merchant' && route.tab === 'orders'} onClick={() => go({ name: 'merchant', tab: 'orders' })}>الطلبات</NavLink>
               <NavLink active={route.name === 'merchant' && route.tab === 'wallet'} onClick={() => go({ name: 'merchant', tab: 'wallet' })}>المحفظة</NavLink>
+              <NavLink active={route.name === 'merchant' && route.tab === 'disputes'} onClick={() => go({ name: 'merchant', tab: 'disputes' })}>النزاعات</NavLink>
+              <NavLink active={route.name === 'merchant' && route.tab === 'settings'} onClick={() => go({ name: 'merchant', tab: 'settings' })}>الإعدادات</NavLink>
             </>
           )}
           {role === 'admin' && (
@@ -167,14 +171,14 @@ export function TopBar() {
             </>
           )}
           {session && (
-            <DropdownMenu>
+            <DropdownMenu onOpenChange={o => { if (o) setTimeout(markNotifsRead, 1200); }}>
               <DropdownMenuTrigger asChild>
                 <button aria-label="التنبيهات" className="relative w-9 h-9 rounded-lg hover:bg-white/10 flex items-center justify-center">
                   <Bell size={17} />
                   {unread > 0 && <span className="absolute top-1 end-1 w-2 h-2 bg-gold rounded-full animate-pulse" />}
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-80" onOpenChange={o => { if (o) setTimeout(markNotifsRead, 1200); }}>
+              <DropdownMenuContent align="end" className="w-80">
                 <DropdownMenuLabel className="font-extrabold">التنبيهات</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {myNotifs.length === 0 && <div className="p-4 text-sm text-muted-foreground text-center">لا تنبيهات بعد</div>}
@@ -231,12 +235,12 @@ export function TopBar() {
 /* ============ التنقل السفلي (جوال - عميل) ============ */
 export function BottomNav() {
   const { route, go, cart } = useDameen();
-  const items = [
-    { id: 'home', t: 'الرئيسية', icon: Home, r: { name: 'home' as const } },
+  const items: { id: string; t: string; icon: typeof Home; r: Route; cart?: boolean }[] = [
+    { id: 'home', t: 'الرئيسية', icon: Home, r: { name: 'home' } },
     { id: 'section', t: 'العوالم', icon: LayoutGrid, r: { name: 'section', id: 'fashion' } },
-    { id: 'favorites', t: 'المفضلة', icon: Heart, r: { name: 'favorites' } },
+    { id: 'cart', t: 'السلة', icon: ShoppingCart, r: { name: 'orders' }, cart: true },
+    { id: 'dlib', t: 'مكتبتي', icon: Library, r: { name: 'dlib' } },
     { id: 'orders', t: 'طلباتي', icon: Package, r: { name: 'orders' } },
-    { id: 'account', t: 'حسابي', icon: User, r: { name: 'account' } },
   ];
   return (
     <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-card border-t border-border shadow-[0_-4px_20px_rgba(0,0,0,0.06)] pb-[env(safe-area-inset-bottom)]" aria-label="التنقل السفلي">
@@ -245,11 +249,11 @@ export function BottomNav() {
           const active = route.name === it.id || (it.id === 'section' && route.name === 'section');
           const Icon = it.icon;
           return (
-            <button key={it.id} className="relative flex flex-col items-center gap-0.5 py-2" onClick={() => go(it.r)}>
+            <button key={it.id} className="relative flex flex-col items-center gap-0.5 py-2" onClick={() => it.cart ? useDameen.getState().setCartOpen(true) : go(it.r)}>
               {active && <motion.span layoutId="bnav" className="absolute top-0 w-8 h-0.5 rounded-full bg-brand" />}
               <Icon size={19} className={active ? 'text-brand' : 'text-muted-foreground'} />
               <span className={`text-[10px] font-bold ${active ? 'text-brand' : 'text-muted-foreground'}`}>{it.t}</span>
-              {it.id === 'orders' && cart.length > 0 && <span className="absolute top-1 end-[22%] bg-gold text-brand text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center">{ar(cart.length)}</span>}
+              {it.cart && cart.length > 0 && <span className="absolute top-1 end-[18%] bg-gold text-brand text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center">{ar(cart.length)}</span>}
             </button>
           );
         })}
@@ -301,10 +305,10 @@ export function Footer() {
           </div>
         </div>
       </div>
-      <div className="border-t border-white/10">
+        <div className="border-t border-white/10">
         <div className="max-w-6xl mx-auto px-4 md:px-6 py-4 text-[11px] text-cream/50 flex flex-col md:flex-row items-center justify-between gap-2 pb-24 md:pb-4">
           <span>ضمين © {ar(2026)} — تسوّق مضمون بثقة</span>
-          <span>ضريبة القيمة المضافة ١٥٪ مضمّنة · الشحن مجاني فوق ٢٠٠ ر.س</span>
+          <span>ضريبة القيمة المضافة ١٥٪ مضمّنة · شحنة مستقلة لكل متجر عبر OTO/Torod</span>
         </div>
       </div>
     </footer>
@@ -433,74 +437,186 @@ export function AuthModal() {
   );
 }
 
-/* ============ السلة الجانبية ============ */
+/* ============ السلة الجانبية المجمعة بالمتاجر ============ */
 export function CartDrawer() {
-  const { ui, setCartOpen, cart, products, setQty, removeLine, session, go, openAuth } = useDameen();
-  const t = cartTotals(cart, products);
+  const d = useDameen();
+  const { ui, setCartOpen, cart, products, stores, setQty, removeLine, session, go, openAuth, cartSel, setCartSel, coupons, ptsVal, freeDlPts } = d;
+  const me = useMe();
+  const t = cartCalc(cart, products, stores, cartSel.city, cartSel.coupon, coupons, cartSel.pts, cartSel.freeDl, me, ptsVal, freeDlPts);
+  const groups = Object.values(t.groups);
+  const count = cart.reduce((a, l) => a + l.qty, 0);
+  const [cpnIn, setCpnIn] = useState('');
+
+  const applyCoupon = (v: string) => {
+    const k = (v || '').trim().toUpperCase();
+    if (!k) { setCartSel({ coupon: null }); return; }
+    if (!coupons[k]) { toast.error('كود غير صالح'); setCartSel({ coupon: null }); return; }
+    setCartSel({ coupon: k });
+    const cc = coupons[k];
+    const calc = cartCalc(cart, products, stores, cartSel.city, k, coupons, cartSel.pts, cartSel.freeDl, me, ptsVal, freeDlPts);
+    if (calc.cpnBad) { toast.error(calc.cpnBad); setCartSel({ coupon: null }); return; }
+    toast.success('فُعّل كوبون «' + k + '» 🎉 ' + (cc.store === 'all' ? '— خصم شامل من الإدارة على كل المتاجر' : '— خصم من متجر ' + (stores.find(s => s.id === cc.store)?.name || '')));
+  };
+
   const line = (pid: string) => {
     const p = products.find(x => x.id === pid)!;
     const l = cart.find(x => x.pid === pid)!;
     return (
-      <div key={pid} className="flex gap-3 p-3 border border-border rounded-2xl bg-card">
-        {p.imgs[0] ? <img src={p.imgs[0]} alt={p.name} className="w-16 h-16 rounded-xl object-cover shrink-0" /> : <span className="w-16 h-16 rounded-xl bg-sand flex items-center justify-center text-2xl">🛍️</span>}
+      <div key={pid} className="flex gap-3 p-2.5 border border-border rounded-xl bg-card">
+        {p.imgs[0] ? <img src={p.imgs[0]} alt={p.name} className="w-14 h-14 rounded-lg object-cover shrink-0" /> : <span className="w-14 h-14 rounded-lg bg-sand flex items-center justify-center text-2xl">🛍️</span>}
         <div className="flex-1 min-w-0">
-          <button className="font-bold text-sm text-ink line-clamp-1 text-start hover:text-brand" onClick={() => { setCartOpen(false); go({ name: 'product', id: p.id }); }}>{p.name}</button>
-          <div className="my-1"><WorldChip storeId={p.store} /></div>
-          <div className="flex items-center justify-between gap-2">
+          <button className="font-bold text-[13px] text-ink line-clamp-1 text-start hover:text-brand" onClick={() => { setCartOpen(false); go({ name: 'product', id: p.id }); }}>{p.name}</button>
+          <div className="text-[10px] text-muted-foreground mt-0.5 flex flex-wrap items-center gap-1">
+            {p.off > 0 && <span className="text-red-600 font-bold">خصم {ar(p.off)}٪</span>}
+            {p.fragile && <span className="text-amber-700 font-bold">⚠️ قابل للكسر</span>}
+            {p.giftOk && <span>🎁 إهداء</span>}
+            {p.customOk && <span>✏️ تعديلات</span>}
+            {l.ans && l.ans.length > 0 && <span className="text-brand font-extrabold">❓ أسئلة مجابة</span>}
+          </div>
+          <div className="flex items-center justify-between gap-2 mt-1">
             <QtyStepper small qty={l.qty} set={q => setQty(pid, q)} max={p.stock} />
-            <span className="font-extrabold text-sm text-brand">{money(curPrice(p) * l.qty)}</span>
+            <span className="font-extrabold text-sm text-brand">{money(eff(p) * l.qty)}</span>
           </div>
         </div>
-        <button aria-label="حذف" className="text-muted-foreground hover:text-red-500 self-start" onClick={() => removeLine(pid)}><Trash2 size={15} /></button>
+        <button aria-label="حذف" className="text-muted-foreground hover:text-red-500 self-start" onClick={() => removeLine(pid)}><Trash2 size={14} /></button>
       </div>
     );
   };
+
   return (
     <Sheet open={ui.cartOpen} onOpenChange={setCartOpen}>
-      <SheetContent side="left" className="w-full sm:max-w-md p-0 flex flex-column gap-0" dir="rtl">
+      <SheetContent side="left" className="w-full sm:max-w-md p-0 flex flex-col gap-0" dir="rtl">
         <SheetHeader className="p-4 border-b border-border bg-brand text-cream rounded-none">
           <SheetTitle className="text-cream flex items-center gap-2 text-base">
-            <ShoppingCart size={17} /> سلتك {cart.length > 0 && <span className="bg-gold text-brand text-[11px] font-black px-2 py-0.5 rounded-full">{ar(cart.length)} منتج</span>}
+            <ShoppingCart size={17} /> سلة التسوق
+            {count > 0 && <span className="bg-gold text-brand text-[11px] font-black px-2 py-0.5 rounded-full">{ar(count)} منتج · {ar(groups.length)} شحنة</span>}
           </SheetTitle>
         </SheetHeader>
         {cart.length === 0 ? (
-          <div className="p-4">
+          <div className="p-4 flex-1 overflow-y-auto">
             <EmptyState
               icon="🛒"
               title="سلتك فارغة"
-              sub="تجوّل في عوالم ضمين الأربعة وأضف ما يعجبك — مبلغك يبقى محجوزاً حتى ترضى."
+              sub="تجوّل في عوالم ضمين الأربعة واختر ما يعجبك — الدفع محمي بضمان ضمين."
               cta={<Button className="bg-brand hover:bg-brand-2 font-bold" onClick={() => { setCartOpen(false); go({ name: 'home' }); }}>ابدأ التسوق ←</Button>}
             />
           </div>
         ) : (
           <>
-            <div className="flex-1 overflow-y-auto p-4 space-y-2.5">
-              {cart.map(l => line(l.pid))}
+            <div className="flex-1 overflow-y-auto p-3.5 space-y-3">
+              {/* اختيار المدينة لحساب الشحن */}
+              <div className="flex items-center gap-2 text-[11px] bg-gold/10 border border-gold/30 rounded-xl p-2.5">
+                <span className="font-extrabold shrink-0">🚚 التوصيل إلى:</span>
+                <select
+                  className="flex-1 bg-transparent font-bold text-ink outline-none cursor-pointer"
+                  value={cartSel.city}
+                  onChange={e => setCartSel({ city: e.target.value })}
+                >
+                  {CITIES.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
+
+              {/* شحنة مستقلة لكل متجر */}
+              {groups.map(grp => {
+                const s = stores.find(x => x.id === grp.sid)!;
+                const q = grp.quote;
+                const freeNeed = (s.freeMin || 0) > 0 && s.dlMode !== 'free' && q.mode !== 'field' && q.mode !== 'digital' && !q.blocked && grp.sub < s.freeMin;
+                return (
+                  <div key={grp.sid} className="rounded-2xl border border-border overflow-hidden bg-sand/30">
+                    <div className="flex items-center gap-2.5 p-3" style={{ background: s.color + '14' }}>
+                      <span className="w-9 h-9 rounded-xl flex items-center justify-center text-white font-extrabold text-sm" style={{ background: s.color }}>{s.name.charAt(0)}</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="font-extrabold text-[13px]" style={{ color: s.color }}>{s.name}</div>
+                        <div className="text-[10px] text-muted-foreground">شحنة مستقلة · {q.label}</div>
+                      </div>
+                      <span className="text-[10px] font-bold bg-white/70 border border-border rounded-full px-2 py-0.5">{ar(grp.items.length)} منتج</span>
+                    </div>
+                    <div className="p-2.5 space-y-2">{grp.items.map(x => line(x.p.id))}</div>
+                    <div className="px-3 pb-3 space-y-1.5">
+                      <div className="flex items-center justify-between text-[12px]">
+                        <span className="text-muted-foreground font-semibold">إجمالي الشحنة</span>
+                        <span className="font-extrabold">{money(grp.sub)}</span>
+                      </div>
+                      <div className="flex items-center justify-between text-[11px]">
+                        <span className="text-muted-foreground">الشحن</span>
+                        {q.blocked ? <span className="font-bold text-red-600">⛔ محجوب</span>
+                          : q.charge > 0 ? <span className="font-bold">+ {money(q.charge)}</span>
+                          : <span className="font-bold text-emerald-700">مجاني 🎉{q.why ? ' — ' + q.why : ''}</span>}
+                      </div>
+                      {q.blocked && <div className="text-[10.5px] font-bold text-red-600 leading-relaxed bg-red-50 border border-red-200 rounded-lg p-2">⛔ {q.blocked}</div>}
+                      {freeNeed && (
+                        <div className="bg-white border border-border rounded-lg p-2">
+                          <div className="text-[10px] font-bold text-ink mb-1">أضف {money(Math.round((s.freeMin - grp.sub) * 100) / 100)} واحصل على شحن مجاني من {s.name}</div>
+                          <div className="h-1.5 bg-border rounded-full overflow-hidden"><div className="h-full bg-brand" style={{ width: Math.min(100, Math.round(grp.sub / s.freeMin * 100)) + '%' }} /></div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+
+              {/* الكوبون */}
+              <div className="flex gap-2">
+                <Input value={cpnIn} onChange={e => setCpnIn(e.target.value.toUpperCase())} placeholder="كود الخصم (جرّب DAMIN10)" className="text-xs h-9" onKeyDown={e => e.key === 'Enter' && applyCoupon(cpnIn)} />
+                {cartSel.coupon ? (
+                  <Button variant="outline" size="sm" className="h-9 shrink-0" onClick={() => { setCpnIn(''); setCartSel({ coupon: null }); }}>إلغاء</Button>
+                ) : (
+                  <Button size="sm" className="h-9 bg-gold text-brand hover:brightness-105 shrink-0 font-extrabold" onClick={() => applyCoupon(cpnIn)}>تطبيق</Button>
+                )}
+              </div>
+              {t.cpnBad && <div className="text-[11px] font-bold text-red-600">🎟️ {t.cpnBad}</div>}
+
+              {/* استبدال النقاط */}
+              {session && session.role === 'customer' ? (
+                <div className="bg-white border border-border rounded-xl p-2.5 space-y-1.5">
+                  <div className="flex items-center justify-between text-[11px]">
+                    <span className="font-bold">🌟 نقاطك: {ar(me?.pts || 0)} نقطة</span>
+                    <div className="flex gap-1.5 flex-wrap">
+                      {t.ptsMax >= 100 && <button className="text-[10px] font-bold border border-border rounded-full px-2 py-0.5 hover:border-brand" onClick={() => setCartSel({ pts: Math.min(100, t.ptsMax) })}>+١٠٠</button>}
+                      {t.ptsMax >= 300 && <button className="text-[10px] font-bold border border-border rounded-full px-2 py-0.5 hover:border-brand" onClick={() => setCartSel({ pts: Math.min(300, t.ptsMax) })}>+٣٠٠</button>}
+                      <button className="text-[10px] font-bold border border-border rounded-full px-2 py-0.5 hover:border-brand" onClick={() => setCartSel({ pts: t.ptsMax })}>الكل</button>
+                      {t.ptsUse > 0 && <button className="text-[10px] font-bold border border-border rounded-full px-2 py-0.5 hover:border-red-400 text-red-600" onClick={() => setCartSel({ pts: 0 })}>إلغاء {ar(t.ptsUse)}</button>}
+                    </div>
+                  </div>
+                  {t.ptsUse > 0 && <div className="flex justify-between text-[11px] text-brand font-bold"><span>خصم النقاط ({ar(t.ptsUse)} نقطة)</span><span>− {money(t.ptsAmt)}</span></div>}
+                  {t.dlCharge > 0 && (
+                    <div className="flex items-center justify-between text-[11px]">
+                      <span className="font-bold">🚚 توصيل مجاني؟</span>
+                      {(me?.pts || 0) >= t.fdN ? (
+                        <button className={`text-[10px] font-extrabold rounded-full px-2.5 py-1 ${t.fd ? 'bg-muted text-muted-foreground' : 'bg-gold text-brand'}`} onClick={() => setCartSel({ freeDl: !t.fd })}>
+                          {t.fd ? 'إلغاء الاستبدال' : 'استبدال ' + ar(t.fdN) + ' نقطة'}
+                        </button>
+                      ) : <span className="text-[10px] text-muted-foreground">تحتاج {ar(t.fdN - (me?.pts || 0))} نقطة أخرى</span>}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <p className="text-[10.5px] text-muted-foreground leading-relaxed text-center">🌟 سجّل دخولك لاستبدال نقاط الولاء (كل ١٠٠ نقطة = {money(100 * ptsVal)}) أو توصيل مجاني بـ{ar(freeDlPts)} نقطة</p>
+              )}
             </div>
+
+            {/* الملخص */}
             <div className="border-t border-border p-4 space-y-3 bg-sand/50">
               <div className="space-y-1.5 text-sm">
-                <div className="flex justify-between"><span className="text-muted-foreground">المجموع</span><span className="font-bold">{money(t.subtotal)}</span></div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">الشحن</span>
-                  {t.shipping === 0
-                    ? <span className="font-bold text-emerald-700">مجاني 🎉</span>
-                    : <span className="font-bold">{money(t.shipping)}</span>}
-                </div>
-                <div className="flex justify-between"><span className="text-muted-foreground">ضريبة القيمة المضافة ١٥٪</span><span className="font-bold">{money(t.vat)}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">المجموع الفرعي ({ar(count)} منتج)</span><span className="font-bold">{money(t.sub)}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">الشحن ({ar(groups.length)} شحنة · إلى {cartSel.city})</span>{t.dlCharge > 0 ? <span className="font-bold">{money(t.dlCharge)}</span> : <span className="font-bold text-emerald-700">مجاني 🎉</span>}</div>
+                {t.cpn > 0 && <div className="flex justify-between text-emerald-700"><span>خصم الكوبون {cartSel.coupon}</span><span className="font-bold">− {money(t.cpn)}</span></div>}
+                <div className="flex justify-between"><span className="text-muted-foreground">ضريبة القيمة المضافة ١٥٪</span><span className="font-bold">{money(t.tax)}</span></div>
                 <div className="flex justify-between border-t border-border pt-1.5"><span className="font-extrabold">الإجمالي</span><span className="font-black text-brand text-lg">{money(t.total)}</span></div>
               </div>
-              <p className="text-[11px] text-muted-foreground leading-relaxed flex items-start gap-1.5">
+              <p className="text-[10.5px] text-muted-foreground leading-relaxed flex items-start gap-1.5">
                 <Lock size={13} className="shrink-0 mt-0.5 text-brand" />
-                سيُحجز الإجمالي في خزنة ضمين المستقلة — لا يستلم التاجر شيئاً حتى تأكيد استلامك.
+                يُحجز المبلغ في خزنة ضمين ولا يُحرَّر للتاجر إلا بعد رضاك · قسّمها على ٤ دفعات مع تابي ({money(Math.round(t.total / 4 * 100) / 100)}) أو ٣ مع تمارا · عمولة ضمين (حسب تصنيف كل منتج) تُحسم من التاجر — لا تُضاف عليك أبداً
               </p>
               <Button
                 className="w-full bg-brand hover:bg-brand-2 font-extrabold h-11 text-base"
+                disabled={groups.some(g => !!g.quote.blocked)}
                 onClick={() => {
                   if (!session) { setCartOpen(false); openAuth('login'); return; }
                   setCartOpen(false); go({ name: 'checkout' });
                 }}
               >
-                إتمام الطلب الآمن <ArrowLeft size={16} />
+                {groups.some(g => !!g.quote.blocked) ? '⛔ أزل الشحنة المحجوبة أولاً' : '🔒 إتمام الطلب الآمن'} <ArrowLeft size={16} />
               </Button>
             </div>
           </>

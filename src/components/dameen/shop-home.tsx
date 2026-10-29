@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { ar, FAQS, money } from './data';
-import { curPrice, useDameen, visibleProducts, visibleStores } from './state';
+import { eff, useDameen, visibleProducts, visibleStores } from './state';
 import { EmptyState, ProductCard, SectionTitle, Stars, StoreCardBig } from './ui';
 import { TrustChips } from './chrome';
 
@@ -338,5 +338,5 @@ export function SearchPage({ q }: { q: string }) {
 }
 
 /* تصدير للاستخدام في صفحة المنتج */
-export const priceOf = curPrice;
+export const priceOf = eff;
 export const LockIcon = Lock;

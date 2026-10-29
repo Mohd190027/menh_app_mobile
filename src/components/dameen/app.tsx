@@ -1,19 +1,26 @@
-/* غلاف ضمين: التوجيه بين الصفحات مع انتقالات حركية + الهيكل + التوست */
+/* غلاف ضمين: التوجيه بين الصفحات مع انتقالات حركية + الهيكل + التوست + محرّك التحرير التلقائي */
 'use client';
 
+import { useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Toaster } from 'sonner';
 import { routeKey, useDameen } from './state';
 import { AuthModal, BottomNav, CartDrawer, Footer, TopBar } from './chrome';
 import { HomePage, SearchPage, SectionPage, StorePage } from './shop-home';
 import { CheckoutPage, ProductPage, SuccessPage } from './shop-buy';
-import { AccountPage, DisputesPage, FavoritesPage, OrdersPage } from './user';
+import { AccountPage, DisputesPage, DLibPage, FavoritesPage, OrdersPage } from './user';
 import { MerchantPanel } from './merchant';
 import { AdminPanel } from './admin';
 
 export default function DameenApp() {
   const route = useDameen(s => s.route);
   const session = useDameen(s => s.session);
+
+  /* محرّك ضمين: تحرير تلقائي بانتهاء نافذة الحماية (كل ثانية) */
+  useEffect(() => {
+    const t = setInterval(() => useDameen.getState().tick(), 1000);
+    return () => clearInterval(t);
+  }, []);
 
   const page = (() => {
     switch (route.name) {
@@ -28,6 +35,7 @@ export default function DameenApp() {
       case 'favorites': return <FavoritesPage />;
       case 'account': return <AccountPage />;
       case 'disputes': return <DisputesPage />;
+      case 'dlib': return <DLibPage />;
       case 'merchant': return <MerchantPanel tab={route.tab} />;
       case 'admin': return <AdminPanel tab={route.tab} />;
       default: return <HomePage />;
@@ -56,7 +64,7 @@ export default function DameenApp() {
       {isShopper && <BottomNav />}
       <AuthModal />
       <CartDrawer />
-      <Toaster position="top-center" richColors dir="rtl" theme="light" toastOptions={{ style: { fontFamily: 'Cairo, Segoe UI, sans-serif', fontWeight: 600 } }} />
+      <Toaster position="top-center" offset="64px" richColors dir="rtl" theme="light" toastOptions={{ style: { fontFamily: 'Cairo, Segoe UI, sans-serif', fontWeight: 600 } }} />
     </div>
   );
 }

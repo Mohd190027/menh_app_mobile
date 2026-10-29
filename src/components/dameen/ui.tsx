@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Star, Heart, ShoppingCart, ShieldCheck, Store as StoreIcon, MapPin, PackageX, Sparkles } from 'lucide-react';
 import { ar, money, worldOf, type Product, type Store } from './data';
-import { curPrice, useDameen } from './state';
+import { eff, useDameen } from './state';
 
 /* عنوان قسم مع إجراء جانبي */
 export function SectionTitle({ title, sub, action }: { title: string; sub?: string; action?: React.ReactNode }) {
@@ -36,18 +36,37 @@ export function Stars({ rt, rc, size = 14 }: { rt: number; rc?: number; size?: n
   );
 }
 
-/* حالة الطلب */
+/* حالة الشحنة */
 const STATUS_MAP: Record<string, { t: string; c: string }> = {
-  new: { t: 'قيد التجهيز', c: 'bg-amber-100 text-amber-800 border-amber-200' },
+  pending: { t: 'بانتظار القبول', c: 'bg-amber-50 text-amber-800 border-amber-200' },
+  preparing: { t: 'قيد التحضير', c: 'bg-amber-100 text-amber-800 border-amber-200' },
   shipped: { t: 'في الطريق', c: 'bg-sky-50 text-teal-700 border-teal-200' },
-  protected: { t: 'تحت الحماية', c: 'bg-emerald-50 text-emerald-800 border-emerald-200' },
-  released: { t: 'محرر ✓', c: 'bg-brand/10 text-brand border-brand/25' },
-  refunded: { t: 'مسترجع', c: 'bg-rose-50 text-rose-700 border-rose-200' },
-  disputed: { t: 'نزاع قيد التحكيم', c: 'bg-orange-50 text-orange-700 border-orange-200' },
+  received: { t: 'استُلم — قيد الفحص', c: 'bg-emerald-50 text-emerald-800 border-emerald-200' },
+  released: { t: 'حُرر المبلغ ✓', c: 'bg-brand/10 text-brand border-brand/25' },
+  refunded: { t: 'استُرجع المبلغ', c: 'bg-rose-50 text-rose-700 border-rose-200' },
+  disputed: { t: 'قيد التحكيم', c: 'bg-orange-50 text-orange-700 border-orange-200' },
+  new: { t: 'قيد التجهيز', c: 'bg-amber-100 text-amber-800 border-amber-200' },
 };
 export function StatusChip({ status }: { status: string }) {
   const m = STATUS_MAP[status] || STATUS_MAP.new;
   return <span className={`text-[11px] font-bold px-2.5 py-1 rounded-full border ${m.c}`}>{m.t}</span>;
+}
+
+/* خطوات الشحنة الخمس */
+const GSTEP_LABELS = ['القبول', 'التحضير', 'الشحن', 'الاستلام', 'التحرير'];
+const gstep = (s: string) => ({ pending: 0, preparing: 1, shipped: 2, received: 3, released: 4 }[s] ?? 0);
+export function GroupSteps({ status }: { status: string }) {
+  const cur = gstep(status);
+  return (
+    <div className="flex items-center gap-1 mt-2" dir="rtl">
+      {GSTEP_LABELS.map((l, i) => (
+        <div key={l} className="flex-1 flex flex-col items-center gap-1">
+          <div className={`h-1.5 w-full rounded-full ${i <= cur ? 'bg-brand' : 'bg-border'}`} />
+          <span className={`text-[9px] font-bold ${i <= cur ? 'text-brand' : 'text-muted-foreground'}`}>{l}</span>
+        </div>
+      ))}
+    </div>
+  );
 }
 
 /* عدّاد نافذة الحماية الحي */
@@ -95,11 +114,10 @@ export function WorldChip({ storeId }: { storeId: string }) {
 
 /* بطاقة منتج */
 export function ProductCard({ p, index = 0 }: { p: Product; index?: number }) {
-  const { go, addToCart, toggleFav, favorites } = useDameen();
-  const stores = useDameen(s => s.stores);
+  const { go, addToCart, toggleFav, favorites, stores } = useDameen();
   const st = stores.find(x => x.id === p.store);
   const fav = favorites.includes(p.id);
-  const cur = curPrice(p);
+  const cur = eff(p);
   return (
     <motion.div
       initial={{ opacity: 0, y: 14 }}
@@ -119,6 +137,15 @@ export function ProductCard({ p, index = 0 }: { p: Product; index?: number }) {
         )}
         {p.digi && (
           <span className="absolute top-2 end-2 bg-violet-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow">⚡ رقمي فوري</span>
+        )}
+        {p.ptype === 'instant' && !p.digi && (
+          <span className="absolute top-2 end-2 bg-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow">🛵 فوري</span>
+        )}
+        {p.ptype === 'chilled' && !p.digi && (
+          <span className="absolute top-2 end-2 bg-sky-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow">🧊 مبرد</span>
+        )}
+        {p.ptype === 'field' && !p.digi && (
+          <span className="absolute top-2 end-2 bg-orange-700 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow">🎪 ميداني</span>
         )}
         <button
           aria-label="المفضلة"

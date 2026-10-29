@@ -123,12 +123,20 @@
    "owner": "0500000002",
    "color": "#7A3B44",
    "cover": "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?q=80&w=760&auto=format&fit=crop",
+   "logo": "",
    "desc": "عبايات كتان وخامات فاخرة بخياطة سعودية متقنة",
    "rt": 4.8,
    "sales": 342,
    "susp": false,
+   "open": true,
    "city": "الرياض",
-   "freeMin": 300
+   "area": "",
+   "dlMode": "customer",
+   "freeMin": 300,
+   "rangeKm": 20,
+   "qs": [],
+   "cr": "",
+   "iban": ""
   },
   {
    "id": "s2",
@@ -137,12 +145,20 @@
    "owner": "0500000004",
    "color": "#96505E",
    "cover": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/b79232a91370.jpg",
+   "logo": "",
    "desc": "طرق بيتية وأزياء مطرزة يدوياً بخيوط ملونة",
    "rt": 4.6,
    "sales": 198,
    "susp": false,
+   "open": true,
    "city": "جدة",
-   "freeMin": 350
+   "area": "",
+   "dlMode": "customer",
+   "freeMin": 350,
+   "rangeKm": 20,
+   "qs": [],
+   "cr": "",
+   "iban": ""
   },
   {
    "id": "s3",
@@ -151,12 +167,20 @@
    "owner": "0500000005",
    "color": "#556636",
    "cover": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/c2626d093c49.jpg",
+   "logo": "",
    "desc": "عسل سدر وتمور خلاص من مزارعنا مباشرة",
    "rt": 4.9,
    "sales": 521,
    "susp": false,
+   "open": true,
    "city": "الأحساء",
-   "freeMin": 250
+   "area": "",
+   "dlMode": "half",
+   "freeMin": 250,
+   "rangeKm": 20,
+   "qs": [],
+   "cr": "",
+   "iban": ""
   },
   {
    "id": "s4",
@@ -165,12 +189,23 @@
    "owner": "0500000006",
    "color": "#6B7A3F",
    "cover": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/cfe35a802f4f.jpg",
+   "logo": "",
    "desc": "منتجات سدو أصيلة منسوجة على النول التقليدي",
    "rt": 4.7,
    "sales": 87,
    "susp": false,
+   "open": true,
    "city": "بريدة",
-   "freeMin": 0
+   "area": "",
+   "dlMode": "customer",
+   "freeMin": 0,
+   "rangeKm": 20,
+   "qs": [
+    "هل لديك ملاحظة على درجة تمليح الجبن؟",
+    "التميس بالبر أم بالعسل الأسود؟"
+   ],
+   "cr": "",
+   "iban": ""
   },
   {
    "id": "s5",
@@ -179,12 +214,20 @@
    "owner": "0500000007",
    "color": "#A45A3A",
    "cover": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/11c491ea9778.jpg",
+   "logo": "",
    "desc": "شموع ومباخر ومستلزمات منزل بأناقة هادئة",
    "rt": 4.5,
    "sales": 264,
    "susp": false,
+   "open": true,
    "city": "الطائف",
-   "freeMin": 400
+   "area": "",
+   "dlMode": "customer",
+   "freeMin": 400,
+   "rangeKm": 20,
+   "qs": [],
+   "cr": "",
+   "iban": ""
   },
   {
    "id": "s6",
@@ -193,12 +236,20 @@
    "owner": "0500000008",
    "color": "#B26640",
    "cover": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/98a1ab5d2183.jpg",
+   "logo": "",
    "desc": "بوكسات هدايا مغلفة بفخامة تناسب كل مناسبة",
    "rt": 4.8,
    "sales": 173,
    "susp": false,
+   "open": true,
    "city": "الرياض",
-   "freeMin": 0
+   "area": "",
+   "dlMode": "free",
+   "freeMin": 0,
+   "rangeKm": 20,
+   "qs": [],
+   "cr": "",
+   "iban": ""
   },
   {
    "id": "s7",
@@ -207,12 +258,20 @@
    "owner": "0500000009",
    "color": "#8F5B36",
    "cover": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/9a3a0638140e.jpg",
+   "logo": "",
    "desc": "فخاريات مدوّرة يدوياً من طين الطائف",
    "rt": 4.4,
    "sales": 12,
    "susp": false,
+   "open": true,
    "city": "الطائف",
-   "freeMin": 0
+   "area": "",
+   "dlMode": "customer",
+   "freeMin": 0,
+   "rangeKm": 20,
+   "qs": [],
+   "cr": "",
+   "iban": ""
   },
   {
    "id": "s8",
@@ -221,12 +280,24 @@
    "owner": "0500000010",
    "color": "#7C5A3A",
    "cover": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/1c2383e2b42c.jpg",
+   "logo": "",
    "desc": "طبخ بيتي سعودي — كيك مناسبات وورق عنب على أصولها",
    "rt": 4.7,
    "sales": 156,
    "susp": false,
+   "open": true,
    "city": "الرياض",
-   "freeMin": 150
+   "area": "",
+   "dlMode": "customer",
+   "freeMin": 150,
+   "rangeKm": 20,
+   "qs": [
+    "هل لديك حساسية من أي مكسرات؟",
+    "الكريمة أم التمر على الكيكة؟",
+    "وقت التسليم المفضل لديك؟"
+   ],
+   "cr": "",
+   "iban": ""
   },
   {
    "id": "s9",
@@ -235,12 +306,20 @@
    "owner": "0500000011",
    "color": "#50489E",
    "cover": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/28b3519cc57c.jpg",
+   "logo": "",
    "desc": "أجهزة ألعاب وملحقات تقنية أصلية بضمان الوكيل — تغليف حماية خاص للأجهزة القابلة للكسر",
    "rt": 4.7,
    "sales": 214,
    "susp": false,
+   "open": true,
    "city": "الرياض",
-   "freeMin": 500
+   "area": "",
+   "dlMode": "customer",
+   "freeMin": 500,
+   "rangeKm": 20,
+   "qs": [],
+   "cr": "",
+   "iban": ""
   },
   {
    "id": "s10",
@@ -249,12 +328,20 @@
    "owner": "0500000012",
    "color": "#3D7B8C",
    "cover": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/8eac332529c2.png",
+   "logo": "",
    "desc": "أكواد ألعاب واشتراكات رقمية وكتب إلكترونية وثيمات — تسليم فوري لحظة الدفع بلا شحن",
    "rt": 4.8,
    "sales": 342,
    "susp": false,
+   "open": true,
    "city": "جدة",
-   "freeMin": 0
+   "area": "",
+   "dlMode": "free",
+   "freeMin": 0,
+   "rangeKm": 20,
+   "qs": [],
+   "cr": "",
+   "iban": ""
   }
  ],
  "products": [
@@ -274,10 +361,29 @@
     "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?q=80&w=760&auto=format&fit=crop",
     "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=760&auto=format&fit=crop"
    ],
-   "desc": "عباية كتان بخامة مصرية مريحة وقَصّة واسعة تناسب يومك كامل. تطريز يدوي دقيق على الأكمام يمن",
-   "digi": false,
-   "ptype": "",
-   "giftOk": false
+   "desc": "عباية كتان بخامة مصرية مريحة وقَصّة واسعة تناسب يومك كامل. تطريز يدوي دقيق على الأكمام يمنحها لمسة أنيقة بعيدة عن المبالغة، مع سحّاب جانبي مخفي وجيوب داخلية عملية.",
+   "fragile": false,
+   "ptype": "std",
+   "giftOk": false,
+   "customOk": false,
+   "pts": 0,
+   "digi": null,
+   "qs": [],
+   "specs": {
+    "الخامة": "كتان مصري ١٠٠٪",
+    "اللون": "كحلي غامق",
+    "المقاسات": "S / M / L / XL",
+    "العناية": "غسيل بارد يدوي"
+   },
+   "ratings": [
+    {
+     "by": "0500000001",
+     "name": "نورة",
+     "stars": 5,
+     "txt": "الخامة ثقيلة وفخمة والخياطة نظيفة جداً، وصلت قبل الموعد.",
+     "atMin": 7200
+    }
+   ]
   },
   {
    "id": "p2",
@@ -294,10 +400,21 @@
     "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?q=80&w=760&auto=format&fit=crop",
     "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?q=80&w=760&auto=format&fit=crop"
    ],
-   "desc": "عباية مناسبات من الحرير الطبيعي بتطريز لؤلؤي على الصدر والأكمام. مناسبة للمناسبات المسائية",
-   "digi": false,
-   "ptype": "",
-   "giftOk": false
+   "desc": "عباية مناسبات من الحرير الطبيعي بتطريز لؤلؤي على الصدر والأكمام. مناسبة للمناسبات المسائية والدعوات الخاصة، تأتي مع كيس حفظ مبطن بالقطن.",
+   "fragile": false,
+   "ptype": "std",
+   "giftOk": false,
+   "customOk": false,
+   "pts": 0,
+   "digi": null,
+   "qs": [],
+   "specs": {
+    "الخامة": "حرير طبيعي",
+    "التطريز": "لؤلؤ يدوي",
+    "الطول": "متوفر حتى ٦٠ سم",
+    "التغليف": "كيس حفظ مبطن"
+   },
+   "ratings": []
   },
   {
    "id": "p3",
@@ -313,10 +430,20 @@
    "imgs": [
     "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=760&auto=format&fit=crop"
    ],
-   "desc": "طرحة شيفون بطبقتين لا تكشف ولا تنزلق، بخياطة مزدوجة تحفظ شكلها بعد الغسيل. متوفرة بعدة ألو",
-   "digi": false,
-   "ptype": "",
-   "giftOk": false
+   "desc": "طرحة شيفون بطبقتين لا تكشف ولا تنزلق، بخياطة مزدوجة تحفظ شكلها بعد الغسيل. متوفرة بعدة ألوان هادئة تناسب العبايات اليومية.",
+   "fragile": false,
+   "ptype": "std",
+   "giftOk": false,
+   "customOk": false,
+   "pts": 0,
+   "digi": null,
+   "qs": [],
+   "specs": {
+    "الخامة": "شيفون مزدوج",
+    "المقاس": "١٨٠ × ٧٥ سم",
+    "الألوان": "أسود / كحلي / زيتي"
+   },
+   "ratings": []
   },
   {
    "id": "p4",
@@ -333,10 +460,20 @@
     "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/53aef9882d40.jpg",
     "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/b79232a91370.jpg"
    ],
-   "desc": "طقم بيت من القطن المشغول بتطريز يدوي على الصدر. مريح للاستخدام اليومي والاستقبالات العائلي",
-   "digi": false,
-   "ptype": "",
-   "giftOk": false
+   "desc": "طقم بيت من القطن المشغول بتطريز يدوي على الصدر. مريح للاستخدام اليومي والاستقبالات العائلية، خامة تتنفس ولا تسبب الحكة.",
+   "fragile": false,
+   "ptype": "std",
+   "giftOk": false,
+   "customOk": false,
+   "pts": 0,
+   "digi": null,
+   "qs": [],
+   "specs": {
+    "الخامة": "قطن مشغول",
+    "المقاسات": "M / L / XL",
+    "الألوان": "بيج / رمادي"
+   },
+   "ratings": []
   },
   {
    "id": "p5",
@@ -352,10 +489,20 @@
    "imgs": [
     "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/a2ad882f2382.jpg"
    ],
-   "desc": "فستان مخمل بقَصّة A كلاسيكية وأزرار لؤلؤية ظهرية. مثالي لحفلات الزواج والمناسبات المسائية،",
-   "digi": false,
-   "ptype": "",
-   "giftOk": false
+   "desc": "فستان مخمل بقَصّة A كلاسيكية وأزرار لؤلؤية ظهرية. مثالي لحفلات الزواج والمناسبات المسائية، مع حاشية داخلية ناعمة تمنع الالتصاق.",
+   "fragile": false,
+   "ptype": "std",
+   "giftOk": false,
+   "customOk": false,
+   "pts": 0,
+   "digi": null,
+   "qs": [],
+   "specs": {
+    "الخامة": "مخمل مستورد",
+    "الطول": "ميدي",
+    "التنظيف": "تنظيف جاف فقط"
+   },
+   "ratings": []
   },
   {
    "id": "p6",
@@ -371,10 +518,20 @@
    "imgs": [
     "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?q=80&w=760&auto=format&fit=crop"
    ],
-   "desc": "حقيبة يد من الجلد الطبيعي المدبوغ نباتياً، تصنع يدوياً وتأتي برائحة الجلد الأصيلة. تتسع لل",
-   "digi": false,
-   "ptype": "",
-   "giftOk": false
+   "desc": "حقيبة يد من الجلد الطبيعي المدبوغ نباتياً، تصنع يدوياً وتأتي برائحة الجلد الأصيلة. تتسع للجوال والمحفظة والأساسيات، بحزام كتف قابل للفك.",
+   "fragile": false,
+   "ptype": "std",
+   "giftOk": false,
+   "customOk": false,
+   "pts": 0,
+   "digi": null,
+   "qs": [],
+   "specs": {
+    "الخامة": "جلد طبيعي مدبوغ",
+    "الحجم": "٢٤ × ١٦ سم",
+    "الحزام": "قابل للفك والتعديل"
+   },
+   "ratings": []
   },
   {
    "id": "p7",
@@ -390,10 +547,21 @@
    "imgs": [
     "https://images.unsplash.com/photo-1541643600914-78a08a3003d8?q=80&w=760&auto=format&fit=crop"
    ],
-   "desc": "عطر زيتي مركّز بمزيج العود الكمبودي والورد الطائفي، ثبات يمتد لأكثر من ثماني ساعات. يأتي ف",
-   "digi": false,
-   "ptype": "",
-   "giftOk": false
+   "desc": "عطر زيتي مركّز بمزيج العود الكمبودي والورد الطائفي، ثبات يمتد لأكثر من ثماني ساعات. يأتي في علبة خشبية تصلح للإهداء.",
+   "fragile": false,
+   "ptype": "std",
+   "giftOk": false,
+   "customOk": false,
+   "pts": 0,
+   "digi": null,
+   "qs": [],
+   "specs": {
+    "النوع": "زيتي مركّز",
+    "الحجم": "٥٠ مل",
+    "الثبات": "٨+ ساعات",
+    "التغليف": "علبة خشب"
+   },
+   "ratings": []
   },
   {
    "id": "p8",
@@ -410,10 +578,29 @@
     "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/c2626d093c49.jpg",
     "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/7bd7eee784a6.jpg"
    ],
-   "desc": "عسل سدر جبلي خام غير مبستر، يُقطف من مناحلنا في مرتفعات الجنوب مرة واحدة في السنة. قوامه ك",
-   "digi": false,
-   "ptype": "",
-   "giftOk": false
+   "desc": "عسل سدر جبلي خام غير مبستر، يُقطف من مناحلنا في مرتفعات الجنوب مرة واحدة في السنة. قوامه كثيف وطعمه غني، ويأتي ببرطمان زجاجي محكم الغلق مع شهادة منشأ.",
+   "fragile": false,
+   "ptype": "std",
+   "giftOk": false,
+   "customOk": false,
+   "pts": 0,
+   "digi": null,
+   "qs": [],
+   "specs": {
+    "النوع": "سدر خام",
+    "الوزن": "٥٠٠ جم",
+    "المصدر": "مرتفعات الجنوب",
+    "التخزين": "بعيداً عن الشمس"
+   },
+   "ratings": [
+    {
+     "by": "0500000001",
+     "name": "نورة",
+     "stars": 5,
+     "txt": "طعمه ما يشبه عسل جدي الله يرحمه، أصلي وواضح.",
+     "atMin": 2880
+    }
+   ]
   },
   {
    "id": "p9",
@@ -429,10 +616,20 @@
    "imgs": [
     "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/cce49520b1e4.jpeg"
    ],
-   "desc": "تمر خلاص مفضل بدرجة أولى، حبة كبيرة لينة بحلاوة متوازنة. يُنتقى حبة حبة ويُعبأ في علبة أني",
-   "digi": false,
-   "ptype": "",
-   "giftOk": false
+   "desc": "تمر خلاص مفضل بدرجة أولى، حبة كبيرة لينة بحلاوة متوازنة. يُنتقى حبة حبة ويُعبأ في علبة أنيقة مناسبة للضيافة والإهداء.",
+   "fragile": false,
+   "ptype": "std",
+   "giftOk": false,
+   "customOk": false,
+   "pts": 0,
+   "digi": null,
+   "qs": [],
+   "specs": {
+    "النوع": "خلاص مفضل",
+    "الوزن": "١ كجم",
+    "الدرجة": "أولى"
+   },
+   "ratings": []
   },
   {
    "id": "p10",
@@ -448,10 +645,19 @@
    "imgs": [
     "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/271fff8e23ab.jpeg"
    ],
-   "desc": "دبس تمر بلدي مطبوخ على الحطب دون أي إضافات أو سكريات. كثيف بلون العنبر، مثالي مع الفطور ال",
-   "digi": false,
-   "ptype": "",
-   "giftOk": false
+   "desc": "دبس تمر بلدي مطبوخ على الحطب دون أي إضافات أو سكريات. كثيف بلون العنبر، مثالي مع الفطور الشتوي والحلويات الشعبية.",
+   "fragile": false,
+   "ptype": "std",
+   "giftOk": false,
+   "customOk": false,
+   "pts": 0,
+   "digi": null,
+   "qs": [],
+   "specs": {
+    "الوزن": "٤٠٠ جم",
+    "المكوّنات": "تمر فقط"
+   },
+   "ratings": []
   },
   {
    "id": "p11",
@@ -467,10 +673,19 @@
    "imgs": [
     "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/650709575035.jpg"
    ],
-   "desc": "سلة خشبية تجمع عسل سدر ٢٥٠ جم وتمر خلاص ٥٠٠ جم ودبس بلدي، مغلفة بجبينة كتان وشريط. الهدية ",
-   "digi": false,
-   "ptype": "",
-   "giftOk": false
+   "desc": "سلة خشبية تجمع عسل سدر ٢٥٠ جم وتمر خلاص ٥٠٠ جم ودبس بلدي، مغلفة بجبينة كتان وشريط. الهدية المثالية للمناسبات وزيارات العزيمة.",
+   "fragile": false,
+   "ptype": "std",
+   "giftOk": false,
+   "customOk": false,
+   "pts": 0,
+   "digi": null,
+   "qs": [],
+   "specs": {
+    "المحتوى": "٣ منتجات",
+    "التغليف": "سلة خشب + كتان"
+   },
+   "ratings": []
   },
   {
    "id": "p12",
@@ -486,10 +701,20 @@
    "imgs": [
     "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/cfe35a802f4f.jpg"
    ],
-   "desc": "مفرش منسوج على النول الأصلي بخيوط صوف ملونة بنقوش السدو النجدية. كل قطعة تستغرق أسبوعين من",
-   "digi": false,
-   "ptype": "",
-   "giftOk": false
+   "desc": "مفرش منسوج على النول الأصلي بخيوط صوف ملونة بنقوش السدو النجدية. كل قطعة تستغرق أسبوعين من النسج اليدوي، ولا تتكرر بنفس توزيعة الألوان.",
+   "fragile": false,
+   "ptype": "std",
+   "giftOk": false,
+   "customOk": false,
+   "pts": 0,
+   "digi": null,
+   "qs": [],
+   "specs": {
+    "الخامة": "صوف طبيعي",
+    "المقاس": "١٤٠ × ٩٠ سم",
+    "الصناعة": "نول يدوي"
+   },
+   "ratings": []
   },
   {
    "id": "p13",
@@ -505,10 +730,19 @@
    "imgs": [
     "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/291826012a56.jpg"
    ],
-   "desc": "حزام منسوج بخيوط السدو الملوّنة مع إبزيم نحاسي مصقول. قطعة تراثية عملية تلبس مع الثوب أو ك",
-   "digi": false,
-   "ptype": "",
-   "giftOk": false
+   "desc": "حزام منسوج بخيوط السدو الملوّنة مع إبزيم نحاسي مصقول. قطعة تراثية عملية تلبس مع الثوب أو كإكسسوار عصري فوق المعطف.",
+   "fragile": false,
+   "ptype": "std",
+   "giftOk": false,
+   "customOk": false,
+   "pts": 0,
+   "digi": null,
+   "qs": [],
+   "specs": {
+    "العرض": "٤ سم",
+    "الإبزيم": "نحاس"
+   },
+   "ratings": []
   },
   {
    "id": "p14",
@@ -524,10 +758,19 @@
    "imgs": [
     "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/ed876a628b49.jpg"
    ],
-   "desc": "جبن قريش بلدي يُحضّر صباح كل يوم من حليب المزرعة، قوامه طري وملحه خفيف. يُسلّم مبرداً في ن",
-   "digi": false,
+   "desc": "جبن قريش بلدي يُحضّر صباح كل يوم من حليب المزرعة، قوامه طري وملحه خفيف. يُسلّم مبرداً في نفس يوم صناعته.",
+   "fragile": false,
    "ptype": "chilled",
-   "giftOk": false
+   "giftOk": false,
+   "customOk": false,
+   "pts": 0,
+   "digi": null,
+   "qs": [],
+   "specs": {
+    "الوزن": "٣٥٠ جم",
+    "الصلاحية": "٥ أيام مبردة"
+   },
+   "ratings": []
   },
   {
    "id": "p15",
@@ -543,10 +786,19 @@
    "imgs": [
     "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/8792c1cd454c.jpg"
    ],
-   "desc": "تميس بيتي يُخبز على التنور الحجري بعجين مخمّر ببطء. يخرج ساخناً مع الزبدة والعسل الأسود، و",
-   "digi": false,
+   "desc": "تميس بيتي يُخبز على التنور الحجري بعجين مخمّر ببطء. يخرج ساخناً مع الزبدة والعسل الأسود، ويُسلّم في أكياس حرارية تحفظ حرارته.",
+   "fragile": false,
    "ptype": "instant",
-   "giftOk": false
+   "giftOk": false,
+   "customOk": false,
+   "pts": 0,
+   "digi": null,
+   "qs": [],
+   "specs": {
+    "الكمية": "٤ حبات",
+    "التسليم": "ساخن يومياً"
+   },
+   "ratings": []
   },
   {
    "id": "p16",
@@ -562,10 +814,21 @@
    "imgs": [
     "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/11c491ea9778.jpg"
    ],
-   "desc": "شمعة صويا معطرة برائحة الياسمين المسائي، فتيل قطني نظيف يحترق دون دخان. تعبئ المنزل بهدوء ",
-   "digi": false,
-   "ptype": "",
-   "giftOk": false
+   "desc": "شمعة صويا معطرة برائحة الياسمين المسائي، فتيل قطني نظيف يحترق دون دخان. تعبئ المنزل بهدوء لأكثر من ٣٥ ساعة، في وعاء زجاجي يعاد استخدامه.",
+   "fragile": false,
+   "ptype": "std",
+   "giftOk": false,
+   "customOk": false,
+   "pts": 0,
+   "digi": null,
+   "qs": [],
+   "specs": {
+    "الشمعة": "شمع صويا",
+    "الرائحة": "ياسمين",
+    "مدة الاحتراق": "٣٥+ ساعة",
+    "الوزن": "٢٢٠ جم"
+   },
+   "ratings": []
   },
   {
    "id": "p17",
@@ -581,10 +844,20 @@
    "imgs": [
     "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/559a027cf1cb.jpg"
    ],
-   "desc": "مبخرة نحاسية بنقش يدوي ومقبض حراري معزول. تأتي مع طبق فحم عازل وغطاء محفور يوزع الدخان بلط",
-   "digi": false,
-   "ptype": "",
-   "giftOk": false
+   "desc": "مبخرة نحاسية بنقش يدوي ومقبض حراري معزول. تأتي مع طبق فحم عازل وغطاء محفور يوزع الدخان بلطف، قطعة تجمع بين الأصالة والاستخدام اليومي.",
+   "fragile": false,
+   "ptype": "std",
+   "giftOk": false,
+   "customOk": false,
+   "pts": 0,
+   "digi": null,
+   "qs": [],
+   "specs": {
+    "الخامة": "نحاس مطروق",
+    "التشطيب": "نقش يدوي",
+    "يشمل": "طبق فحم + غطاء"
+   },
+   "ratings": []
   },
   {
    "id": "p18",
@@ -600,10 +873,20 @@
    "imgs": [
     "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/285d08d3a5ca.jpg"
    ],
-   "desc": "ستة فناجيل بورسلين بحافة مذهّبة مقاومة للاحتكاك، تصلح للقهوة والشاي. تصميم بقوارير رفيعة ي",
-   "digi": false,
-   "ptype": "",
-   "giftOk": false
+   "desc": "ستة فناجيل بورسلين بحافة مذهّبة مقاومة للاحتكاك، تصلح للقهوة والشاي. تصميم بقوارير رفيعة يليق بالمجالس، وتأتي في علبة مبطنة تصلح للإهداء.",
+   "fragile": true,
+   "ptype": "std",
+   "giftOk": false,
+   "customOk": false,
+   "pts": 0,
+   "digi": null,
+   "qs": [],
+   "specs": {
+    "العدد": "٦ فناجيل",
+    "الخامة": "بورسلين",
+    "الطلاء": "ذهبي ٢٤ قيراط"
+   },
+   "ratings": []
   },
   {
    "id": "p19",
@@ -620,10 +903,20 @@
     "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?q=80&w=760&auto=format&fit=crop",
     "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/98a1ab5d2183.jpg"
    ],
-   "desc": "بوكس مخمل فارغ يضم ٤ علب داخلية و٣ بطاقات إهداء بألوان هادئة، يعاد تشكيله حسب المناسبة. ال",
-   "digi": false,
+   "desc": "بوكس مخمل فارغ يضم ٤ علب داخلية و٣ بطاقات إهداء بألوان هادئة، يعاد تشكيله حسب المناسبة. التغليف يشمل شريط ساتان وبطاقة يدوية بخط جميل.",
+   "fragile": false,
    "ptype": "ship",
-   "giftOk": true
+   "giftOk": true,
+   "customOk": true,
+   "pts": 0,
+   "digi": null,
+   "qs": [],
+   "specs": {
+    "المحتوى": "٤ علب + ٣ بطاقات",
+    "اللون": "أخضر زيتي / كحلي",
+    "التغليف": "ساتان + بطاقة"
+   },
+   "ratings": []
   },
   {
    "id": "p20",
@@ -639,10 +932,20 @@
    "imgs": [
     "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/ffebfbe70844.jpg"
    ],
-   "desc": "لوحة خط ديواني بكلمة «الفرج» مرسومة يدوياً بالحبر الأسود على ورق مقوى عاجي، بإطار خشب طبيع",
-   "digi": false,
+   "desc": "لوحة خط ديواني بكلمة «الفرج» مرسومة يدوياً بالحبر الأسود على ورق مقوى عاجي، بإطار خشب طبيعي وزجاج عاكس. توقيع الخطاط على الزاوية.",
+   "fragile": false,
    "ptype": "ship",
-   "giftOk": true
+   "giftOk": true,
+   "customOk": false,
+   "pts": 0,
+   "digi": null,
+   "qs": [],
+   "specs": {
+    "المقاس": "٤٠ × ٣٠ سم",
+    "الإطار": "خشب طبيعي",
+    "الخط": "ديواني حر"
+   },
+   "ratings": []
   },
   {
    "id": "p21",
@@ -658,10 +961,19 @@
    "imgs": [
     "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/9a3a0638140e.jpg"
    ],
-   "desc": "مزهرية فخارية مدوّرة على الدولاب ومزججة بطلاء لامع غير متكرر. كل قطعة فريدة بدرجة لونها، م",
-   "digi": false,
-   "ptype": "",
-   "giftOk": false
+   "desc": "مزهرية فخارية مدوّرة على الدولاب ومزججة بطلاء لامع غير متكرر. كل قطعة فريدة بدرجة لونها، من طين الطائف الأحمر.",
+   "fragile": true,
+   "ptype": "std",
+   "giftOk": false,
+   "customOk": false,
+   "pts": 0,
+   "digi": null,
+   "qs": [],
+   "specs": {
+    "الارتفاع": "٢٤ سم",
+    "الخامة": "فخار مزجج"
+   },
+   "ratings": []
   },
   {
    "id": "p22",
@@ -677,10 +989,20 @@
    "imgs": [
     "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/1c2383e2b42c.jpg"
    ],
-   "desc": "كيكة إسفنجية بطبقات الكريمة المخفوقة، تُخبز يوم الطلب وتُسلّم مبردة في صندوق حافظ للحرارة.",
-   "digi": false,
+   "desc": "كيكة إسفنجية بطبقات الكريمة المخفوقة، تُخبز يوم الطلب وتُسلّم مبردة في صندوق حافظ للحرارة. حساسة للحرارة — يُجدول لها النظام تلقائياً توصيلاً مبرداً مع أقرب شركة متعاقدة.",
+   "fragile": false,
    "ptype": "chilled",
-   "giftOk": false
+   "giftOk": false,
+   "customOk": false,
+   "pts": 0,
+   "digi": null,
+   "qs": [],
+   "specs": {
+    "الحجم": "٨ أشخاص",
+    "الحفظ": "مبردة حتى التسليم",
+    "التحضير": "يوم الطلب"
+   },
+   "ratings": []
   },
   {
    "id": "p23",
@@ -696,10 +1018,20 @@
    "imgs": [
     "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/991d8bb4c001.jpg"
    ],
-   "desc": "ورق عنب بلدي ملفوف يدوياً ومطبوخ على أصوله مع لحم مفروم وأرز بسمتي. يُحضّر يوم الطلب ويُرس",
-   "digi": false,
+   "desc": "ورق عنب بلدي ملفوف يدوياً ومطبوخ على أصوله مع لحم مفروم وأرز بسمتي. يُحضّر يوم الطلب ويُرسل فور تأكيده مع مندوب فوري — وقت التسليم المتوقع ٤٥ دقيقة.",
+   "fragile": false,
    "ptype": "instant",
-   "giftOk": false
+   "giftOk": false,
+   "customOk": false,
+   "pts": 0,
+   "digi": null,
+   "qs": [],
+   "specs": {
+    "الحجم": "صحن عائلي",
+    "التسليم": "فوري خلال ٤٥ دقيقة",
+    "التحضير": "يوم الطلب"
+   },
+   "ratings": []
   },
   {
    "id": "p24",
@@ -715,10 +1047,20 @@
    "imgs": [
     "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/e44feac627da.jpg"
    ],
-   "desc": "خدمة تنسيق ميداني لطاولة المناسبة: خلفية قماش، تنسيق ورد طبيعي، أدوات تقديم وإضاءة هادئة. ",
-   "digi": false,
+   "desc": "خدمة تنسيق ميداني لطاولة المناسبة: خلفية قماش، تنسيق ورد طبيعي، أدوات تقديم وإضاءة هادئة. فريق المتجر يركّب قبل المناسبة ويفكّ بعدها — بلا بوليصة شحن تجاري، ومع حجز موعد مسبق ومشاركة موقع المناسبة.",
+   "fragile": false,
    "ptype": "field",
-   "giftOk": false
+   "giftOk": false,
+   "customOk": false,
+   "pts": 0,
+   "digi": null,
+   "qs": [],
+   "specs": {
+    "الخدمة": "تركيب + فك",
+    "المدة": "حتى ٦ ساعات",
+    "الحجز": "موعد مسبق إلزامي"
+   },
+   "ratings": []
   },
   {
    "id": "p25",
@@ -735,10 +1077,29 @@
     "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/308769bd3796.jpg",
     "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/2f9d9fe61140.jpg"
    ],
-   "desc": "سماعة ألعاب لاسلكية بتقنية صوت محيطي ٧٫١ افتراضي وبطارية تدوم ٤٠ ساعة متواصلة، مع مايك عاز",
-   "digi": false,
+   "desc": "سماعة ألعاب لاسلكية بتقنية صوت محيطي ٧٫١ افتراضي وبطارية تدوم ٤٠ ساعة متواصلة، مع مايك عازل للضوضاء بإلغاء بيئي وإضاءة RGB قابلة للتخصيص من التطبيق. تُشحن بتغليف حماية خاص لأنها من الأجهزة القابلة للكسر، وتشمل وسادتين احتياطيتين وحمّال مغناطيسي.",
+   "fragile": true,
    "ptype": "std",
-   "giftOk": false
+   "giftOk": false,
+   "customOk": false,
+   "pts": 0,
+   "digi": null,
+   "qs": [],
+   "specs": {
+    "الاتصال": "لاسلكي ٢٫٤ جيجا + بلوتوث ٥٫٣",
+    "البطارية": "٤٠ ساعة",
+    "الصوت": "محيطي ٧٫١ افتراضي",
+    "الوزن": "٣١٢ جم"
+   },
+   "ratings": [
+    {
+     "by": "0500000001",
+     "name": "نورة",
+     "stars": 5,
+     "txt": "خفيفة على الرأس والصوت غامر، وصلت بتغليف حماية ممتاز.",
+     "atMin": 4320
+    }
+   ]
   },
   {
    "id": "p26",
@@ -755,10 +1116,20 @@
     "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/e861dc8f6341.png",
     "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/5bd6ab3c9322.png"
    ],
-   "desc": "ذراع تحكم احترافي بأزرار ميكانيكية قابلة للبرمجة وعصا مقاومة للانحراف بدقة عالية، مع أذرع ",
-   "digi": false,
+   "desc": "ذراع تحكم احترافي بأزرار ميكانيكية قابلة للبرمجة وعصا مقاومة للانحراف بدقة عالية، مع أذرع خلفية قابلة للتبديل ووضعيات إعدادات محفوظة لثلاث ألعاب. مناسب لمنصات PC والأندرويد، ويأتي بحافظة صلبة تناسب السفر.",
+   "fragile": false,
    "ptype": "std",
-   "giftOk": false
+   "giftOk": false,
+   "customOk": false,
+   "pts": 0,
+   "digi": null,
+   "qs": [],
+   "specs": {
+    "التوافق": "PC / أندرويد",
+    "الأزرار": "٨ ميكانيكية قابلة للبرمجة",
+    "البطارية": "٢٠ ساعة"
+   },
+   "ratings": []
   },
   {
    "id": "p27",
@@ -775,10 +1146,20 @@
     "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/04fd480125c5.jpg",
     "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/7ddc9c999a9d.jpg"
    ],
-   "desc": "جهاز ألعاب محمول بشاشة أموليد ٧ بوصة بمعدل تحديث ١٤٤ هرتز ومعالج ثماني النوى مخصص للألعاب،",
-   "digi": false,
+   "desc": "جهاز ألعاب محمول بشاشة أموليد ٧ بوصة بمعدل تحديث ١٤٤ هرتز ومعالج ثماني النوى مخصص للألعاب، يشغّل مكتبتك الرقمية بالكامل مع دعم البث السحابي. يُشحن بصندوق مقوّى بعلامة قابل للكسر وتغليف ممتص للصدمات + تأمين شحن إضافي.",
+   "fragile": true,
    "ptype": "std",
-   "giftOk": false
+   "giftOk": false,
+   "customOk": false,
+   "pts": 0,
+   "digi": null,
+   "qs": [],
+   "specs": {
+    "الشاشة": "أموليد ٧ بوصة / ١٤٤ هرتز",
+    "التخزين": "٥١٢ جيجابايت",
+    "البطارية": "حتى ٨ ساعات لعب"
+   },
+   "ratings": []
   },
   {
    "id": "p28",
@@ -795,10 +1176,20 @@
     "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/e28496a66dff.jpg",
     "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/4e591ed2c48b.png"
    ],
-   "desc": "لوحة مفاتيح ميكانيكية بمفاتيح حمراء قابلة للتبديل الساخن وإضاءة RGB لكل مفتاح مع ٢٢ نمط إض",
-   "digi": false,
+   "desc": "لوحة مفاتيح ميكانيكية بمفاتيح حمراء قابلة للتبديل الساخن وإضاءة RGB لكل مفتاح مع ٢٢ نمط إضاءة جاهز، وهيكل ألمنيوم مختوم مقاوم للغبار. تدعم الاتصال السلكي ولاسلكي مع ثلاث أجهزة في آن واحد، وتشمل مسند معصم مغناطيسي.",
+   "fragile": false,
    "ptype": "std",
-   "giftOk": false
+   "giftOk": false,
+   "customOk": false,
+   "pts": 0,
+   "digi": null,
+   "qs": [],
+   "specs": {
+    "المفاتيح": "حمراء قابلة للتبديل",
+    "الاتصال": "سلكي + ٢٫٤ جيجا + بلوتوث",
+    "الإضاءة": "RGB لكل مفتاح"
+   },
+   "ratings": []
   },
   {
    "id": "p29",
@@ -814,10 +1205,24 @@
    "imgs": [
     "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/2fb50ac6678a.jpg"
    ],
-   "desc": "كود رقمي أصلي للعبة سباق الرمال ٥ كاملة الإصدار القياسي، يُسلّم فور إتمام الدفع في مكتبتك ",
-   "digi": true,
+   "desc": "كود رقمي أصلي للعبة سباق الرمال ٥ كاملة الإصدار القياسي، يُسلّم فور إتمام الدفع في مكتبتك الرقمية دون أي شحن أو انتظار. الكود صالح للتفعيل مرة واحدة على حسابك، ويعمل بكل اللغات بما فيها العربية.",
+   "fragile": false,
    "ptype": "digital",
-   "giftOk": false
+   "giftOk": false,
+   "customOk": false,
+   "pts": 0,
+   "digi": {
+    "kind": "code",
+    "val": "DRR5-9K2M-X7Q4-88FV",
+    "size": ""
+   },
+   "qs": [],
+   "specs": {
+    "النوع": "كود تفعيل رقمي",
+    "التسليم": "فوري بعد الدفع",
+    "الصلاحية": "تفعيل واحد"
+   },
+   "ratings": []
   },
   {
    "id": "p30",
@@ -833,10 +1238,24 @@
    "imgs": [
     "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/160a70aabe91.jpg"
    ],
-   "desc": "كود اشتراك ١٢ شهراً كاملة في خدمة بلس جيمنج مع ألعاب شهرية مجانية وخصومات حصرية على المتجر",
-   "digi": true,
+   "desc": "كود اشتراك ١٢ شهراً كاملة في خدمة بلس جيمنج مع ألعاب شهرية مجانية وخصومات حصرية على المتجر الرقمي. يصل الكود لحظة الدفع في مكتبتك الرقمية عبر رابط مؤقت آمن، ويفعّل على حسابك بثلاث خطوات دون بطاقة.",
+   "fragile": false,
    "ptype": "digital",
-   "giftOk": false
+   "giftOk": false,
+   "customOk": false,
+   "pts": 0,
+   "digi": {
+    "kind": "code",
+    "val": "PSN-4T8B-22LD-QW90",
+    "size": ""
+   },
+   "qs": [],
+   "specs": {
+    "المدة": "١٢ شهراً",
+    "المنطقة": "السعودية والخليج",
+    "التسليم": "فوري بعد الدفع"
+   },
+   "ratings": []
   },
   {
    "id": "p31",
@@ -852,10 +1271,24 @@
    "imgs": [
     "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/06fdd0b9a622.jpg"
    ],
-   "desc": "كتاب إلكتروني عربي شامل من ٣٢٠ صفحة يأخذك من أساسيات محركات الألعاب إلى نشر أول لعبة لك عل",
-   "digi": true,
+   "desc": "كتاب إلكتروني عربي شامل من ٣٢٠ صفحة يأخذك من أساسيات محركات الألعاب إلى نشر أول لعبة لك على المتاجر، مع أمثلة كود قابلة للتنزيل ومشاريع عملية موزعة على كل فصل. يُسلّم فور الدفع عبر رابط مؤقت آمن، وتبقى نسخته دائمة في مكتبتك.",
+   "fragile": false,
    "ptype": "digital",
-   "giftOk": false
+   "giftOk": false,
+   "customOk": false,
+   "pts": 0,
+   "digi": {
+    "kind": "file",
+    "val": "game-dev-master-ar.pdf",
+    "size": "٤٫٢ م.ب"
+   },
+   "qs": [],
+   "specs": {
+    "الصيغة": "PDF",
+    "الصفحات": "٣٢٠ صفحة",
+    "اللغة": "العربية"
+   },
+   "ratings": []
   },
   {
    "id": "p32",
@@ -871,10 +1304,24 @@
    "imgs": [
     "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/1f1482a46bbb.jpg"
    ],
-   "desc": "حزمة من ١٢ ثيم واجهة نيون بتدرجات ليلية متناسقة للأجهزة وسطح المكتب، تشمل خلفيات وأيقونات ",
-   "digi": true,
+   "desc": "حزمة من ١٢ ثيم واجهة نيون بتدرجات ليلية متناسقة للأجهزة وسطح المكتب، تشمل خلفيات وأيقونات مؤشرات وأصوات تنبيه مطابقة. ملف واحد مضغوط يُسلّم فوراً بعد الدفع، مع دليل تركيب مصور بالعربية داخل الحزمة.",
+   "fragile": false,
    "ptype": "digital",
-   "giftOk": false
+   "giftOk": false,
+   "customOk": false,
+   "pts": 0,
+   "digi": {
+    "kind": "file",
+    "val": "neon-night-themes.zip",
+    "size": "١٨ م.ب"
+   },
+   "qs": [],
+   "specs": {
+    "المحتوى": "١٢ ثيم متكامل",
+    "الصيغة": "ZIP",
+    "التوافق": "ويندوز / ماك / أندرويد"
+   },
+   "ratings": []
   }
  ],
  "users": [
@@ -885,7 +1332,45 @@
    "store": null,
    "pts": 340,
    "bal": 240,
-   "email": "noura@mail.com"
+   "email": "noura@mail.com",
+   "addrs": [
+    {
+     "t": "المنزل",
+     "a": "الرياض، حي الياسمين، شارع الأمير سلطان، مبنى ١٢",
+     "def": true
+    },
+    {
+     "t": "العمل",
+     "a": "الرياض، طريق الملك فهد، برج المملكة، الدور ١٤"
+    }
+   ],
+   "favs": [
+    "p1",
+    "p8"
+   ],
+   "dlib": [],
+   "ptsLog": [
+    {
+     "t": "تحرير طلب #١٠٢١",
+     "v": 29,
+     "atMin": 8640
+    },
+    {
+     "t": "تقييم تجربتك",
+     "v": 10,
+     "atMin": 8640
+    },
+    {
+     "t": "استبدال في السلة",
+     "v": -100,
+     "atMin": 12960
+    },
+    {
+     "t": "تحرير طلب #١٠١٨",
+     "v": 24,
+     "atMin": 17280
+    }
+   ]
   },
   {
    "phone": "0500000002",
@@ -894,7 +1379,11 @@
    "store": "s1",
    "pts": 0,
    "bal": 0,
-   "email": "rima@dafi.sa"
+   "email": "rima@dafi.sa",
+   "addrs": [],
+   "favs": [],
+   "dlib": [],
+   "ptsLog": []
   },
   {
    "phone": "0500000003",
@@ -903,7 +1392,11 @@
    "store": null,
    "pts": 0,
    "bal": 0,
-   "email": "fahd@dameen.sa"
+   "email": "fahd@dameen.sa",
+   "addrs": [],
+   "favs": [],
+   "dlib": [],
+   "ptsLog": []
   },
   {
    "phone": "0500000004",
@@ -912,7 +1405,11 @@
    "store": "s2",
    "pts": 0,
    "bal": 0,
-   "email": ""
+   "email": "",
+   "addrs": [],
+   "favs": [],
+   "dlib": [],
+   "ptsLog": []
   },
   {
    "phone": "0500000005",
@@ -921,7 +1418,11 @@
    "store": "s3",
    "pts": 0,
    "bal": 0,
-   "email": ""
+   "email": "",
+   "addrs": [],
+   "favs": [],
+   "dlib": [],
+   "ptsLog": []
   },
   {
    "phone": "0500000006",
@@ -930,7 +1431,11 @@
    "store": "s4",
    "pts": 0,
    "bal": 0,
-   "email": ""
+   "email": "",
+   "addrs": [],
+   "favs": [],
+   "dlib": [],
+   "ptsLog": []
   },
   {
    "phone": "0500000007",
@@ -939,7 +1444,11 @@
    "store": "s5",
    "pts": 0,
    "bal": 0,
-   "email": ""
+   "email": "",
+   "addrs": [],
+   "favs": [],
+   "dlib": [],
+   "ptsLog": []
   },
   {
    "phone": "0500000008",
@@ -948,7 +1457,11 @@
    "store": "s6",
    "pts": 0,
    "bal": 0,
-   "email": ""
+   "email": "",
+   "addrs": [],
+   "favs": [],
+   "dlib": [],
+   "ptsLog": []
   },
   {
    "phone": "0500000009",
@@ -957,7 +1470,11 @@
    "store": "s7",
    "pts": 0,
    "bal": 0,
-   "email": ""
+   "email": "",
+   "addrs": [],
+   "favs": [],
+   "dlib": [],
+   "ptsLog": []
   },
   {
    "phone": "0500000010",
@@ -966,7 +1483,11 @@
    "store": "s8",
    "pts": 0,
    "bal": 0,
-   "email": ""
+   "email": "",
+   "addrs": [],
+   "favs": [],
+   "dlib": [],
+   "ptsLog": []
   },
   {
    "phone": "0500000011",
@@ -975,7 +1496,11 @@
    "store": "s9",
    "pts": 0,
    "bal": 0,
-   "email": ""
+   "email": "",
+   "addrs": [],
+   "favs": [],
+   "dlib": [],
+   "ptsLog": []
   },
   {
    "phone": "0500000012",
@@ -984,7 +1509,11 @@
    "store": "s10",
    "pts": 0,
    "bal": 0,
-   "email": ""
+   "email": "",
+   "addrs": [],
+   "favs": [],
+   "dlib": [],
+   "ptsLog": []
   }
  ],
  "reqs": [
@@ -997,7 +1526,12 @@
    "phone": "0501122334",
    "cr": "1010456789",
    "sec": "fashion",
-   "status": "pending"
+   "iban": "SA0380000000608010167519",
+   "code": "",
+   "role": "",
+   "status": "pending",
+   "why": "",
+   "atMin": 2880
   },
   {
    "id": "rq-102",
@@ -1008,35 +1542,74 @@
    "phone": "0505544332",
    "cr": "",
    "sec": "",
-   "status": "pending"
+   "iban": "",
+   "code": "DMN-2026",
+   "role": "مشرف تحكيم ونزاعات",
+   "status": "pending",
+   "why": "",
+   "atMin": 1800
   }
  ],
  "orders": [
   {
    "id": 1018,
    "customer": "0500000001",
-   "at": 1792143145501,
+   "atMin": 17280,
+   "pay": "mada",
+   "addr": "الرياض، حي الياسمين، شارع الأمير سلطان، مبنى ١٢",
+   "coupon": null,
+   "ptsUsed": 0,
+   "ptsAmt": 0,
+   "freeDl": false,
    "groups": [
     {
      "store": "s6",
      "status": "refunded",
+     "sub": 240,
+     "dl": 0,
+     "extra": 0,
+     "digi": false,
+     "custom": false,
+     "gift": null,
+     "booking": null,
      "items": [
       {
        "pid": "p19",
        "qty": 1
       }
-     ]
+     ],
+     "ship": null,
+     "payout": {
+      "sub": 240,
+      "comm": 0,
+      "net": 0
+     },
+     "rated": null,
+     "chatN": 0
     }
    ]
   },
   {
    "id": 1021,
    "customer": "0500000001",
-   "at": 1792661545501,
+   "atMin": 8640,
+   "pay": "mada",
+   "addr": "الرياض، حي الياسمين، شارع الأمير سلطان، مبنى ١٢",
+   "coupon": null,
+   "ptsUsed": 0,
+   "ptsAmt": 0,
+   "freeDl": false,
    "groups": [
     {
      "store": "s1",
      "status": "released",
+     "sub": 372.65,
+     "dl": 0,
+     "extra": 0,
+     "digi": false,
+     "custom": false,
+     "gift": null,
+     "booking": null,
      "items": [
       {
        "pid": "p1",
@@ -1046,18 +1619,41 @@
        "pid": "p3",
        "qty": 1
       }
-     ]
+     ],
+     "ship": null,
+     "payout": {
+      "sub": 372.65,
+      "comm": 9.32,
+      "net": 363.33
+     },
+     "rated": {
+      "stars": 5
+     },
+     "chatN": 0
     }
    ]
   },
   {
    "id": 1022,
    "customer": "0500000001",
-   "at": 1793007145501,
+   "atMin": 2880,
+   "pay": "visa",
+   "addr": "الرياض، حي الياسمين، شارع الأمير سلطان، مبنى ١٢",
+   "coupon": null,
+   "ptsUsed": 0,
+   "ptsAmt": 0,
+   "freeDl": false,
    "groups": [
     {
      "store": "s3",
      "status": "shipped",
+     "sub": 243.5,
+     "dl": 0,
+     "extra": 0,
+     "digi": false,
+     "custom": false,
+     "gift": null,
+     "booking": null,
      "items": [
       {
        "pid": "p8",
@@ -1067,41 +1663,79 @@
        "pid": "p9",
        "qty": 2
       }
-     ]
+     ],
+     "ship": null,
+     "payout": null,
+     "rated": null,
+     "chatN": 0
     }
    ]
   },
   {
    "id": 1023,
    "customer": "0500000001",
-   "at": 1793154745501,
+   "atMin": 420,
+   "pay": "bal",
+   "addr": "الرياض، حي الياسمين، شارع الأمير سلطان، مبنى ١٢",
+   "coupon": null,
+   "ptsUsed": 0,
+   "ptsAmt": 0,
+   "freeDl": false,
    "groups": [
     {
      "store": "s5",
      "status": "received",
+     "sub": 130,
+     "dl": 12,
+     "extra": 0,
+     "digi": false,
+     "custom": false,
+     "gift": null,
+     "booking": null,
      "items": [
       {
        "pid": "p16",
        "qty": 2
       }
-     ]
+     ],
+     "ship": null,
+     "payout": null,
+     "rated": null,
+     "chatN": 0
     }
    ]
   },
   {
    "id": 1024,
    "customer": "0500000001",
-   "at": 1793093545501,
+   "atMin": 1440,
+   "pay": "mada",
+   "addr": "الرياض، حي الياسمين، شارع الأمير سلطان، مبنى ١٢",
+   "coupon": null,
+   "ptsUsed": 0,
+   "ptsAmt": 0,
+   "freeDl": false,
    "groups": [
     {
      "store": "s4",
      "status": "disputed",
+     "sub": 420,
+     "dl": 0,
+     "extra": 0,
+     "digi": false,
+     "custom": false,
+     "gift": null,
+     "booking": null,
      "items": [
       {
        "pid": "p12",
        "qty": 1
       }
-     ]
+     ],
+     "ship": null,
+     "payout": null,
+     "rated": null,
+     "chatN": 0
     }
    ]
   }
@@ -1109,13 +1743,184 @@
  "disputes": [
   {
    "id": "d0",
+   "order": 1018,
    "store": "s6",
-   "status": "resolved"
+   "customer": "0500000001",
+   "subject": "لا يطابق الوصف",
+   "status": "resolved",
+   "openedAtMin": 15840,
+   "ruling": {
+    "act": "refund",
+    "text": "بعد الاطلاع على الصور المرفقة ومقارنتها بوصف المنتج، تبيّن اختلاف درجة اللون بشكل جوهري. اعتُمد استرجاع كامل المبلغ إلى محفظة العميلة."
+   },
+   "messages": [
+    {
+     "r": "sys",
+     "t": "فتحت العميلة نزاعاً على الطلب #١٠١٨ (متجر هدايا المعمور) بسبب: لا يطابق الوصف",
+     "atMin": 15840,
+     "img": null
+    },
+    {
+     "r": "customer",
+     "t": "طلبت البوكس باللون الأخضر الزيتي كما في الصورة ووصل كحلي غامق تماماً، الفرق واضح جداً.",
+     "atMin": 15832,
+     "img": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/2f0ce9ff82fd.jpg"
+    },
+    {
+     "r": "merchant",
+     "t": "نعتذر عن الخطأ، يبدو أنه التباس في اللون عند التغليف. مستعدون لاستبدالها أو استرجاع المبلغ حسب ما تقرر الإدارة.",
+     "atMin": 15825,
+     "img": null
+    },
+    {
+     "r": "sys",
+     "t": "أصدرت الإدارة حكمها: استرجاع كامل المبلغ للعميلة + تحذير للمتجر بضبط مطابقة الألوان.",
+     "atMin": 14400,
+     "img": null
+    }
+   ]
   },
   {
    "id": "d1",
+   "order": 1024,
    "store": "s4",
-   "status": "open"
+   "customer": "0500000001",
+   "subject": "المنتج تالف",
+   "status": "open",
+   "openedAtMin": 1380,
+   "ruling": null,
+   "messages": [
+    {
+     "r": "sys",
+     "t": "فتحت العميلة نزاعاً على الطلب #١٠٢٤ (متجر بيت السدو) بسبب: المنتج تالف",
+     "atMin": 1380,
+     "img": null
+    },
+    {
+     "r": "customer",
+     "t": "المفرش وصل بشد واضح عند أحد الأطراف مع خيط مقطوع، الضرر ظاهر من أول نظرة. مرفق صور الوضع عند الوصول.",
+     "atMin": 1375,
+     "img": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/2ee34fcf2428.jpg"
+    },
+    {
+     "r": "merchant",
+     "t": "وعليكم السلام، نعتذر جداً عما وصلك. راجعنا تقرير الجودة قبل الشحن وكان سليماً، ويحتمل أن يكون الضرر من النقل. نرجو احتساب صور زاوية آخر للتأكد.",
+     "atMin": 1368,
+     "img": null
+    }
+   ]
   }
- ]
+ ],
+ "db": {
+  "coupons": {
+   "DAMIN10": {
+    "type": "pct",
+    "v": 10,
+    "max": 50,
+    "store": "all",
+    "min": 0,
+    "uses": 0
+   },
+   "SAVE20": {
+    "type": "pct",
+    "v": 20,
+    "max": 80,
+    "store": "all",
+    "min": 200,
+    "uses": 14
+   },
+   "DAFI15": {
+    "type": "pct",
+    "v": 15,
+    "max": 60,
+    "store": "s1",
+    "min": 150,
+    "uses": 37
+   },
+   "BYTE10": {
+    "type": "pct",
+    "v": 10,
+    "max": 30,
+    "store": "s10",
+    "min": 30,
+    "uses": 9
+   }
+  },
+  "ptsVal": 0.1,
+  "freeDlPts": 250,
+  "aPtsWallet": 0,
+  "logiWallet": 418.6,
+  "vat": 527.4,
+  "aRevenue": 1268.75,
+  "revMonths": [
+   {
+    "m": "يونيو",
+    "v": 186
+   },
+   {
+    "m": "يوليو",
+    "v": 212
+   },
+   {
+    "m": "أغسطس",
+    "v": 254
+   },
+   {
+    "m": "سبتمبر",
+    "v": 301
+   },
+   {
+    "m": "أكتوبر",
+    "v": 316
+   }
+  ],
+  "storeWallets": {
+   "s1": 4820.5,
+   "s2": 2160,
+   "s3": 9130.25,
+   "s4": 1540,
+   "s5": 3310,
+   "s6": 2980,
+   "s7": 0,
+   "s9": 2760,
+   "s10": 4180
+  },
+  "ptsFunding": [],
+  "notifs": [
+   {
+    "to": "0500000001",
+    "ic": "🚚",
+    "t": "طلبك في الطريق",
+    "b": "مزرعة الواحة شحنت طلبك #١٠٢٢",
+    "atMin": 300,
+    "read": false,
+    "go": [
+     "orders"
+    ]
+   },
+   {
+    "to": "0500000001",
+    "ic": "⏳",
+    "t": "نافذة الحماية بدأت",
+    "b": "بقي أقل من ٨ دقائق لتحرير تلقائي لطلب #١٠٢٣",
+    "atMin": 10,
+    "read": false,
+    "go": [
+     "orders"
+    ]
+   },
+   {
+    "to": "0500000001",
+    "ic": "🎁",
+    "t": "عرض من قسم الأزياء",
+    "b": "خصومات تصل إلى ٢٠٪ على العبايات",
+    "atMin": 1440,
+    "read": true,
+    "go": [
+     "section",
+     "fashion"
+    ]
+   }
+  ]
+ }
 }

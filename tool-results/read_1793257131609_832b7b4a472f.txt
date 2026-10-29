@@ -1,0 +1,522 @@
+     1→/* هيكل ضمين: الشريط العلوي، البحث الفوري، التنبيهات، الحساب، التنقل السفلي، التذييل، نافذة الدخول، سلة جانبية */
+     2→'use client';
+     3→
+     4→import { useMemo, useState } from 'react';
+     5→import { motion } from 'framer-motion';
+     6→import {
+     7→  ShieldCheck, Search, Bell, ShoppingCart, Heart, Home, LayoutGrid, Package, User,
+     8→  LogOut, Store as StoreIcon, Settings, ChevronDown, Trash2, Lock, ArrowLeft, Sparkles,
+     9→} from 'lucide-react';
+    10→import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+    11→import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+    12→import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+    13→import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+    14→import { Input } from '@/components/ui/input';
+    15→import { Label } from '@/components/ui/label';
+    16→import { Button } from '@/components/ui/button';
+    17→import { ar, CITIES, DEMO_LOGINS, PAY_METHODS, money } from './data';
+    18→import { cartTotals, curPrice, useDameen } from './state';
+    19→import { QtyStepper, WorldChip, EmptyState } from './ui';
+    20→
+    21→/* ============ الشعار ============ */
+    22→export function Logo({ light = true }: { light?: boolean }) {
+    23→  const { go } = useDameen();
+    24→  return (
+    25→    <button className="flex items-center gap-2 shrink-0" onClick={() => go({ name: 'home' })} aria-label="ضمين - الرئيسية">
+    26→      <span className={`w-9 h-9 rounded-xl flex items-center justify-center shadow ${light ? 'bg-gold text-brand' : 'bg-brand text-gold'}`}>
+    27→        <ShieldCheck size={19} strokeWidth={2.4} />
+    28→      </span>
+    29→      <span className={`font-black text-xl tracking-tight ${light ? 'text-cream' : 'text-ink'}`}>ضمين</span>
+    30→    </button>
+    31→  );
+    32→}
+    33→
+    34→/* ============ البحث الفوري ============ */
+    35→function InstantSearch() {
+    36→  const { products, stores, go } = useDameen();
+    37→  const [q, setQ] = useState('');
+    38→  const [open, setOpen] = useState(false);
+    39→  const hits = useMemo(() => {
+    40→    const k = q.trim();
+    41→    if (k.length < 1) return [];
+    42→    return products
+    43→      .map(p => ({ p, st: stores.find(s => s.id === p.store) }))
+    44→      .filter(({ p, st }) => !st?.susp && (p.name.includes(k) || p.cat.includes(k) || (st?.name || '').includes(k)))
+    45→      .slice(0, 6);
+    46→  }, [q, products, stores]);
+    47→  return (
+    48→    <div className="relative flex-1 max-w-md">
+    49→      <form onSubmit={e => { e.preventDefault(); if (q.trim()) { go({ name: 'search', q: q.trim() }); setOpen(false); } }}>
+    50→        <Search size={15} className="absolute start-3 top-1/2 -translate-y-1/2 text-white/50" />
+    51→        <Input
+    52→          value={q}
+    53→          onChange={e => { setQ(e.target.value); setOpen(true); }}
+    54→          onFocus={() => setOpen(true)}
+    55→          placeholder="ابحث عن منتج أو متجر…"
+    56→          className="bg-white/10 border-white/20 text-cream placeholder:text-white/45 rounded-full h-9 ps-9 pe-3 focus-visible:ring-gold/60"
+    57→          aria-label="البحث"
+    58→        />
+    59→      </form>
+    60→      {open && q.trim().length > 0 && (
+    61→        <>
+    62→          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+    63→          <div className="absolute top-full mt-2 inset-x-0 z-50 bg-card text-ink rounded-2xl shadow-2xl border border-border overflow-hidden">
+    64→            {hits.length === 0 ? (
+    65→              <div className="p-4 text-sm text-muted-foreground text-center">لا نتائج لـ«{q}» — جرّب كلمة أخرى</div>
+    66→            ) : hits.map(({ p, st }) => (
+    67→              <button
+    68→                key={p.id}
+    69→                className="w-full flex items-center gap-3 p-2.5 hover:bg-accent text-start transition-colors"
+    70→                onClick={() => { go({ name: 'product', id: p.id }); setOpen(false); setQ(''); }}
+    71→              >
+    72→                {p.imgs[0] ? <img src={p.imgs[0]} alt="" className="w-10 h-10 rounded-lg object-cover" /> : <span className="w-10 h-10 rounded-lg bg-sand flex items-center justify-center">🛍️</span>}
+    73→                <span className="flex-1 min-w-0">
+    74→                  <span className="block text-sm font-bold truncate">{p.name}</span>
+    75→                  <span className="block text-[11px] text-muted-foreground">{st?.name} · {p.cat}</span>
+    76→                </span>
+    77→                <span className="text-sm font-extrabold text-brand shrink-0">{money(curPrice(p))}</span>
+    78→              </button>
+    79→            ))}
+    80→            <button className="w-full p-2 text-xs font-bold text-brand bg-accent/60 hover:bg-accent" onClick={() => { go({ name: 'search', q: q.trim() }); setOpen(false); }}>
+    81→              كل النتائج عن «{q}» ←
+    82→            </button>
+    83→          </div>
+    84→        </>
+    85→      )}
+    86→    </div>
+    87→  );
+    88→}
+    89→
+    90→/* رابط تنقلي داخل الشريط */
+    91→function NavLink({ active, onClick, children }: { active?: boolean; onClick: () => void; children: React.ReactNode }) {
+    92→  return (
+    93→    <button
+    94→      className={`text-[13px] font-bold px-2.5 py-1.5 rounded-lg transition-colors whitespace-nowrap ${active ? 'bg-white/15 text-gold' : 'text-cream/85 hover:text-cream hover:bg-white/10'}`}
+    95→      onClick={onClick}
+    96→    >
+    97→      {children}
+    98→    </button>
+    99→  );
+   100→}
+   101→
+   102→/* ============ الشريط العلوي ============ */
+   103→export function TopBar() {
+   104→  const { session, route, go, cart, notifs, setCartOpen, openAuth, markNotifsRead, logout, worlds } = useDameen();
+   105→  const role = session?.role;
+   106→  const myNotifs = notifs.filter(n => n.to === role);
+   107→  const unread = myNotifs.filter(n => !n.read).length;
+   108→  return (
+   109→    <header className="sticky top-0 z-50 bg-brand text-cream shadow-md">
+   110→      <div className="max-w-6xl mx-auto px-3 md:px-6 h-14 flex items-center gap-2 md:gap-4">
+   111→        <Logo />
+   112→        {role !== 'merchant' && role !== 'admin' && (
+   113→          <div className="hidden md:flex flex-1 justify-center"><InstantSearch /></div>
+   114→        )}
+   115→        <nav className="hidden md:flex items-center gap-0.5 ms-auto" aria-label="التنقل الرئيسي">
+   116→          {role === 'customer' && (
+   117→            <>
+   118→              <NavLink active={route.name === 'home'} onClick={() => go({ name: 'home' })}>الرئيسية</NavLink>
+   119→              <DropdownMenu>
+   120→                <DropdownMenuTrigger asChild>
+   121→                  <button className={`text-[13px] font-bold px-2.5 py-1.5 rounded-lg inline-flex items-center gap-1 ${route.name === 'section' ? 'bg-white/15 text-gold' : 'text-cream/85 hover:bg-white/10'}`}>
+   122→                    العوالم <ChevronDown size={13} />
+   123→                  </button>
+   124→                </DropdownMenuTrigger>
+   125→                <DropdownMenuContent align="start" className="w-60">
+   126→                  {worlds.map(w => (
+   127→                    <DropdownMenuItem key={w.id} onClick={() => go({ name: 'section', id: w.id })} className="gap-2">
+   128→                      <span className="w-7 h-7 rounded-lg flex items-center justify-center text-white text-sm" style={{ background: w.color }}>{w.icon}</span>
+   129→                      <span className="flex flex-col"><span className="font-bold text-xs">{w.name}</span><span className="text-[10px] text-muted-foreground">حماية {w.win}</span></span>
+   130→                    </DropdownMenuItem>
+   131→                  ))}
+   132→                </DropdownMenuContent>
+   133→              </DropdownMenu>
+   134→              <NavLink active={route.name === 'favorites'} onClick={() => go({ name: 'favorites' })}>المفضلة</NavLink>
+   135→              <NavLink active={route.name === 'orders'} onClick={() => go({ name: 'orders' })}>طلباتي</NavLink>
+   136→              <NavLink active={route.name === 'disputes'} onClick={() => go({ name: 'disputes' })}>نزاعاتي</NavLink>
+   137→            </>
+   138→          )}
+   139→          {role === 'merchant' && (
+   140→            <>
+   141→              <NavLink active={route.name === 'merchant' && route.tab === 'overview'} onClick={() => go({ name: 'merchant', tab: 'overview' })}>لوحة التاجر</NavLink>
+   142→              <NavLink active={route.name === 'merchant' && route.tab === 'products'} onClick={() => go({ name: 'merchant', tab: 'products' })}>منتجاتي</NavLink>
+   143→              <NavLink active={route.name === 'merchant' && route.tab === 'orders'} onClick={() => go({ name: 'merchant', tab: 'orders' })}>الطلبات</NavLink>
+   144→              <NavLink active={route.name === 'merchant' && route.tab === 'wallet'} onClick={() => go({ name: 'merchant', tab: 'wallet' })}>المحفظة</NavLink>
+   145→            </>
+   146→          )}
+   147→          {role === 'admin' && (
+   148→            <>
+   149→              <NavLink active={route.name === 'admin' && route.tab === 'overview'} onClick={() => go({ name: 'admin', tab: 'overview' })}>مركز الإدارة</NavLink>
+   150→              <NavLink active={route.name === 'admin' && route.tab === 'stores'} onClick={() => go({ name: 'admin', tab: 'stores' })}>المتاجر</NavLink>
+   151→              <NavLink active={route.name === 'admin' && route.tab === 'cats'} onClick={() => go({ name: 'admin', tab: 'cats' })}>الأقسام</NavLink>
+   152→              <NavLink active={route.name === 'admin' && route.tab === 'disputes'} onClick={() => go({ name: 'admin', tab: 'disputes' })}>التحكيم</NavLink>
+   153→              <NavLink active={route.name === 'admin' && route.tab === 'revenue'} onClick={() => go({ name: 'admin', tab: 'revenue' })}>الإيرادات</NavLink>
+   154→            </>
+   155→          )}
+   156→        </nav>
+   157→        <div className="flex items-center gap-1 ms-auto md:ms-0">
+   158→          {(role === 'customer' || !role) && (
+   159→            <>
+   160→              <button aria-label="البحث" className="md:hidden w-9 h-9 rounded-lg hover:bg-white/10 flex items-center justify-center" onClick={() => go({ name: 'search', q: '' })}>
+   161→                <Search size={17} />
+   162→              </button>
+   163→              <button aria-label="السلة" className="relative w-9 h-9 rounded-lg hover:bg-white/10 flex items-center justify-center" onClick={() => setCartOpen(true)}>
+   164→                <ShoppingCart size={18} />
+   165→                {cart.length > 0 && <span className="absolute -top-0.5 -end-0.5 bg-gold text-brand text-[10px] font-black w-4.5 h-4.5 min-w-[18px] h-[18px] rounded-full flex items-center justify-center">{ar(cart.length)}</span>}
+   166→              </button>
+   167→            </>
+   168→          )}
+   169→          {session && (
+   170→            <DropdownMenu>
+   171→              <DropdownMenuTrigger asChild>
+   172→                <button aria-label="التنبيهات" className="relative w-9 h-9 rounded-lg hover:bg-white/10 flex items-center justify-center">
+   173→                  <Bell size={17} />
+   174→                  {unread > 0 && <span className="absolute top-1 end-1 w-2 h-2 bg-gold rounded-full animate-pulse" />}
+   175→                </button>
+   176→              </DropdownMenuTrigger>
+   177→              <DropdownMenuContent align="end" className="w-80" onOpenChange={o => { if (o) setTimeout(markNotifsRead, 1200); }}>
+   178→                <DropdownMenuLabel className="font-extrabold">التنبيهات</DropdownMenuLabel>
+   179→                <DropdownMenuSeparator />
+   180→                {myNotifs.length === 0 && <div className="p-4 text-sm text-muted-foreground text-center">لا تنبيهات بعد</div>}
+   181→                {myNotifs.slice(0, 6).map(n => (
+   182→                  <DropdownMenuItem key={n.id} className="items-start gap-2 py-2.5" disabled>
+   183→                    <span className="text-xl shrink-0">{n.ic}</span>
+   184→                    <span className="flex flex-col gap-0.5">
+   185→                      <span className={`text-xs ${n.read ? 'font-semibold' : 'font-extrabold'}`}>{n.t}</span>
+   186→                      <span className="text-[11px] text-muted-foreground leading-relaxed">{n.b}</span>
+   187→                    </span>
+   188→                  </DropdownMenuItem>
+   189→                ))}
+   190→              </DropdownMenuContent>
+   191→            </DropdownMenu>
+   192→          )}
+   193→          {session ? (
+   194→            <DropdownMenu>
+   195→              <DropdownMenuTrigger asChild>
+   196→                <button className="flex items-center gap-2 ps-1.5 pe-2.5 h-9 rounded-full bg-white/10 hover:bg-white/15 transition-colors" aria-label="حسابي">
+   197→                  <span className="w-6.5 h-6.5 w-[26px] h-[26px] rounded-full bg-gold text-brand text-xs font-black flex items-center justify-center">{session.name.charAt(0)}</span>
+   198→                  <span className="hidden sm:block text-xs font-bold max-w-24 truncate">{session.name}</span>
+   199→                  <ChevronDown size={13} className="text-cream/70" />
+   200→                </button>
+   201→              </DropdownMenuTrigger>
+   202→              <DropdownMenuContent align="end" className="w-60">
+   203→                <DropdownMenuLabel>
+   204→                  <div className="font-extrabold text-sm">{session.name}</div>
+   205→                  <div className="text-[11px] text-muted-foreground font-normal">{ar(session.phone)} · {session.role === 'customer' ? 'عميل' : session.role === 'merchant' ? 'تاجر' : 'الإدارة'}</div>
+   206→                </DropdownMenuLabel>
+   207→                <DropdownMenuSeparator />
+   208→                {session.role === 'customer' && (
+   209→                  <>
+   210→                    <DropdownMenuItem onClick={() => go({ name: 'account' })} className="gap-2"><User size={15} /> حسابي وإعداداتي</DropdownMenuItem>
+   211→                    <DropdownMenuItem onClick={() => go({ name: 'orders' })} className="gap-2"><Package size={15} /> طلباتي</DropdownMenuItem>
+   212→                  </>
+   213→                )}
+   214→                {session.role === 'merchant' && <DropdownMenuItem onClick={() => go({ name: 'merchant', tab: 'overview' })} className="gap-2"><StoreIcon size={15} /> لوحة التاجر</DropdownMenuItem>}
+   215→                {session.role === 'admin' && <DropdownMenuItem onClick={() => go({ name: 'admin', tab: 'overview' })} className="gap-2"><Settings size={15} /> مركز الإدارة</DropdownMenuItem>}
+   216→                <DropdownMenuSeparator />
+   217→                <DropdownMenuItem onClick={logout} className="gap-2 text-red-600 focus:text-red-600"><LogOut size={15} /> تسجيل الخروج</DropdownMenuItem>
+   218→              </DropdownMenuContent>
+   219→            </DropdownMenu>
+   220→          ) : (
+   221→            <button className="bg-gold text-brand text-[13px] font-black px-4 h-9 rounded-full hover:brightness-105 active:scale-95 transition-all shadow" onClick={() => openAuth('login')}>
+   222→              تسجيل الدخول
+   223→            </button>
+   224→          )}
+   225→        </div>
+   226→      </div>
+   227→    </header>
+   228→  );
+   229→}
+   230→
+   231→/* ============ التنقل السفلي (جوال - عميل) ============ */
+   232→export function BottomNav() {
+   233→  const { route, go, cart } = useDameen();
+   234→  const items = [
+   235→    { id: 'home', t: 'الرئيسية', icon: Home, r: { name: 'home' as const } },
+   236→    { id: 'section', t: 'العوالم', icon: LayoutGrid, r: { name: 'section', id: 'fashion' } },
+   237→    { id: 'favorites', t: 'المفضلة', icon: Heart, r: { name: 'favorites' } },
+   238→    { id: 'orders', t: 'طلباتي', icon: Package, r: { name: 'orders' } },
+   239→    { id: 'account', t: 'حسابي', icon: User, r: { name: 'account' } },
+   240→  ];
+   241→  return (
+   242→    <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-card border-t border-border shadow-[0_-4px_20px_rgba(0,0,0,0.06)] pb-[env(safe-area-inset-bottom)]" aria-label="التنقل السفلي">
+   243→      <div className="grid grid-cols-5">
+   244→        {items.map(it => {
+   245→          const active = route.name === it.id || (it.id === 'section' && route.name === 'section');
+   246→          const Icon = it.icon;
+   247→          return (
+   248→            <button key={it.id} className="relative flex flex-col items-center gap-0.5 py-2" onClick={() => go(it.r)}>
+   249→              {active && <motion.span layoutId="bnav" className="absolute top-0 w-8 h-0.5 rounded-full bg-brand" />}
+   250→              <Icon size={19} className={active ? 'text-brand' : 'text-muted-foreground'} />
+   251→              <span className={`text-[10px] font-bold ${active ? 'text-brand' : 'text-muted-foreground'}`}>{it.t}</span>
+   252→              {it.id === 'orders' && cart.length > 0 && <span className="absolute top-1 end-[22%] bg-gold text-brand text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center">{ar(cart.length)}</span>}
+   253→            </button>
+   254→          );
+   255→        })}
+   256→      </div>
+   257→    </nav>
+   258→  );
+   259→}
+   260→
+   261→/* ============ التذييل ============ */
+   262→export function Footer() {
+   263→  const { go, worlds } = useDameen();
+   264→  return (
+   265→    <footer className="mt-auto bg-brand text-cream/80">
+   266→      <div className="max-w-6xl mx-auto px-4 md:px-6 py-10 grid grid-cols-2 md:grid-cols-4 gap-8 pb-24 md:pb-10">
+   267→        <div className="col-span-2 md:col-span-1">
+   268→          <div className="flex items-center gap-2 mb-3">
+   269→            <span className="w-9 h-9 rounded-xl bg-gold text-brand flex items-center justify-center"><ShieldCheck size={19} strokeWidth={2.4} /></span>
+   270→            <span className="font-black text-xl text-cream">ضمين</span>
+   271→          </div>
+   272→          <p className="text-xs leading-relaxed text-cream/65">
+   273→            منصة التسوق السعودية بضمان الإسكرو — نحجز مبلغك في خزنة مستقلة حتى استلامك ورضاك، والعمولة تُحسم من التاجر فقط.
+   274→          </p>
+   275→        </div>
+   276→        <div>
+   277→          <h4 className="font-extrabold text-cream text-sm mb-3">العوالم</h4>
+   278→          <ul className="space-y-2 text-xs">
+   279→            {worlds.map(w => (
+   280→              <li key={w.id}>
+   281→                <button className="hover:text-gold transition-colors" onClick={() => go({ name: 'section', id: w.id })}>{w.icon} {w.name}</button>
+   282→              </li>
+   283→            ))}
+   284→          </ul>
+   285→        </div>
+   286→        <div>
+   287→          <h4 className="font-extrabold text-cream text-sm mb-3">الأمان</h4>
+   288→          <ul className="space-y-2 text-xs text-cream/65 leading-relaxed">
+   289→            <li>🔒 خزنة ضمان مستقلة</li>
+   290→            <li>⏱️ تحرير تلقائي بانتهاء الحماية</li>
+   291→            <li>⚖️ تحكيم ثلاثي الأطراف</li>
+   292→            <li>🚚 شحن آلي عبر OTO وTorod</li>
+   293→          </ul>
+   294→        </div>
+   295→        <div>
+   296→          <h4 className="font-extrabold text-cream text-sm mb-3">الدفع</h4>
+   297→          <div className="flex flex-wrap gap-1.5">
+   298→            {PAY_METHODS.map(m => (
+   299→              <span key={m.id} className="text-[10px] font-bold bg-white/10 border border-white/15 rounded-md px-2 py-1">{m.badge}</span>
+   300→            ))}
+   301→          </div>
+   302→        </div>
+   303→      </div>
+   304→      <div className="border-t border-white/10">
+   305→        <div className="max-w-6xl mx-auto px-4 md:px-6 py-4 text-[11px] text-cream/50 flex flex-col md:flex-row items-center justify-between gap-2 pb-24 md:pb-4">
+   306→          <span>ضمين © {ar(2026)} — تسوّق مضمون بثقة</span>
+   307→          <span>ضريبة القيمة المضافة ١٥٪ مضمّنة · الشحن مجاني فوق ٢٠٠ ر.س</span>
+   308→        </div>
+   309→      </div>
+   310→    </footer>
+   311→  );
+   312→}
+   313→
+   314→/* ============ نافذة الدخول والتسجيل ============ */
+   315→export function AuthModal() {
+   316→  const { ui, closeAuth, login, register, registerStoreReq, worlds } = useDameen();
+   317→  const [id, setId] = useState('');
+   318→  const [pw, setPw] = useState('');
+   319→  const [err, setErr] = useState('');
+   320→  const [reg, setReg] = useState({ name: '', phone: '', city: '' });
+   321→  const [st, setSt] = useState({ own: '', store: '', sec: 'fashion', phone: '', email: '', cr: '', iban: '' });
+   322→  const doLogin = () => { if (!login(id, pw)) setErr('تعذر الدخول — تحقق من المعرّف وكلمة المرور (1234)'); };
+   323→  return (
+   324→    <Dialog open={ui.authOpen} onOpenChange={v => { if (!v) closeAuth(); }}>
+   325→      <DialogContent className="max-w-md p-0 overflow-hidden gap-0" dir="rtl" aria-describedby={undefined}>
+   326→        <div className="bg-brand text-cream p-5 flex items-center gap-3">
+   327→          <span className="w-12 h-12 rounded-2xl bg-gold text-brand flex items-center justify-center shadow-lg"><ShieldCheck size={26} strokeWidth={2.2} /></span>
+   328→          <div>
+   329→            <DialogTitle className="text-cream font-black text-lg">أهلاً بك في ضمين</DialogTitle>
+   330→            <p className="text-xs text-cream/70">سجّل دخولك — مالك محجوز حتى ترضى 🛡️</p>
+   331→          </div>
+   332→        </div>
+   333→        <div className="p-5 max-h-[70vh] overflow-y-auto">
+   334→          {ui.authTab === 'login' && (
+   335→            <div className="space-y-3">
+   336→              <div>
+   337→                <Label className="text-xs font-bold">رقم الجوال أو البريد</Label>
+   338→                <Input value={id} onChange={e => { setId(e.target.value); setErr(''); }} placeholder="05xxxxxxxx أو name@mail.com" className="mt-1" dir="ltr" />
+   339→              </div>
+   340→              <div>
+   341→                <Label className="text-xs font-bold">كلمة المرور</Label>
+   342→                <Input type="password" value={pw} onChange={e => { setPw(e.target.value); setErr(''); }} placeholder="••••" className="mt-1" dir="ltr" onKeyDown={e => e.key === 'Enter' && doLogin()} />
+   343→              </div>
+   344→              {err && <p className="text-xs text-red-600 font-semibold">{err}</p>}
+   345→              <Button className="w-full bg-brand hover:bg-brand-2 font-extrabold h-10" onClick={doLogin}>🔑 دخول</Button>
+   346→              <div className="flex items-center gap-3 text-[11px] text-muted-foreground"><span className="flex-1 h-px bg-border" />أو جرّب مباشرة بحساب جاهز<span className="flex-1 h-px bg-border" /></div>
+   347→              <div className="grid grid-cols-3 gap-2">
+   348→                {DEMO_LOGINS.map(d => (
+   349→                  <button key={d.phone} className="border border-border rounded-xl p-2.5 hover:border-brand hover:bg-accent/60 transition-colors text-center" onClick={() => useDameen.getState().loginAs(d.phone)}>
+   350→                    <div className="text-xl mb-1">{d.label.split(' ')[0]}</div>
+   351→                    <div className="text-[10px] font-bold text-ink leading-tight">{d.label.split(' ').slice(1).join(' ')}</div>
+   352→                    <div className="text-[9px] text-muted-foreground mt-0.5">{d.name}</div>
+   353→                  </button>
+   354→                ))}
+   355→              </div>
+   356→              <Button variant="outline" className="w-full font-bold h-10" onClick={() => useDameen.getState().openAuth('reg')}>✨ حساب جديد — سجّل خلال دقيقة</Button>
+   357→            </div>
+   358→          )}
+   359→          {ui.authTab === 'reg' && (
+   360→            <div className="space-y-3">
+   361→              <div>
+   362→                <Label className="text-xs font-bold">الاسم الكامل</Label>
+   363→                <Input value={reg.name} onChange={e => setReg({ ...reg, name: e.target.value })} placeholder="مثال: نورة العبدالله" className="mt-1" />
+   364→              </div>
+   365→              <div>
+   366→                <Label className="text-xs font-bold">رقم الجوال</Label>
+   367→                <Input value={reg.phone} onChange={e => setReg({ ...reg, phone: e.target.value })} placeholder="05xxxxxxxx" className="mt-1" dir="ltr" />
+   368→              </div>
+   369→              <div>
+   370→                <Label className="text-xs font-bold">المدينة</Label>
+   371→                <Select value={reg.city} onValueChange={v => setReg({ ...reg, city: v })}>
+   372→                  <SelectTrigger className="mt-1 w-full"><SelectValue placeholder="اختر مدينتك" /></SelectTrigger>
+   373→                  <SelectContent>{CITIES.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+   374→                </Select>
+   375→              </div>
+   376→              <Button className="w-full bg-brand hover:bg-brand-2 font-extrabold h-10" onClick={() => register(reg.name, reg.phone, reg.city)}>إنشاء حسابي 🎉</Button>
+   377→              <button className="w-full text-xs font-bold text-brand hover:underline" onClick={() => useDameen.getState().openAuth('store')}>
+   378→                🏪 لديك متجر؟ سجّل متجرك في ضمين ←
+   379→              </button>
+   380→            </div>
+   381→          )}
+   382→          {ui.authTab === 'store' && (
+   383→            <div className="space-y-3">
+   384→              <div className="bg-gold/10 border border-gold/30 rounded-xl p-3 text-[11px] leading-relaxed text-ink">
+   385→                🏪 انضمام متجرك لضمين: تُراجع الإدارة طلبك ثم يظهر متجرك للعملاء فور الموافقة — عمولة ضمين ٢٫٥٪ فقط تُحسم عند التحرير.
+   386→              </div>
+   387→              <div className="grid grid-cols-2 gap-2">
+   388→                <div>
+   389→                  <Label className="text-xs font-bold">اسمك</Label>
+   390→                  <Input value={st.own} onChange={e => setSt({ ...st, own: e.target.value })} className="mt-1" placeholder="هند الشهري" />
+   391→                </div>
+   392→                <div>
+   393→                  <Label className="text-xs font-bold">جوالك</Label>
+   394→                  <Input value={st.phone} onChange={e => setSt({ ...st, phone: e.target.value })} className="mt-1" placeholder="05xxxxxxxx" dir="ltr" />
+   395→                </div>
+   396→              </div>
+   397→              <div>
+   398→                <Label className="text-xs font-bold">اسم المتجر</Label>
+   399→                <Input value={st.store} onChange={e => setSt({ ...st, store: e.target.value })} className="mt-1" placeholder="عطور تلال الطائف" />
+   400→              </div>
+   401→              <div>
+   402→                <Label className="text-xs font-bold">العالم</Label>
+   403→                <Select value={st.sec} onValueChange={v => setSt({ ...st, sec: v })}>
+   404→                  <SelectTrigger className="mt-1 w-full"><SelectValue /></SelectTrigger>
+   405→                  <SelectContent>{worlds.map(w => <SelectItem key={w.id} value={w.id}>{w.icon} {w.name}</SelectItem>)}</SelectContent>
+   406→                </Select>
+   407→              </div>
+   408→              <div className="grid grid-cols-2 gap-2">
+   409→                <div>
+   410→                  <Label className="text-xs font-bold">البريد</Label>
+   411→                  <Input value={st.email} onChange={e => setSt({ ...st, email: e.target.value })} className="mt-1" placeholder="name@mail.com" dir="ltr" />
+   412→                </div>
+   413→                <div>
+   414→                  <Label className="text-xs font-bold">السجل التجاري</Label>
+   415→                  <Input value={st.cr} onChange={e => setSt({ ...st, cr: e.target.value })} className="mt-1" placeholder="10xxxxxxxx" dir="ltr" />
+   416→                </div>
+   417→              </div>
+   418→              <div>
+   419→                <Label className="text-xs font-bold">الآيبان</Label>
+   420→                <Input value={st.iban} onChange={e => setSt({ ...st, iban: e.target.value })} className="mt-1" placeholder="SAxxxxxxxxxxxx" dir="ltr" />
+   421→              </div>
+   422→              <Button
+   423→                className="w-full bg-gold text-brand hover:brightness-105 font-extrabold h-10"
+   424→                onClick={() => { if (st.own && st.store && st.phone) registerStoreReq(st); }}
+   425→              >
+   426→                إرسال طلب الانضمام 📋
+   427→              </Button>
+   428→            </div>
+   429→          )}
+   430→        </div>
+   431→      </DialogContent>
+   432→    </Dialog>
+   433→  );
+   434→}
+   435→
+   436→/* ============ السلة الجانبية ============ */
+   437→export function CartDrawer() {
+   438→  const { ui, setCartOpen, cart, products, setQty, removeLine, session, go, openAuth } = useDameen();
+   439→  const t = cartTotals(cart, products);
+   440→  const line = (pid: string) => {
+   441→    const p = products.find(x => x.id === pid)!;
+   442→    const l = cart.find(x => x.pid === pid)!;
+   443→    return (
+   444→      <div key={pid} className="flex gap-3 p-3 border border-border rounded-2xl bg-card">
+   445→        {p.imgs[0] ? <img src={p.imgs[0]} alt={p.name} className="w-16 h-16 rounded-xl object-cover shrink-0" /> : <span className="w-16 h-16 rounded-xl bg-sand flex items-center justify-center text-2xl">🛍️</span>}
+   446→        <div className="flex-1 min-w-0">
+   447→          <button className="font-bold text-sm text-ink line-clamp-1 text-start hover:text-brand" onClick={() => { setCartOpen(false); go({ name: 'product', id: p.id }); }}>{p.name}</button>
+   448→          <div className="my-1"><WorldChip storeId={p.store} /></div>
+   449→          <div className="flex items-center justify-between gap-2">
+   450→            <QtyStepper small qty={l.qty} set={q => setQty(pid, q)} max={p.stock} />
+   451→            <span className="font-extrabold text-sm text-brand">{money(curPrice(p) * l.qty)}</span>
+   452→          </div>
+   453→        </div>
+   454→        <button aria-label="حذف" className="text-muted-foreground hover:text-red-500 self-start" onClick={() => removeLine(pid)}><Trash2 size={15} /></button>
+   455→      </div>
+   456→    );
+   457→  };
+   458→  return (
+   459→    <Sheet open={ui.cartOpen} onOpenChange={setCartOpen}>
+   460→      <SheetContent side="left" className="w-full sm:max-w-md p-0 flex flex-column gap-0" dir="rtl">
+   461→        <SheetHeader className="p-4 border-b border-border bg-brand text-cream rounded-none">
+   462→          <SheetTitle className="text-cream flex items-center gap-2 text-base">
+   463→            <ShoppingCart size={17} /> سلتك {cart.length > 0 && <span className="bg-gold text-brand text-[11px] font-black px-2 py-0.5 rounded-full">{ar(cart.length)} منتج</span>}
+   464→          </SheetTitle>
+   465→        </SheetHeader>
+   466→        {cart.length === 0 ? (
+   467→          <div className="p-4">
+   468→            <EmptyState
+   469→              icon="🛒"
+   470→              title="سلتك فارغة"
+   471→              sub="تجوّل في عوالم ضمين الأربعة وأضف ما يعجبك — مبلغك يبقى محجوزاً حتى ترضى."
+   472→              cta={<Button className="bg-brand hover:bg-brand-2 font-bold" onClick={() => { setCartOpen(false); go({ name: 'home' }); }}>ابدأ التسوق ←</Button>}
+   473→            />
+   474→          </div>
+   475→        ) : (
+   476→          <>
+   477→            <div className="flex-1 overflow-y-auto p-4 space-y-2.5">
+   478→              {cart.map(l => line(l.pid))}
+   479→            </div>
+   480→            <div className="border-t border-border p-4 space-y-3 bg-sand/50">
+   481→              <div className="space-y-1.5 text-sm">
+   482→                <div className="flex justify-between"><span className="text-muted-foreground">المجموع</span><span className="font-bold">{money(t.subtotal)}</span></div>
+   483→                <div className="flex justify-between">
+   484→                  <span className="text-muted-foreground">الشحن</span>
+   485→                  {t.shipping === 0
+   486→                    ? <span className="font-bold text-emerald-700">مجاني 🎉</span>
+   487→                    : <span className="font-bold">{money(t.shipping)}</span>}
+   488→                </div>
+   489→                <div className="flex justify-between"><span className="text-muted-foreground">ضريبة القيمة المضافة ١٥٪</span><span className="font-bold">{money(t.vat)}</span></div>
+   490→                <div className="flex justify-between border-t border-border pt-1.5"><span className="font-extrabold">الإجمالي</span><span className="font-black text-brand text-lg">{money(t.total)}</span></div>
+   491→              </div>
+   492→              <p className="text-[11px] text-muted-foreground leading-relaxed flex items-start gap-1.5">
+   493→                <Lock size={13} className="shrink-0 mt-0.5 text-brand" />
+   494→                سيُحجز الإجمالي في خزنة ضمين المستقلة — لا يستلم التاجر شيئاً حتى تأكيد استلامك.
+   495→              </p>
+   496→              <Button
+   497→                className="w-full bg-brand hover:bg-brand-2 font-extrabold h-11 text-base"
+   498→                onClick={() => {
+   499→                  if (!session) { setCartOpen(false); openAuth('login'); return; }
+   500→                  setCartOpen(false); go({ name: 'checkout' });
+   501→                }}
+   502→              >
+   503→                إتمام الطلب الآمن <ArrowLeft size={16} />
+   504→              </Button>
+   505→            </div>
+   506→          </>
+   507→        )}
+   508→      </SheetContent>
+   509→    </Sheet>
+   510→  );
+   511→}
+   512→
+   513→export const TrustChips = () => (
+   514→  <div className="flex flex-wrap gap-2">
+   515→    {['🔒 خزنة ضمان مستقلة', '⏱️ تحرير تلقائي', '⚖️ تحكيم ثلاثي', '🚚 شحن آلي OTO/Torod', '⚡ تسليم رقمي فوري'].map(t => (
+   516→      <span key={t} className="text-[11px] font-bold bg-white/10 border border-white/15 text-cream/90 rounded-full px-3 py-1">{t}</span>
+   517→    ))}
+   518→  </div>
+   519→);
+   520→
+   521→export const Sparkline = () => <Sparkles size={14} className="text-gold" />;
+   522→
