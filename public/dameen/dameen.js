@@ -45,7 +45,7 @@ const ZPOOL=['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/271fff8e23ab.
 
 /* ================= المنتجات ================= */
 let PRODUCTS=[
-{id:'p1',store:'s1',name:'عباية كتان «نسمة»',cat:'عبايات',price:349,off:15,stock:12,sold:214,rt:4.9,rc:86,imgs:[IM('1594633312681-425c7b97ccd1'),IM('1515372039744-b8f02a3ae446'),IM('1523381210434-271e8be1f52b')],
+{id:'p1',store:'s1',name:'عباية كتان «نسمة»',cat:'عبايات',price:349,off:15,stock:12,sold:214,rt:4.9,rc:86,imgs:[IM('1594633312681-425c7b97ccd1'),IM('1515372039744-b8f02a3ae446'),IM('1523381210434-271e8be1f52b')],vids:[{src:'https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4',dur:10}],qs:[{q:'لون التطريز على الأكمام؟',t:'opts',o:['ذهبي','فضي','بلا تطريز']},{q:'ملاحظتك على التغليف (تصل مع الطلب)',t:'txt'}],
 desc:'عباية كتان بخامة مصرية مريحة وقَصّة واسعة تناسب يومك كامل. تطريز يدوي دقيق على الأكمام يمنحها لمسة أنيقة بعيدة عن المبالغة، مع سحّاب جانبي مخفي وجيوب داخلية عملية.',
 specs:{'الخامة':'كتان مصري ١٠٠٪','اللون':'كحلي غامق','المقاسات':'S / M / L / XL','العناية':'غسيل بارد يدوي'},ratings:[{by:'0500000001',name:'نورة',stars:5,txt:'الخامة ثقيلة وفخمة والخياطة نظيفة جداً، وصلت قبل الموعد.',at:Date.now()-864e5*5}]},
 {id:'p2',store:'s1',name:'عباية حرير مطرزة «ليان»',cat:'عبايات',price:520,off:0,stock:7,sold:97,rt:4.7,rc:41,imgs:[IM('1515372039744-b8f02a3ae446'),IM('1594633312681-425c7b97ccd1')],
@@ -66,7 +66,7 @@ specs:{'الخامة':'جلد طبيعي مدبوغ','الحجم':'٢٤ × ١٦ 
 {id:'p7',store:'s2',name:'عطر عود ملكي ٥٠ مل',cat:'حقائب وعطور',price:220,off:0,stock:18,sold:167,rt:4.7,rc:44,imgs:[IM('1541643600914-78a08a3003d8')],
 desc:'عطر زيتي مركّز بمزيج العود الكمبودي والورد الطائفي، ثبات يمتد لأكثر من ثماني ساعات. يأتي في علبة خشبية تصلح للإهداء.',
 specs:{'النوع':'زيتي مركّز','الحجم':'٥٠ مل','الثبات':'٨+ ساعات','التغليف':'علبة خشب'},ratings:[]},
-{id:'p8',store:'s3',name:'عسل سدر جبلي ٥٠٠ جم',cat:'عسل وتمور',price:185,off:0,stock:26,sold:412,rt:4.9,rc:154,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/c2626d093c49.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/7bd7eee784a6.jpg'],
+{id:'p8',store:'s3',name:'عسل سدر جبلي ٥٠٠ جم',cat:'عسل وتمور',price:185,off:0,stock:26,sold:412,rt:4.9,rc:154,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/c2626d093c49.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/7bd7eee784a6.jpg'],vids:[{src:'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',dur:7}],
 desc:'عسل سدر جبلي خام غير مبستر، يُقطف من مناحلنا في مرتفعات الجنوب مرة واحدة في السنة. قوامه كثيف وطعمه غني، ويأتي ببرطمان زجاجي محكم الغلق مع شهادة منشأ.',
 specs:{'النوع':'سدر خام','الوزن':'٥٠٠ جم','المصدر':'مرتفعات الجنوب','التخزين':'بعيداً عن الشمس'},ratings:[{by:'0500000001',name:'نورة',stars:5,txt:'طعمه ما يشبه عسل جدي الله يرحمه، أصلي وواضح.',at:Date.now()-864e5*2}]},
 {id:'p9',store:'s3',name:'تمر خلاص فاخر ١ كجم',cat:'عسل وتمور',price:65,off:10,stock:40,sold:380,rt:4.8,rc:96,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/cce49520b1e4.jpeg'],
@@ -84,10 +84,10 @@ specs:{'الخامة':'صوف طبيعي','المقاس':'١٤٠ × ٩٠ سم','
 {id:'p13',store:'s4',name:'حزام سدو منسوج',cat:'سدو وحرف',price:150,off:0,stock:8,sold:73,rt:4.5,rc:17,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/291826012a56.jpg'],
 desc:'حزام منسوج بخيوط السدو الملوّنة مع إبزيم نحاسي مصقول. قطعة تراثية عملية تلبس مع الثوب أو كإكسسوار عصري فوق المعطف.',
 specs:{'العرض':'٤ سم','الإبزيم':'نحاس'},ratings:[]},
-{id:'p14',store:'s4',name:'جبن قريش بلدي ٣٥٠ جم',cat:'ألبان ومخبوزات',ptype:'chilled',price:25,off:0,stock:20,sold:96,rt:4.6,rc:31,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/ed876a628b49.jpg'],
+{id:'p14',store:'s4',name:'جبن قريش بلدي ٣٥٠ جم',cat:'ألبان ومخبوزات',ptype:'chilled',temp:'chilled',price:25,off:0,stock:20,sold:96,rt:4.6,rc:31,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/ed876a628b49.jpg'],
 desc:'جبن قريش بلدي يُحضّر صباح كل يوم من حليب المزرعة، قوامه طري وملحه خفيف. يُسلّم مبرداً في نفس يوم صناعته.',
 specs:{'الوزن':'٣٥٠ جم','الصلاحية':'٥ أيام مبردة'},ratings:[]},
-{id:'p15',store:'s4',name:'خبز تميس بيتي (٤ حبات)',cat:'ألبان ومخبوزات',ptype:'instant',price:12,off:0,stock:35,sold:640,rt:4.8,rc:203,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/8792c1cd454c.jpg'],
+{id:'p15',store:'s4',name:'خبز تميس بيتي (٤ حبات)',cat:'ألبان ومخبوزات',ptype:'instant',temp:'hot',price:12,off:0,stock:35,sold:640,rt:4.8,rc:203,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/8792c1cd454c.jpg'],
 desc:'تميس بيتي يُخبز على التنور الحجري بعجين مخمّر ببطء. يخرج ساخناً مع الزبدة والعسل الأسود، ويُسلّم في أكياس حرارية تحفظ حرارته.',
 specs:{'الكمية':'٤ حبات','التسليم':'ساخن يومياً'},ratings:[]},
 {id:'p16',store:'s5',name:'شمعة ياسمين معطرة',cat:'ديكور',price:65,off:0,stock:28,sold:231,rt:4.5,rc:47,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/11c491ea9778.jpg'],
@@ -108,7 +108,7 @@ specs:{'المقاس':'٤٠ × ٣٠ سم','الإطار':'خشب طبيعي','ا
 {id:'p21',store:'s7',name:'مزهرية فخار مزججة',cat:'ديكور',fragile:true,price:110,off:0,stock:6,sold:12,rt:4.4,rc:5,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/9a3a0638140e.jpg'],
 desc:'مزهرية فخارية مدوّرة على الدولاب ومزججة بطلاء لامع غير متكرر. كل قطعة فريدة بدرجة لونها، من طين الطائف الأحمر.',
 specs:{'الارتفاع':'٢٤ سم','الخامة':'فخار مزجج'},ratings:[]},
-{id:'p22',store:'s8',name:'كيكة العيد بالكريمة (حساسة للحرارة)',cat:'حلويات وأطباق',ptype:'chilled',price:145,off:0,stock:6,sold:89,rt:4.8,rc:21,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/1c2383e2b42c.jpg'],
+{id:'p22',store:'s8',name:'كيكة العيد بالكريمة (حساسة للحرارة)',cat:'حلويات وأطباق',ptype:'chilled',temp:'chilled',price:145,off:0,stock:6,sold:89,rt:4.8,rc:21,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/1c2383e2b42c.jpg'],
 desc:'كيكة إسفنجية بطبقات الكريمة المخفوقة، تُخبز يوم الطلب وتُسلّم مبردة في صندوق حافظ للحرارة. حساسة للحرارة — يُجدول لها النظام تلقائياً توصيلاً مبرداً مع أقرب شركة متعاقدة.',
 specs:{'الحجم':'٨ أشخاص','الحفظ':'مبردة حتى التسليم','التحضير':'يوم الطلب'},ratings:[]},
 {id:'p23',store:'s8',name:'صحن ورق عنب عائلي (طازج)',cat:'حلويات وأطباق',ptype:'instant',price:55,off:0,stock:15,sold:132,rt:4.7,rc:30,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/991d8bb4c001.jpg'],
@@ -117,7 +117,7 @@ specs:{'الحجم':'صحن عائلي','التسليم':'فوري خلال ٤٥
 {id:'p24',store:'s5',name:'تنسيق طاولة ضيافة كاملة (خدمة ميدانية)',cat:'تنسيق مناسبات',ptype:'field',price:850,off:0,stock:4,sold:23,rt:4.9,rc:9,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/e44feac627da.jpg'],
 desc:'خدمة تنسيق ميداني لطاولة المناسبة: خلفية قماش، تنسيق ورد طبيعي، أدوات تقديم وإضاءة هادئة. فريق المتجر يركّب قبل المناسبة ويفكّ بعدها — بلا بوليصة شحن تجاري، ومع حجز موعد مسبق ومشاركة موقع المناسبة.',
 specs:{'الخدمة':'تركيب + فك','المدة':'حتى ٦ ساعات','الحجز':'موعد مسبق إلزامي'},ratings:[]},
-{id:'p25',store:'s9',name:'سماعة ألعاب لاسلكية «صقر برو»',cat:'أجهزة وملحقات',ptype:'std',fragile:true,price:349,off:10,stock:14,sold:167,rt:4.8,rc:38,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/308769bd3796.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/2f9d9fe61140.jpg'],
+{id:'p25',store:'s9',name:'سماعة ألعاب لاسلكية «صقر برو»',cat:'أجهزة وملحقات',ptype:'std',fragile:true,price:349,off:10,stock:14,sold:167,rt:4.8,rc:38,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/308769bd3796.jpg','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/2f9d9fe61140.jpg'],vids:[{src:'https://media.w3.org/2010/05/sintel/trailer.mp4',dur:52}],
 desc:'سماعة ألعاب لاسلكية بتقنية صوت محيطي ٧٫١ افتراضي وبطارية تدوم ٤٠ ساعة متواصلة، مع مايك عازل للضوضاء بإلغاء بيئي وإضاءة RGB قابلة للتخصيص من التطبيق. تُشحن بتغليف حماية خاص لأنها من الأجهزة القابلة للكسر، وتشمل وسادتين احتياطيتين وحمّال مغناطيسي.',
 specs:{'الاتصال':'لاسلكي ٢٫٤ جيجا + بلوتوث ٥٫٣','البطارية':'٤٠ ساعة','الصوت':'محيطي ٧٫١ افتراضي','الوزن':'٣١٢ جم'},ratings:[{by:'0500000001',name:'نورة',stars:5,txt:'خفيفة على الرأس والصوت غامر، وصلت بتغليف حماية ممتاز.',at:Date.now()-864e5*3}]},
 {id:'p26',store:'s9',name:'ذراع تحكم احترافي «نمر»',cat:'أجهزة وملحقات',ptype:'std',price:189,off:0,stock:26,sold:241,rt:4.7,rc:52,imgs:['https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/e861dc8f6341.png','https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/5bd6ab3c9322.png'],
@@ -199,6 +199,50 @@ ptsVal:0.1,freeDlPts:250,aPtsWallet:0,ptsFunding:[],logiWallet:418.6,vat:527.4,
 reqs:[
 {id:'rq-101',kind:'store',own:'هند الشهري',store:'عطور تلال الطائف',email:'hind@talal.sa',phone:'0501122334',cr:'1010456789',iban:'SA0380000000608010167519',sec:'fashion',at:NOW-864e5*2,status:'pending'},
 {id:'rq-102',kind:'admin',own:'خالد المطيري',email:'khaled.m@dameen.sa',phone:'0505544332',role:'مشرف تحكيم ونزاعات',code:'DMN-2026',at:NOW-36e5*30,status:'pending'}]};
+/* ================= 🎬 حدود الوسائط الترويجية و🌟 العدّاد المجتمعي الشفاف ================= */
+let MED={imgs:6,vids:2,secs:60,stores:{}};
+const medOf=s=>Object.assign({},MED,MED.stores[s.id]||{});
+let IMP={total:0,n:0,users:{},stores:{}};
+const IMP_STEP=0.5;
+const durTxt=s=>{s=Math.max(0,Math.round(s||0));return ar(Math.floor(s/60))+':'+ar(String(s%60).padStart(2,'0'))};
+const tempTxt=p=>p.temp==='chilled'?'🧊 مبرد':p.temp==='hot'?'🔥 يُسلَّم ساخناً':'🌡️ عادي';
+function impSeed(){let n=0;const users={},stores={};
+DB.orders.forEach(o=>{const ok=o.groups.filter(g=>g.status!=='refunded');
+if(ok.length){n++;users[o.customer]=r2((users[o.customer]||0)+IMP_STEP);
+ok.forEach(g=>{stores[g.store]=r2((stores[g.store]||0)+IMP_STEP)})}});
+IMP={total:r2(n*IMP_STEP),n,users,stores};}
+function impAdd(o){IMP.total=r2(IMP.total+IMP_STEP);IMP.n++;
+IMP.users[o.customer]=r2((IMP.users[o.customer]||0)+IMP_STEP);
+o.groups.forEach(g=>{if(g.status!=='refunded')IMP.stores[g.store]=r2((IMP.stores[g.store]||0)+IMP_STEP)});
+appSave();}
+function impRefund(o,g){IMP.stores[g.store]=r2(Math.max(0,(IMP.stores[g.store]||0)-IMP_STEP));
+if(o.groups.every(x=>x.status==='refunded')){IMP.total=r2(Math.max(0,IMP.total-IMP_STEP));IMP.n=Math.max(0,IMP.n-1);IMP.users[o.customer]=r2(Math.max(0,(IMP.users[o.customer]||0)-IMP_STEP))}
+appSave();}
+function impAnim(){const el=$('#impnum');if(!el)return;const target=IMP.total||0;const t0=performance.now();
+const stepFn=t=>{const k=Math.min(1,(t-t0)/1400);el.textContent=ard(r2(target*(1-Math.pow(1-k,3))));if(k<1)requestAnimationFrame(stepFn)};
+requestAnimationFrame(stepFn);}
+function impactBlock(){return `<div class="impwrap">
+<span class="implbl">🌟 العدّاد المجتمعي الشفاف — أثر ضمين</span>
+<div class="impnum"><span id="impnum">${ard(IMP.total)}</span><small>ريال سعودي</small></div>
+<div class="improw"><span>من <b>${ar(IMP.n)}</b> عملية شراء ناجحة عبر ضمين</span><span>·</span><span><b>٠٫٥٠ ر.س</b> عن كل عملية</span></div>
+<p>مع كل عملية شراء ناجحة تقتطع ضمين ٠٫٥٠ ريال من <b>حصة أرباح المنصة</b> — لا من جيب العميل ولا من التاجر — وتعتمدها لأعمال الخير. العدّاد يتحدّث لحظياً مع كل عملية، والشفافية كاملة أمام جميع الأطراف.</p>
+</div>`;}
+function impHero(){return `<div class="imphero">
+<div class="spread"><b style="font-size:13.5px">🌟 مساهماتي الخيرية</b><span class="tag wht">من أرباح ضمين — لا من مالك</span></div>
+<div style="display:flex;align-items:baseline;gap:8px;margin-top:6px"><span class="bignum">${ard(IMP.users[SES.phone]||0)}</span><span style="font-size:12px;font-weight:800">ر.س</span></div>
+<div class="hint" style="margin-top:2px">اقتطعت ضمين ٠٫٥٠ ريال من أرباحها مع كل عملية شراء ناجحة لك${(IMP.users[SES.phone]||0)>0?' — مجموع أثرك الخيري باسمك':': أول عملية شراء لك تضيف أول ٠٫٥٠ ر.س ✨'}</div>
+</div>`;}
+function vidFail(v){try{v.style.display='none';v.insertAdjacentHTML('afterend','<div class="verr">🎬 تعذّر تشغيل المقطع من مصدره — تأكد من الرابط أو جرّب مقطعاً آخر</div>')}catch(e){}}
+function playVid(pid,src,dur){const p=P(pid);if(!p)return;const s=ST(p.store);
+openModal(`<div class="mhead"><b>🎬 ${esc(p.name)}</b><button class="x" onclick="closeModal()">✕</button></div>
+<div class="mbody vmodal">
+<video src="${esc(src)}" poster="${p.imgs[0]||''}" controls autoplay playsinline preload="metadata" onerror="vidFail(this)"></video>
+<div class="vinfo"><span class="hint">${dur?('⏱️ المدة '+durTxt(dur)+' · '):''}من متجر <a style="color:${s.color};font-weight:800;cursor:pointer" onclick="closeModal();go('product','${p.id}')">${esc(s.name)}</a> · ${money(eff(p))}</span>
+<button class="btn sm" onclick="closeModal();go('product','${p.id}')">🛒 صفحة المنتج</button></div>
+</div>`,'lg');}
+function pvidsBlock(p){if(!p.vids||!p.vids.length)return '';
+return `<div class="pvids"><b>🎬 مقاطع ترويجية من المتجر</b>
+<div class="vrail">${p.vids.map((v,vi)=>`<div class="mcard" onclick="playVid('${p.id}','${esc(v.src)}',${+v.dur||0})">${imgTag(p.imgs[0],'',p.name)}<span class="play">▶</span><span class="vtag">🎬 ${v.dur?durTxt(v.dur):'مقطع '+ar(vi+1)}</span><div class="mcap"><b>مقطع ${ar(vi+1)}</b><small>${money(eff(p))}</small></div></div>`).join('')}</div></div>`;}
 const ptsVal=()=>DB.ptsVal||0.1;
 const fdPts=()=>DB.freeDlPts||250;
 const P=id=>PRODUCTS.find(p=>p.id===id);
@@ -261,7 +305,7 @@ const cartCount=()=>CART.reduce((a,c)=>a+c.qty,0);
 /* ================= التنقل ================= */
 function go(page,arg){
 if(page==='section'){VIEW={page:'section',sec:arg,cat:'الكل',q:''};LASTSEC=arg}
-else if(page==='store')VIEW={page:'store',store:arg,q:''};
+else if(page==='store')VIEW={page:'store',store:arg,q:'',scat:'الكل'};
 else if(page==='product')VIEW={page:'product',pid:arg,gi:0,q:''};
 else if(page==='search')VIEW={page:'search',q:arg};
 else if(page==='a-hub')VIEW={page:'a-hub'};
@@ -280,6 +324,7 @@ const R={home:pgHome,search:pgSearch,section:pgSection,store:pgStore,product:pgP
 'a-hub':pgAHub,'a-stores':pgAStoresPage,'a-disputes':pgADisputes,'a-cats':pgACats,'a-rev':pgARev};
 app.innerHTML=(R[VIEW.page]||pgHome)();
 renderTop();renderFab();appSave();
+if(VIEW.page==='home')setTimeout(impAnim,60);
 }
 function renderFab(){
 const f=$('#fab');const show=!SES&&cartCount()>0;
@@ -304,7 +349,7 @@ const sb=VIEW.page==='home'?'':sbox;
 const brand=`<div class="brand" onclick="go('home')"><div class="lg">ض</div><div class="bt"><b>ضمين</b><small>تسوّق مضمون بثقة</small></div></div>`;
 let h='';
 if(!SES){ /* زائر: الرئيسية نظيفة بلا بحث — البحث يظهر داخل الأقسام والمتاجر */
-h=`<div class="topin">${brand}${sb}<button class="btn" onclick="openAuth()">تسجيل الدخول</button>${instChip()}</div>`;
+h=`<div class="topin">${brand}${sb}<button class="btn" onclick="openAuth()">تسجيل الدخول</button></div>`;
 }else if(SES.role==='merchant'){
 const st=ST(SES.store);
 h=`<div class="topin">${brand}${sb}<nav class="nav">
@@ -602,6 +647,8 @@ return `
 <div class="trust"><span class="tchip"><i>🔒</i> خزنة ضمان مستقلة</span><span class="tchip"><i>⏱️</i> تحرير تلقائي بانتهاء نافذة الحماية</span><span class="tchip"><i>⚖️</i> تحكيم ثلاثي الأطراف</span><span class="tchip"><i>🚚</i> شحن آلي عبر OTO وTorod</span><span class="tchip"><i>💳</i> مدى وApple Pay وتقسيط تابي وتمارا</span><span class="tchip"><i>⚡</i> تسليم رقمي فوري</span></div>
 </div>
 
+${impactBlock()}
+
 <div class="bubzone"><div class="lbl"><span class="dot"></span> يتجدّد الآن بين متاجر ضمين — انقر أي منتج لتفاصيله</div>
 <div class="bubwrap"><div class="bubtrack">${track}${track}</div></div></div>
 
@@ -682,7 +729,10 @@ function pgStore(){
 const s=ST(VIEW.store);
 if(!s)return pgHome();
 const sec=SEC(s.sec);
-const ps=PRODUCTS.filter(p=>p.store===s.id);
+const all=PRODUCTS.filter(p=>p.store===s.id);
+const cats=['الكل',...[...new Set(all.map(p=>p.cat))]];
+const scat=VIEW.scat||'الكل';
+const ps=scat==='الكل'?all:all.filter(p=>p.cat===scat);
 return `<div class="pghead"><button class="backb" onclick="go('section','${sec.id}')">→</button><h1>${esc(s.name)}</h1><span class="tag" style="background:${s.color}18;color:${s.color}">${sec.name}</span></div>
 <div class="storeban" style="--c:${s.color};${s.cover?`background-image:linear-gradient(100deg,${s.color}F2,${s.color}C4),url('${s.cover}');background-size:cover;background-position:center`:''}">
 <div class="lg">${s.logo?`<img src="${s.logo}" style="width:100%;height:100%;object-fit:cover">`:s.name[0]}</div>
@@ -691,8 +741,26 @@ return `<div class="pghead"><button class="backb" onclick="go('section','${sec.i
 <span>📍 ${esc(s.city||'—')}</span><span>·</span><span>★ ${ard(s.rt)} تقييم المتجر</span><span>·</span><span>${ars(s.sales)} طلباً مكتمل البيع</span><span>·</span><span>🛡️ نافذة حماية ${sec.win}</span></div></div>
 ${s.open?'':'<span class="tag wht">مغلق مؤقتاً</span>'}
 </div>
-<div class="secthead"><h2>منتجات المتجر (${ars(ps.length)})</h2><div class="ln"></div></div>
-${ps.length?`<div class="pgrid">${ps.map(pcard).join('')}</div>`:`<div class="empty"><div class="em">🏪</div><b>لا منتجات معروضة الآن</b><span>المتجر يجهّز مفاجآته</span></div>`}`;
+${storeMedia(s)}
+<div class="secthead"><h2>🗂️ تصنيفات المتجر (${ars(cats.length-1)})</h2><div class="ln"></div></div>
+<div class="chiprow">${cats.map(c=>`<button class="chip ${scat===c?'on':''}" style="--acc:${s.color}" onclick="VIEW.scat='${esc(c)}';render()">${esc(c)}</button>`).join('')}</div>
+<div class="secthead"><h2>${scat==='الكل'?'منتجات المتجر':'منتجات «'+esc(scat)+'»'} (${ars(ps.length)})</h2><div class="ln"></div></div>
+${ps.length?`<div class="pgrid">${ps.map(pcard).join('')}</div>`:`<div class="empty"><div class="em">🧺</div><b>لا منتجات في هذا التصنيف حالياً</b><span>جرّب تصنيفاً آخر من تصنيفات المتجر</span></div>`}`;
+}
+/* معرض الوسائط الترويجية للمتجر — صور ومقاطع منتجاته ضمن حدود تحددها الإدارة */
+function storeMedia(s){
+const cards=[];
+PRODUCTS.filter(p=>p.store===s.id).forEach(p=>{
+(p.vids||[]).forEach(v=>cards.push({p,type:'v',src:v.src,dur:+v.dur||0}));
+(p.imgs||[]).slice(1).forEach((im,i)=>cards.push({p,type:'i',im,i}));
+});
+if(!cards.length)return '';
+return `<div class="mshow">
+<div class="hrow"><h3>🎬 معرض ${esc(s.name)} الترويجي</h3><span class="hint">${ar(cards.length)} وسائط من منتجات المتجر — انقر أي وسائط</span></div>
+<div class="mrail">${cards.slice(0,16).map(c=>c.type==='v'
+?`<div class="mcard" onclick="playVid('${c.p.id}','${esc(c.src)}',${c.dur})">${imgTag(c.p.imgs[0],'',c.p.name)}<span class="play">▶</span><span class="vtag">🎬 ${c.dur?durTxt(c.dur):'مقطع'}</span><div class="mcap"><b>${esc(c.p.name)}</b><small>${money(eff(c.p))}</small></div></div>`
+:`<div class="mcard" onclick="go('product','${c.p.id}')">${imgTag(c.im,'',c.p.name)}<div class="mcap"><b>${esc(c.p.name)}</b><small>${money(eff(c.p))} · صورة ${ar(c.i+2)}</small></div></div>`
+).join('')}</div></div>`;
 }
 /* ================= صفحة المنتج ================= */
 let QTY=1;
@@ -718,6 +786,7 @@ return `<div class="pghead"><button class="backb" onclick="go('store','${s.id}')
 <div class="pgal">
 <div class="main">${imgTag(gal[VIEW.gi||0],'','' )}</div>
 ${p.imgs.length>1?`<div class="thumbs">${p.imgs.map((im,i)=>`<img src="${im}" class="${i===(VIEW.gi||0)?'on':''}" onclick="VIEW.gi=${i};render()" onerror="this.onerror=null;this.src='https://picsum.photos/seed/d${hash(im)%997}/200/200'">`).join('')}</div>`:''}
+${pvidsBlock(p)}
 <div class="gstrip"><span class="gi">🛡️</span><div><b>حماية ضمين مفعّلة على هذا المنتج</b><br>مبلغك يُحجز في خزنة مستقلة، ونافذة فحص القسم «${sec.name}» هي <b>${sec.win}</b> بعد الاستلام — للطلب أو الاسترجاع قبل التحرير.</div></div>
 </div>
 <div>
@@ -727,7 +796,7 @@ ${p.imgs.length>1?`<div class="thumbs">${p.imgs.map((im,i)=>`<img src="${im}" cl
 </div>
 <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:4px 0 10px">
 ${STARS(p.rt)} <b style="font-size:12.5px">${ard(p.rt)}</b><span class="hint">(${ar(p.rc)} تقييم)</span>
-<span class="hint">· بيع ${ar(p.sold)} مرة</span><span class="hint">· ${p.stock>0?'متوفر ('+ar(p.stock)+')':'نفدت الكمية'}</span>
+<span class="hint">· بيع ${ar(p.sold)} مرة</span><span class="hint">· ${p.stock>0?'متوفر ('+ar(p.stock)+')':'نفدت الكمية'}</span>${p.fragile?`<span class="hint" style="color:#B3541E;font-weight:800">· ⚠️ قابل للكسر</span>`:''}${p.temp&&p.temp!=='std'?`<span class="hint" style="font-weight:800">· ${tempTxt(p)}</span>`:''}
 </div>
 <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:5px">
 <span class="fx" style="font-size:26px;font-weight:800;color:var(--grn)">${money(e)}</span>
@@ -1076,7 +1145,7 @@ return `<div class="citem" onclick="go('product','${p.id}')">
 <div class="im">${imgTag(p.imgs[0],'','')}</div>
 <div class="info">
 <b style="font-size:13px">${esc(p.name)}</b>
-<div class="hint">${esc(s.name)}${p.off?` · <span style="color:var(--red);font-weight:700">خصم ${ar(p.off)}٪</span>`:''}${PTI(p)?` · <span style="font-weight:700">${PTI(p)}</span>`:''}${p.giftOk?' · 🎁 قابل للإهداء':''}${p.fragile?' · <span style="color:#B3541E;font-weight:700">⚠️ قابل للكسر</span>':''}${p.customOk?' · ✏️ قابل للتعديل':''}${x.ans&&x.ans.length?' · <span style="color:var(--grn);font-weight:800">❓ أسئلة مجابة</span>':''}</div>
+<div class="hint">${esc(s.name)}${p.off?` · <span style="color:var(--red);font-weight:700">خصم ${ar(p.off)}٪</span>`:''}${PTI(p)?` · <span style="font-weight:700">${PTI(p)}</span>`:''}${p.giftOk?' · 🎁 قابل للإهداء':''}${p.fragile?' · <span style="color:#B3541E;font-weight:700">⚠️ قابل للكسر</span>':''}${p.customOk?' · ✏️ قابل للتعديل':''}${x.ans&&x.ans.length?' · <span style="color:var(--grn);font-weight:800">❓ '+x.ans.map(y=>esc(y.q)+': '+esc(y.a)).join(' · ')+'</span>':''}${p.temp&&p.temp!=='std'?' · <b>'+tempTxt(p)+'</b>':''}</div>
 <div style="display:flex;gap:9px;align-items:center;margin-top:5px">
 <div class="qty" onclick="event.stopPropagation()">
 <button onclick="cartQty('${p.id}',1)">＋</button><b>${ar(x.qty)}</b><button onclick="cartQty('${p.id}',-1)">−</button>
@@ -1228,6 +1297,7 @@ return `<div style="text-align:center;padding:8px 4px">
 <div class="bigok">✅</div>
 <b class="fx" style="font-size:17px">تم حجز مبلغك في خزنة ضمين!</b>
 <p class="hint mt" style="line-height:1.9">رقم طلبك <b style="color:var(--grn)">#${ar(CK.oid)}</b><br>أُرسلت طلباتك إلى ${ar(CK.gcount)} متجر — كل شحنة ببوليصة مستقلة.<br>📄 أُصدرت ${ar(CK.wb||0)} بوليصة شحن آلية وأُرسلت طلبات الاستلام للمناديب · فُتحت محادثة الطلب مع كل متجر (بلا أرقام ولا روابط).${og&&og.groups.some(g=>g.digi)?'<br>⚡ مشترياتك الرقمية سُلّمت فوراً إلى «مكتبتك الرقمية».':''}<br>💡 للعميل: يمكنك فتح نزاع خلال نافذة الحماية قبل التحرير التلقائي.</p>
+<div class="impdone">🌟 <b>شكراً لك!</b> باسم طلبك هذا اقتطعت ضمين <b>٠٫٥٠ ر.س من أرباحها</b> — لا من مبلغك ولا من التاجر — واعتمدتها لأعمال الخير.<br><small>إجمالي مساهماتك الخيرية عبر طلباتك بلغ <b>${money(IMP.users[SES.phone]||0)}</b> — تابعها في «حسابي» 🌱</small></div>
 ${g0?`<button class="btn wide mt" onclick="closeModal();openOChat(${CK.oid},${CK.chatG})">💬 دردشة التنسيق/التعديلات مع ${esc(ST(g0.store).name)}</button>`:''}
 ${og&&og.groups.some(g=>g.digi)?`<button class="btn wide mt" onclick="closeModal();go('dlib')">📚 مكتبتي الرقمية — الكود/الملف جاهز</button>`:''}
 <button class="btn wide mt" onclick="closeModal();go('orders')">📦 تتبع طلبي</button>
@@ -1355,6 +1425,7 @@ if(CPN&&DB.coupons[CPN])DB.coupons[CPN].uses=(DB.coupons[CPN].uses||0)+1;
 if(c.fd){u.pts=(u.pts||0)-c.fdN;u.ptsLog.unshift({t:'استبدال نقاط بتوصيل مجاني في الطلب #'+(OID-1),v:-c.fdN,at:Date.now()})}
 if(c.ptsUse){u.pts=(u.pts||0)-c.ptsUse;u.ptsLog.unshift({t:'استبدال نقاط في الطلب #'+(OID-1),v:-c.ptsUse,at:Date.now()})}
 DB.orders.unshift(o);
+impAdd(o);
 let chatG=-1;
 o.groups.forEach((g,gi)=>{const own=ST(g.store).owner;
 if(own&&USERS[own])pushNotif(own,g.digi?'⚡':'📦','طلب جديد'+(g.digi?' رقمي — سُلّم فوراً للعميل':' بانتظار قبولك'),'عميل جديد أرسل طلباً بقيمة '+money(g.sub),['m-orders']);
@@ -1404,6 +1475,7 @@ ${st==='disputed'?`<span class="tag red">⚖️ قيد التحكيم</span>`:st
 </div>
 <div class="oitems">${g.items.map(it=>{const p=P(it.pid);return `<span class="oitag" onclick="go('product','${it.pid}')">${p?imgTag(p.imgs[0],'',''):''} ${ar(it.qty)}× ${p?esc(p.name):'—'}</span>`}).join('')}</div>
 ${g.logi?logiStrip(o,g):''}
+${shipBlock(o,g,gi)}
 ${g.booking?`<div class="hint" style="margin-top:7px;background:#A45A3A12;border:1px dashed #A45A3A55;border-radius:11px;padding:8px 11px;line-height:1.8">🎪 <b>حجز مناسبتك:</b> ${esc(g.booking.date)} · التركيب ${esc(g.booking.setup)}${g.booking.tear?' · الفك '+esc(g.booking.tear):''}${g.booking.dl==='pickup'?' · 🚶 استلام من مقر المتجر بلا توصيل':' · 🚚 فريق المتجر يوصل ويركّب'}${g.booking.geo?' · 📍 موقع المناسبة محدد لفريق التنسيق':''}${g.booking.note?' · '+esc(g.booking.note):''}</div>`:''}
 ${g.gift?`<div class="giftrow">🎁 إهداء إلى: <b>${esc(g.gift.name||'مستلم')}</b> · ${ar(g.gift.phone)} · ${esc(g.gift.city||'—')} — صدرت البوليصة باسم المستلم فتوصله الهدية مباشرة</div>`:''}
 ${g.digi?`<div class="giftrow" style="background:#50489E12;border-color:#50489E66">⚡ طلب رقمي — سُلّم فوراً إلى <a style="color:#50489E;font-weight:800;cursor:pointer" onclick="go('dlib')">مكتبتك الرقمية</a> والكود/الملف جاهز للعرض والتحميل</div>`:''}
@@ -1437,6 +1509,53 @@ if(g.chat&&!g.chatArchived&&!g.chatDeleted){g.chatArchived=true;g.chat.push({r:'
 pushNotif(o.customer,'🛡️','بدأت نافذة الحماية','افحص طلبك #'+ar(oid)+' — لديك '+secOf(g.store).win,['orders']);
 const own=ST(g.store).owner;if(own)pushNotif(own,'📦','أكّد العميل الاستلام','بدأت نافذة حماية طلب #'+ar(oid)+' — يُحرر المبلغ تلقائياً بانتهائها',['m-orders']);
 toast('بدأت نافذة الفحص — '+secOf(g.store).win+' 🛡️','ok');render();
+}
+
+/* ===== 📋 بيانات الشحنة — تُسلَّم لشركة الشحن ===== */
+function shipBlock(o,g,gi){
+if(!g.logi||!g.logi.mode||g.logi.mode==='field'||g.logi.mode==='digital')return '';
+const cust=USERS[o.customer]||{};
+const its=g.items.map(it=>({p:P(it.pid),qty:it.qty})).filter(x=>x.p);
+const frag=its.filter(x=>x.p.fragile).map(x=>esc(x.p.name));
+const cold=its.filter(x=>x.p.ptype==='chilled'||x.p.temp==='chilled').map(x=>esc(x.p.name));
+const hot=its.filter(x=>x.p.ptype==='instant'||x.p.temp==='hot').map(x=>esc(x.p.name));
+const sans=(g.ans||[]).map(x=>esc(x.q)+': '+esc(x.a)).join(' · ');
+const pans=(g.pans||[]).map(x=>esc(x.pn)+' — '+x.ans.map(y=>esc(y.q)+': '+esc(y.a)).join('، ')).join(' · ');
+return `<div class="shipblk">
+<div class="spread" style="flex-wrap:wrap"><b style="font-size:12px">📋 بيانات الشحنة — لشركة الشحن (${esc(g.logi.courier)})</b>
+<button class="btn gray xs" onclick="shipCopy(${o.id},${gi})">📋 نسخ للشحن</button></div>
+<div class="srow2"><span>المستلم</span><b>${esc(cust.name||'عميل ضمين')}${cust.phone?' · '+ar(o.customer):''}</b></div>
+<div class="srow2"><span>العنوان</span><b>${esc(o.addr||'—')}</b></div>
+<div class="srow2"><span>المسار</span><b>من ${esc(ST(g.store).city||'—')} إلى ${esc(o.city||'—')}${g.logi.wb?' · بوليصة '+ar(g.logi.wb):''}</b></div>
+<div class="srow2"><span>الطرود</span><b>${ar(g.items.reduce((a,x)=>a+x.qty,0))} قطعة · ${ar(its.length)} منتج</b></div>
+${frag.length?`<div class="srow2"><span>تعليمات التداول</span><b style="color:#B3541E">⚠️ قابل للكسر: ${frag.join('، ')} — تغليف حماية إلزامي</b></div>`:''}
+${cold.length?`<div class="srow2"><span>سلسلة التبريد</span><b style="color:#2E6B8A">🧊 مبرد: ${cold.join('، ')} — نقل مبرد إلزامي</b></div>`:''}
+${hot.length?`<div class="srow2"><span>التسليم الحار</span><b style="color:#A45A3A">🔥 يُسلَّم ساخناً: ${hot.join('، ')} — حافظات حرارية</b></div>`:''}
+${sans?`<div class="srow2"><span>إجابات أسئلة المتجر</span><b>${sans}</b></div>`:''}
+${pans?`<div class="srow2"><span>اختيارات العميل للمنتجات</span><b>${pans}</b></div>`:''}
+</div>`;
+}
+function shipCopy(oid,gi){
+const o=DB.orders.find(x=>x.id===oid);if(!o)return;const g=o.groups[gi];if(!g||!g.logi)return;
+const cust=USERS[o.customer]||{};
+const its=g.items.map(it=>({p:P(it.pid),qty:it.qty})).filter(x=>x.p);
+const frag=its.filter(x=>x.p.fragile).map(x=>x.p.name);
+const cold=its.filter(x=>x.p.ptype==='chilled'||x.p.temp==='chilled').map(x=>x.p.name);
+const hot=its.filter(x=>x.p.ptype==='instant'||x.p.temp==='hot').map(x=>x.p.name);
+const txt=['بيانات شحنة ضمين — طلب #'+o.id,
+'شركة الشحن: '+(g.logi.courier||'—')+(g.logi.wb?' · بوليصة '+g.logi.wb:''),
+'المستلم: '+(cust.name||'عميل ضمين')+' · '+o.customer,
+'العنوان: '+(o.addr||'—'),
+'المسار: من '+(ST(g.store).city||'—')+' إلى '+(o.city||'—'),
+'المحتويات: '+its.map(x=>x.qty+'× '+x.p.name).join('، '),
+frag.length?'⚠️ قابل للكسر: '+frag.join('، ')+' — تغليف حماية إلزامي':'',
+cold.length?'🧊 مبرد: '+cold.join('، ')+' — نقل مبرد إلزامي':'',
+hot.length?'🔥 يُسلَّم ساخناً: '+hot.join('، ')+' — حافظات حرارية':'',
+(g.ans||[]).map(x=>x.q+': '+x.a).join(' | '),
+(g.pans||[]).map(x=>x.pn+' — '+x.ans.map(y=>y.q+': '+y.a).join('، ')).join(' | ')
+].filter(Boolean).join('\n');
+const done=()=>toast('نُسخت بيانات الشحنة لتسليمها لشركة الشحن ✓','ok');
+if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(done,done);else done();
 }
 /* ===== شريط البوليصة والتتبع بالحالات ===== */
 function logiStrip(o,g){
@@ -1585,6 +1704,7 @@ const back=r2(g.sub+((g.ship&&g.ship.charge)||(g.dl||0)));
 const u=USERS[o.customer];if(u){u.bal=r2((u.bal||0)+back)}
 pushNotif(o.customer,'💸','استُرجع مبلغ طلبك','أُعيد '+money(back)+' إلى محفظة ضمين الخاصة بك (المنتجات + الشحن)',['account']);
 const own=ST(g.store).owner;if(own)pushNotif(own,'↩️','استرجاع مبلغ شحنة','حكم التحكيم لطلب #'+ar(o.id)+': استرجاع كامل المبلغ للعميل',['m-disputes']);
+impRefund(o,g);
 }
 setInterval(()=>{
 let changed=false;
@@ -1827,6 +1947,7 @@ return `<div class="pghead"><h1>👤 حسابي وإعداداتي</h1></div>
 ${(u.ptsLog&&u.ptsLog.length)?`<div class="hr" style="background:#ffffff30"></div><b style="font-size:11px">سجل النقاط</b>
 ${u.ptsLog.slice(0,4).map(l=>`<div class="spread" style="font-size:10.5px;padding:2.5px 0"><span style="opacity:.92">${esc(l.t)}</span><b>${l.v>0?'+':''}${ar(l.v)}</b></div>`).join('')}`:''}
 </div>
+${impHero()}
 <div class="qtiles">
 <div class="qtile" onclick="go('orders')"><i>🧾</i><b>طلباتي</b><span>${ar(ordersN)} طلبات</span></div>
 <div class="qtile" onclick="go('disputes')"><i>⚖️</i><b>نزاعاتي</b><span>${ar(disOpen)} جارٍ</span></div>
@@ -1956,6 +2077,7 @@ return `<div class="pghead"><h1>📊 لوحة تحكم ${esc(s.name)}</h1><span 
 <div class="kpi nvy"><i>📦</i><b>${ar(active.length)}</b><span>طلبات نشطة الآن</span></div>
 <div class="kpi"><i>🧺</i><b>${ar(PRODUCTS.filter(p=>p.store===s.id).length)}</b><span>منتجات معروضة</span></div>
 <div class="kpi grn"><i>⭐</i><b>${ard(s.rt)}</b><span>تقييم المتجر (${ar(s.sales)} عملية)</span></div>
+<div class="kpi" style="cursor:pointer" onclick="toast('تقتطع ضمين ٠٫٥٠ ر.س من أرباحها مع كل عملية شراء ناجحة من متجرك — لا من العميل ولا منك','amb')"><i>🌟</i><b>${money(IMP.stores[s.id]||0)}</b><span>أثر مجتمعي من مبيعات متجرك</span></div>
 </div>
 <div class="grid2 mt">
 <div class="acard"><h3>🔥 الأكثر مبيعاً لديك</h3>
@@ -1990,7 +2112,7 @@ ${ps.map(p=>{const e=eff(p);return `<div class="mpcard" style="--acc:${s.color}"
 <span class="mpstat">📦 مخزون ${ar(p.stock)}</span>
 <span class="mpstat">🛒 بيع ${ar(p.sold)}</span>
 <span class="mpstat" style="color:var(--amb2)">★ ${ard(p.rt)}</span>
-${p.ptype==='chilled'?'<span class="mpstat" style="color:#2E6B8A">🧊 مبرد</span>':p.ptype==='instant'?'<span class="mpstat" style="color:var(--amb2)">🛵 فوري</span>':p.ptype==='field'?'<span class="mpstat" style="color:#A45A3A">🎪 ميداني</span>':p.ptype==='digital'?'<span class="mpstat" style="color:#50489E">⚡ رقمي فوري</span>':p.ptype==='ship'?'<span class="mpstat">📦 شحن</span>':''}${p.fragile?'<span class="mpstat" style="color:#B3541E">⚠️ قابل للكسر</span>':''}${p.customOk?'<span class="mpstat" style="color:#A45A3A">✏️ تعديلات</span>':''}${p.giftOk?'<span class="mpstat" style="color:var(--red)">🎁 إهداء</span>':''}
+${p.ptype==='chilled'?'<span class="mpstat" style="color:#2E6B8A">🧊 مبرد</span>':p.ptype==='instant'?'<span class="mpstat" style="color:var(--amb2)">🛵 فوري</span>':p.ptype==='field'?'<span class="mpstat" style="color:#A45A3A">🎪 ميداني</span>':p.ptype==='digital'?'<span class="mpstat" style="color:#50489E">⚡ رقمي فوري</span>':p.ptype==='ship'?'<span class="mpstat">📦 شحن</span>':''}${p.fragile?'<span class="mpstat" style="color:#B3541E">⚠️ قابل للكسر</span>':''}${p.temp==='chilled'?'<span class="mpstat" style="color:#2E6B8A">🧊 مبرد</span>':p.temp==='hot'?'<span class="mpstat" style="color:#A45A3A">🔥 ساخن</span>':''}${p.vids&&p.vids.length?'<span class="mpstat" style="color:#50489E">🎬 '+ar(p.vids.length)+'</span>':''}${p.customOk?'<span class="mpstat" style="color:#A45A3A">✏️ تعديلات</span>':''}${p.giftOk?'<span class="mpstat" style="color:var(--red)">🎁 إهداء</span>':''}
 </div>
 <div class="mpacts">
 <button class="btn soft xs" onclick="mOfferForm('${p.id}')">🏷️ عروض</button>
@@ -2006,6 +2128,9 @@ const s=myStore(),sec=SEC(s.sec);
 const p=pid?P(pid):null;
 MPQ=p&&p.qs?JSON.parse(JSON.stringify(p.qs)):[];
 MPQOPEN=false;
+MIMGS=p&&p.imgs?p.imgs.slice():[];
+MVIDS=p&&p.vids?JSON.parse(JSON.stringify(p.vids)):[];
+const med=medOf(s);
 openModal(`<div class="mhead"><b>${p?'تعديل منتج':'منتج جديد'}</b><button class="x" onclick="closeModal()">✕</button></div>
 <div class="mbody">
 <div class="fld"><label>اسم المنتج</label><input class="inp" id="mp-nm" value="${p?esc(p.name):''}" placeholder="مثال: عباية كتان مطرزة"></div>
@@ -2051,14 +2176,34 @@ ${sec.id==='gaming'?`<div class="fld mt"><label>🎮 طبيعة المنتج و�
 <div id="mpqbox">${mpqHTML()}</div>
 <button class="btn soft sm mt" onclick="mAddQ2()">＋ إضافة سؤال للمنتج</button>
 </div>
-<div class="mt" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-<button class="btn soft sm" onclick="mPickImg()">📷 رفع صورة من جهازي</button>
-<button class="btn gray sm" onclick="mAutoImg()">🎲 صورة تلقائية</button>
-<img id="mp-prev" src="${p?p.imgs[0]:''}" style="width:54px;height:54px;border-radius:12px;object-fit:cover;border:1px solid var(--line);${p?'':'display:none'}">
+<div class="fgrid mt">
+<div class="fld"><label>⚠️ هل المنتج قابل للكسر؟</label>
+<select class="inp" id="mp-frag2">
+<option value="0" ${!p||!p.fragile?'selected':''}>لا — تغليف عادي</option>
+<option value="1" ${p&&p.fragile?'selected':''}>نعم — قابل للكسر: علامة آلية لشركة الشحن + تغليف حماية ورسوم ١٥ ر.س ضمن الشحن</option>
+</select></div>
+<div class="fld"><label>🌡️ الحالة الحرارية للمنتج</label>
+<select class="inp" id="mp-temp">
+<option value="std" ${!p||!p.temp||p.temp==='std'?'selected':''}>🌡️ عادي — بلا تحكم حراري</option>
+<option value="chilled" ${p&&p.temp==='chilled'?'selected':''}>🧊 مبرد — سلسلة تبريد إلزامية للتوصيل</option>
+<option value="hot" ${p&&p.temp==='hot'?'selected':''}>🔥 ساخن — يُجهَّز ويُسلَّم ساخناً بحافظات حرارية</option>
+</select></div>
+</div>
+<div class="acard mt" style="padding:13px;background:#1D443206">
+<b style="font-size:12.5px">🖼️🎬 الوسائط الترويجية للمنتج</b>
+<p class="hint" style="margin-top:3px">تظهر للعملاء في معرض صفحة متجرك وفي صفحة المنتج — حدودك المحددة من الإدارة: حتى <b>${ar(med.imgs)} صور</b> و<b>${ar(med.vids)} ${med.vids===1?'مقطع':'مقاطع'}</b> بمدة أقصاها <b>${ar(med.secs)} ثانية</b> للمقطع.</p>
+<b style="font-size:11.5px;display:block;margin-top:10px">🖼️ صور المنتج (${MIMGS.length}/${ar(med.imgs)}) — الأولى هي الغلاف</b>
+<div id="mpimgs">${mpImgsHTML(med)}</div>
+<div class="mt" style="display:flex;gap:7px;flex-wrap:wrap">
+<button class="btn soft xs" onclick="mImgPick()">📷 رفع صورة من جهازي</button>
+<button class="btn gray xs" onclick="mImgAuto()">🎲 صورة تلقائية</button>
+</div>
+<b style="font-size:11.5px;display:block;margin-top:13px">🎬 مقاطع ترويجية (${MVIDS.length}/${ar(med.vids)})</b>
+<div id="mpvids">${mpVidsHTML(med)}</div>
+${med.vids>0?`<div class="hint" style="margin-top:8px">أضف رابط مقطع (MP4 مباشر) ثم اضغط «كشف المدة» — يُرفض المقطع إن تجاوز مدته ${ar(med.secs)} ثانية.</div>`:'<div class="hint" style="margin-top:8px">الإدارة لم تفعّل المقاطع الترويجية لمتجرك حالياً</div>'}
 </div>
 <button class="btn wide mt" onclick="mSaveProd('${pid||''}')">${p?'حفظ التعديلات':'إضافة المنتج'}</button>
 </div>`,'lg');
-MIMG=p?p.imgs[0]:'';
 ptsCostPrev();
 mPtypePrev();
 }
@@ -2073,13 +2218,66 @@ if(!np&&!old){el.innerHTML='أدخل نقاطاً (١ فأكثر) — إجبار
 if(d===0){el.innerHTML='لا تغيير على تمويل النقاط ('+ar(np)+' نقطة للعميل)';return}
 el.innerHTML=d>0?`تُخصم من محفظتك <b style="color:var(--amb2)">− ${money(d)}</b> وتُحوَّل لمحفظة الإدارة (${ar(np-old)} نقطة × ${money(pv)})`:`يُسترجع لمحفظتك <b style="color:var(--grn)">+ ${money(-d)}</b> (${ar(old-np)} نقطة × ${money(pv)})`;
 }
-let MIMG='';
-function mPickImg(){
+let MIMGS=[],MVIDS=[];
+function mpImgsHTML(med){
+if(!MIMGS.length)return '<div class="hint" style="padding:3px 0 5px">لا صور بعد — أول صورة ترفعها تكون الغلاف الرئيسي للمنتج.</div>';
+return `<div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:6px">${MIMGS.map((im,i)=>`<div class="mpthumb">${i===0?'<span class="cover">غلاف</span>':''}<img src="${im}" onerror="this.onerror=null;this.src='https://picsum.photos/seed/dmg${i}/200/200'"><button onclick="mImgDel(${i})" title="حذف">✕</button></div>`).join('')}</div>`;
+}
+function mpImgsRefresh(med){const el=$('#mpimgs');if(el)el.innerHTML=mpImgsHTML(med||medOf(myStore()))}
+function mImgDel(i){MIMGS.splice(i,1);mpImgsRefresh(medOf(myStore()))}
+function mImgPick(){
 $('#fup').onchange=e=>{const f=e.target.files[0];if(!f)return;
-const rd=new FileReader();rd.onload=()=>{MIMG=rd.result;$('#fup').value='';
-const pv=$('#mp-prev');pv.src=MIMG;pv.style.display='block';toast('جهزت الصورة ✓','ok')};rd.readAsDataURL(f)};
+const rd=new FileReader();rd.onload=()=>{$('#fup').value='';
+const med=medOf(myStore());
+if(MIMGS.length>=med.imgs){toast('بلغت حد '+ar(med.imgs)+' صور المحدد من الإدارة','err');return}
+MIMGS.push(rd.result);mpImgsRefresh(med);toast('أُضيفت الصورة ('+ar(MIMGS.length)+'/'+ar(med.imgs)+') ✓','ok')};rd.readAsDataURL(f)};
 $('#fup').click();}
-function mAutoImg(){MIMG=ZPOOL[Math.floor(Math.random()*ZPOOL.length)];const pv=$('#mp-prev');pv.src=MIMG;pv.style.display='block';toast('اختيرت صورة تلقائية','ok')}
+function mImgAuto(){const med=medOf(myStore());
+if(MIMGS.length>=med.imgs){toast('بلغت حد '+ar(med.imgs)+' صور المحدد من الإدارة','err');return}
+MIMGS.push(ZPOOL[Math.floor(Math.random()*ZPOOL.length)]);mpImgsRefresh(med);toast('أُضيفت صورة تلقائية ('+ar(MIMGS.length)+'/'+ar(med.imgs)+') ✓','ok')}
+function mpVidsHTML(med){
+let h='';
+if(MVIDS.length)h+=`<div class="rows" style="margin-top:6px">${MVIDS.map((v,i)=>`<div class="row" style="flex-wrap:wrap;gap:7px">
+<span style="font-size:16px">🎬</span>
+<div style="flex:1;min-width:150px"><b style="font-size:11.5px;word-break:break-all">${esc(String(v.src).slice(0,48))}${String(v.src).length>48?'…':''}</b>
+<div class="hint">المدة: ${v.dur?('<b style="color:'+(v.bad?'var(--red)':'var(--grn)')+'">'+durTxt(v.dur)+'</b>'+(v.bad?' — تتجاوز الحد!':'')):'غير محددة — اضغط «كشف المدة»'} · الحد ${ar(med.secs)} ث</div></div>
+<button class="btn gray xs" onclick="mVidProbe(${i})">⏱️ كشف المدة</button>
+<button class="btn red xs" onclick="mVidDel(${i})">🗑 حذف</button>
+</div>`).join('')}</div>`;
+else h+='<div class="hint" style="padding:3px 0 5px">لا مقاطع بعد — أضف رابط مقطع MP4 مباشر بالأسفل.</div>';
+if(MVIDS.length<med.vids)h+=`<div class="mt" style="display:flex;gap:7px;flex-wrap:wrap"><input class="inp" id="mv-url" style="flex:1;min-width:200px;font-size:12px" placeholder="رابط المقطع (MP4 مباشر — https://…)" onkeydown="if(event.key==='Enter')mVidAdd()"><button class="btn sm" onclick="mVidAdd()">＋ إضافة المقطع</button></div>`;
+return h;
+}
+function mpVidsRefresh(med){const el=$('#mpvids');if(el)el.innerHTML=mpVidsHTML(med||medOf(myStore()))}
+function mVidDel(i){MVIDS.splice(i,1);mpVidsRefresh(medOf(myStore()))}
+function mVidAdd(){
+const med=medOf(myStore());
+if(MVIDS.length>=med.vids){toast('بلغت حد '+ar(med.vids)+' مقاطع المحدد من الإدارة','err');return}
+const src=($('#mv-url')||{}).value||'';
+if(!/^https?:\/\/.+/i.test(src.trim())){toast('ألصق رابط مقطع صحيحاً يبدأ بـ http','err');return}
+if(MVIDS.some(v=>v.src===src.trim())){toast('هذا المقطع مضاف مسبقاً','err');return}
+MVIDS.push({src:src.trim(),dur:0,bad:false});
+mpVidsRefresh(med);
+mVidProbe(MVIDS.length-1);
+}
+function mVidProbe(i){
+const v=MVIDS[i];if(!v)return;const med=medOf(myStore());
+toast('جارٍ فحص المقطع من مصدره…','amb');
+probeVid(v.src,secs=>{
+if(secs==null){v.dur=0;v.bad=false;mpVidsRefresh(med);toast('تعذّر قراءة المدة تلقائياً — تأكد من رابط MP4 مباشر، ويُسمح بالحفظ وتبقى المدة غير محددة','amb');return}
+v.dur=Math.round(secs);
+if(secs>med.secs+0.5){v.bad=true;mpVidsRefresh(med);toast('مدة المقطع '+durTxt(secs)+' تتجاوز حد الإدارة '+ar(med.secs)+' ثانية — اختصر المقطع أو احذفه','err');return}
+v.bad=false;mpVidsRefresh(med);toast('مدة المقطع '+durTxt(secs)+' — ضمن الحد ✓','ok');
+});
+}
+function probeVid(url,cb){
+let done=false;const fin=v=>{if(done)return;done=true;cb(v)};
+try{const v=document.createElement('video');v.preload='metadata';
+v.onloadedmetadata=()=>fin(v.duration||null);
+v.onerror=()=>fin(null);
+v.src=url;setTimeout(()=>fin(v.duration||null),3500);
+}catch(e){fin(null)}
+}
 /* منشئ أسئلة المنتج — اختيارات أو كتابة حرة */
 function mpqHTML(){
 let h='';
@@ -2136,14 +2334,21 @@ customOk=!!$('#mp-custom')&&$('#mp-custom').checked;
 }else{
 if(!['chilled','instant'].includes(ptypeVal))ptypeVal='std';
 }
+fragile=fragile||($('#mp-frag2')&&$('#mp-frag2').value==='1');
+const tempv=$('#mp-temp')?$('#mp-temp').value:'std';
+const med=medOf(s);
+if(MVIDS.length>med.vids){toast('عدد المقاطع ('+ar(MVIDS.length)+') يتجاوز حد الإدارة '+ar(med.vids)+' — احذف الزائد','err');return}
+if(MVIDS.some(v=>v.bad)){toast('في مقاطع تتجاوز مدتها حد الإدارة '+ar(med.secs)+' ثانية — اختصرها أو احذفها','err');return}
+let imgs=MIMGS.slice(0,med.imgs);
+if(!imgs.length)imgs=[ZPOOL[Math.floor(Math.random()*ZPOOL.length)]];
 if(dPts!==0){DB.storeWallets[s.id]=r2((DB.storeWallets[s.id]||0)-cost);
 DB.aPtsWallet=r2((DB.aPtsWallet||0)+cost);
 DB.ptsFunding.unshift({store:s.id,amt:cost,pts:dPts,pname:nm,at:Date.now()})}
-if(pid){const p=P(pid);Object.assign(p,{name:nm,cat:$('#mp-cat').value,price:pr,off,stock:st,desc:$('#mp-ds').value.trim(),specs,pts,ptype:ptypeVal||p.ptype||'std',giftOk:$('#mp-gift')?$('#mp-gift').checked:!!p.giftOk,fragile,customOk,qs:MPQ.map(x=>({...x}))});
+if(pid){const p=P(pid);Object.assign(p,{name:nm,cat:$('#mp-cat').value,price:pr,off,stock:st,desc:$('#mp-ds').value.trim(),specs,pts,ptype:ptypeVal||p.ptype||'std',giftOk:$('#mp-gift')?$('#mp-gift').checked:!!p.giftOk,fragile,customOk,temp:tempv,qs:MPQ.map(x=>({...x}))});
 if(digi)p.digi=digi;if(ipOK)p.ipOK=true;
-if(MIMG)p.imgs=[MIMG,...p.imgs.slice(1)];
+p.imgs=imgs;p.vids=MVIDS.map(v=>({src:v.src,dur:Math.round(v.dur||0)}));
 toast('حُفظ تعديل المنتج ✓'+(dPts?` — ${dPts>0?'خُصمت':'استُرجعت'} ${money(Math.abs(cost))} تمويل نقاط`:''),'ok')}
-else{PRODUCTS.unshift({id:'p'+(Date.now()%100000),store:s.id,name:nm,cat:$('#mp-cat').value,price:pr,off,stock:st,pts,ptype:ptypeVal||'std',giftOk:$('#mp-gift')?$('#mp-gift').checked:false,fragile,customOk,digi,ipOK,sold:0,rt:0,rc:0,imgs:[MIMG||ZPOOL[Math.floor(Math.random()*ZPOOL.length)]],desc:$('#mp-ds').value.trim()||nm,specs,specsFallback:{},ratings:[],qs:MPQ.map(x=>({...x}))});
+else{PRODUCTS.unshift({id:'p'+(Date.now()%100000),store:s.id,name:nm,cat:$('#mp-cat').value,price:pr,off,stock:st,pts,ptype:ptypeVal||'std',giftOk:$('#mp-gift')?$('#mp-gift').checked:false,fragile,customOk,digi,ipOK,sold:0,rt:0,rc:0,imgs:imgs,vids:MVIDS.map(v=>({src:v.src,dur:Math.round(v.dur||0)})),temp:tempv,desc:$('#mp-ds').value.trim()||nm,specs,specsFallback:{},ratings:[],qs:MPQ.map(x=>({...x}))});
 toast('أُضيف المنتج لمتجرك ✓'+(pts?` — خُصمت ${money(cost)} تمويل ${ar(pts)} نقطة`:''),'ok')}
 MPID=null;closeModal();render();
 }
@@ -2235,6 +2440,7 @@ return `<div class="ocard">
 ${o.freeDl?'<span class="tag grn" style="margin-top:6px">🚚 توصيل مجاني — استبدلها العميل بالنقاط</span>':''}
 <div class="oitems">${g.items.map(it=>{const p=P(it.pid);return `<span class="oitag">${p?imgTag(p.imgs[0],'',''):''} ${ar(it.qty)}× ${p?esc(p.name):'—'}${p&&(p.pts||0)>0?` <span style="color:var(--amb2)">🌟${ar(p.pts*it.qty)}</span>`:''}</span>`}).join('')}</div>
 ${g.logi?`<div class="hint" style="margin-top:6px">📄 ${g.logi.wb?'بوليصة '+ar(g.logi.wb)+' · ':''}${esc(g.logi.courier)}${g.logi.wb?` · <a style="color:var(--grn);font-weight:700;cursor:pointer" onclick="toast('أُرسلت البوليصة للطباعة 🖨️','ok')">طباعة البوليصة 🖨️</a>`:' — بلا بوليصة (خدمة ميدانية)'} · من ${esc(ST(g.store).city||'—')} إلى ${esc(o.city||'—')}</div>`:''}
+${shipBlock(o,g,gi)}
 ${g.booking?`<div class="bkcard"><b style="font-size:11.5px">🎪 مناسبة العميل — حجز مؤكد</b>
 <div class="hint" style="line-height:1.8;margin-top:4px">📅 ${esc(g.booking.date)} · التركيب ${esc(g.booking.setup)}${g.booking.tear?' · الفك '+esc(g.booking.tear):''}${g.booking.dl==='pickup'?' · 🚶 يستلمها العميل من مقرك بلا توصيل':' · 🚚 فريقك يوصل ويركّب في الموقع'}${g.booking.geo?' · 📍 موقع محدد ('+ard(g.booking.geo.lat)+'، '+ard(g.booking.geo.lng)+')':''}${g.booking.note?' · '+esc(g.booking.note):''}</div></div>`:''}
 ${g.custom?`<div class="giftrow" style="background:#A45A3A12;border-color:#A45A3A66">✏️ طلب قابل للتعديل — ناقش العميل في المحادثة واطلب مبلغ أي إضافة من زر «طلب مبلغ إضافي» داخل الدردشة (يُحجز بضمان ضمين)</div>`:''}
@@ -2322,6 +2528,7 @@ ${d.ruling?`<div class="verd ${d.ruling.act==='release'?'rel':'ref'}" style="mar
 function pgMSet(){
 const s=myStore(),sec=SEC(s.sec);
 const own=USERS[s.owner];
+const med=medOf(s);
 const ps=PRODUCTS.filter(p=>p.store===s.id);
 const myFund=DB.ptsFunding.filter(x=>x.store===s.id);
 const myCats=[...new Set(ps.map(p=>p.cat))].map(cn=>({n:cn,c:catComm(s.sec,cn)}));
@@ -2338,6 +2545,7 @@ ${s.cr?`<div class="setrow"><div class="ic">🧾</div><div class="tx"><b>الس�
 ${s.iban?`<div class="setrow"><div class="ic">🏦</div><div class="tx"><b>الآيبان — تحويل أرباحك</b><span>يُحوَّل إليه صافي محفظتك عند طلب السحب خلال ٢٤ ساعة</span></div><span class="tag nvy" style="font-size:10px;letter-spacing:.5px">${esc(String(s.iban).slice(0,10))}••</span></div>`:''}
 <div class="setrow"><div class="ic">⭐</div><div class="tx"><b>تقييم المتجر</b><span>${ard(s.rt)} من ٥ — ${ar(s.sales)} عملية بيع مكتملة</span></div>${STARS(s.rt)}</div>
 <div class="setrow"><div class="ic">🧺</div><div class="tx"><b>المنتجات المعروضة</b><span>${ar(ps.length)} منتج · ${ar(ps.filter(p=>p.off>0).length)} عليه عرض · ${ar(ps.filter(p=>(p.pts||0)>0).length)} يمنح نقاطاً</span></div></div>
+<div class="setrow"><div class="ic">🎬</div><div class="tx"><b>الوسائط الترويجية — حدود الإدارة لمتجرك</b><span>حتى ${ar(med.imgs)} صور و${ar(med.vids)} مقاطع بمدة ${ar(med.secs)} ثانية للمقطع، لكل منتج</span></div><span class="tag gry">من الإدارة</span></div>
 <div class="setrow"><div class="ic">💰</div><div class="tx"><b>المحفظة</b><span>متاح ${money(DB.storeWallets[s.id]||0)} · محجوز ${money(heldFor(s.id))}</span></div><button class="btn soft xs" onclick="go('m-wallet')">عرض</button></div>
 </div>
 <div class="acard"><h3>🖼️ هوية المتجر — اللوقو والصورة</h3>
@@ -2428,12 +2636,12 @@ ${pgAOver()}`;
 }
 /* صفحة المتاجر المستقلة: طلبات التسجيل + جميع المتاجر بتبويبين */
 function pgAStoresPage(){
-const t=['reqs','stores'].includes(VIEW.atab)?VIEW.atab:'stores';ASTT=t;
+const t=['reqs','stores','media'].includes(VIEW.atab)?VIEW.atab:'stores';ASTT=t;
 const pends=DB.reqs.filter(r=>r.status==='pending').length;
 const tab=(k,l,n)=>`<button class="${t===k?'on':''}" onclick="astTab('${k}')">${l}${n?` (${ar(n)})`:''}</button>`;
 return `<div class="pghead"><h1>🏪 المتاجر</h1><span class="tag nvy">طلبات التسجيل وإدارة المتاجر</span></div>
-<div class="tabs" style="margin-top:8px">${tab('reqs','📋 طلبات التسجيل',pends)}${tab('stores','🏪 جميع المتاجر',STORES.length)}</div>
-${t==='reqs'?pgAReqs():pgAStores()}`;
+<div class="tabs" style="margin-top:8px">${tab('reqs','📋 طلبات التسجيل',pends)}${tab('stores','🏪 جميع المتاجر',STORES.length)}${tab('media','🎛️ حدود الوسائط')}</div>
+${t==='reqs'?pgAReqs():t==='media'?pgAMedia():pgAStores()}`;
 }
 function astTab(t){VIEW.atab=t;render()}
 const vaultNow=()=>r2(DB.orders.reduce((a,o)=>a+o.groups.filter(g=>['pending','preparing','shipped','received','disputed'].includes(g.status)).reduce((x,g)=>x+g.sub+((g.ship&&g.ship.charge)||(g.dl||0)),0),0));
@@ -2451,6 +2659,7 @@ return `<div class="kpis">
 <div class="kpi red"><i>⚖️</i><b>${ar(open.length)}</b><span>نزاعات بانتظار حكمك</span></div>
 <div class="kpi" style="cursor:pointer" onclick="go('a-stores')"><i>🏪</i><b>${ar(STORES.length)}</b><span>متجر في ضمين</span></div>
 <div class="kpi"><i>👥</i><b>${ar(Object.keys(USERS).length)}</b><span>مستخدم مسجل</span></div>
+<div class="kpi" style="cursor:pointer" onclick="go('a-stores','media')"><i>🌟</i><b>${money(IMP.total)}</b><span>أثر مجتمعي شفاف (من أرباح ضمين)</span></div>
 </div>
 <div class="grid2 mt">
 <div class="acard"><h3>⚖️ طابور التحكيم</h3>
@@ -2464,6 +2673,7 @@ ${open.length?open.map(d=>`<div class="row" style="cursor:pointer" onclick="open
 <div class="row"><div class="fx" style="font-size:13px">📋 طلبات تسجيل بانتظار البت</div><span class="tag ${pends.length?'amb':'grn'}">${ar(pends.length)} طلب</span></div>
 </div>
 <button class="btn soft wide mt" onclick="go('a-stores')">فتح صفحة المتاجر وطلبات التسجيل ←</button>
+<button class="btn soft wide mt" onclick="go('a-stores','media')">🎛️ حدود الوسائط الترويجية للمتاجر ←</button>
 </div></div>
 <div class="acard mt"><h3>💬 مراقبة محادثات الطلبات ${vTot?`<span class="tag red">${ar(vTot)} مخالفة محجوبة</span>`:'<span class="tag grn">بلا مخالفات</span>'}</h3>
 <p class="hint mb">محادثات العميل × التاجر مرتبطة بالطلب — تُحجب الأرقام والروابط ووسائل التواصل الخارجية تلقائياً، وتُحذف المحادثة بعد ٣ مخالفات مع تنبيه فوري للإدارة.</p>
@@ -2512,6 +2722,49 @@ ${s.susp?`<span class="tag red">موقوف</span><button class="btn gray xs" onc
 function aSusp(sid){const s=ST(sid);s.susp=!s.susp;
 pushNotif(s.owner,s.susp?'⛔':'✅',s.susp?'أُوقف متجرك مؤقتاً':'أُلغي إيقاف متجرك',s.susp?'راجع فريق الامتثال في ضمين':'عاد متجرك للعمل بشكل طبيعي',['m-set']);
 toast(s.susp?'أُوقف المتجر مؤقتاً':'أُعيد تشغيل المتجر','ok');render()}
+/* ===== 🎛️ حدود الوسائط الترويجية — تحددها الإدارة لكل متجر ===== */
+function pgAMedia(){
+return `<div class="spread" style="margin:2px 0 12px"><b class="fx" style="font-size:14.5px">🎛️ حدود الوسائط الترويجية</b><span class="tag gry">تُطبَّق على منتجات كل متجر</span></div>
+<p class="hint mb" style="line-height:1.8">تحدد الإدارة لكل متجر عدد الصور الترويجية وعدد المقاطع المرئية وأقصى مدة لكل مقطع في كل منتج — يلتزم بها التاجر في نموذج إضافة وتعديل المنتجات، وتظهر الوسائط للعملاء داخل صفحة المتجر بشكل أنيق.</p>
+<div class="acard"><h3>الحدود الافتراضية (لكل المتاجر)</h3>
+<div class="fgrid">
+<div class="fld"><label>🖼️ عدد الصور لكل منتج</label><input class="inp" id="amd-imgs" type="number" min="1" max="12" value="${MED.imgs}"></div>
+<div class="fld"><label>🎬 عدد المقاطع لكل منتج</label><input class="inp" id="amd-vids" type="number" min="0" max="4" value="${MED.vids}"></div>
+<div class="fld"><label>⏱️ أقصى مدة للمقطع (ثانية)</label><input class="inp" id="amd-secs" type="number" min="10" max="300" step="5" value="${MED.secs}"></div>
+</div>
+<button class="btn sm mt" onclick="aSaveMedDef()">حفظ الحدود الافتراضية</button></div>
+<div class="acard mt"><h3>حدود خاصة بكل متجر</h3>
+<p class="hint mb">عدّل الأرقام ثم اضغط حفظ — المتجر الذي لا تعدّله يتبع الافتراضي، و«إلغاء الخاص» يعيده للافتراضي.</p>
+<div class="rows">
+${STORES.map(s=>{const m=medOf(s);const own=!!MED.stores[s.id];
+return `<div class="row" style="flex-wrap:wrap;gap:8px">
+<div style="flex:1;min-width:140px;display:flex;gap:9px;align-items:center">
+<div style="width:36px;height:36px;border-radius:11px;background:${s.color};color:#fff;display:grid;place-items:center;font-weight:800;flex-shrink:0">${s.name[0]}</div>
+<div><b style="font-size:12.5px">${esc(s.name)}</b><div class="hint">${own?'حد خاص من الإدارة':'يتبع الافتراضي'}</div></div></div>
+<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+<span class="hint">🖼️</span><input class="inp" style="width:62px;padding:8px;text-align:center" id="amd-i-${s.id}" type="number" min="1" max="12" value="${m.imgs}">
+<span class="hint">🎬</span><input class="inp" style="width:62px;padding:8px;text-align:center" id="amd-v-${s.id}" type="number" min="0" max="4" value="${m.vids}">
+<span class="hint">⏱️ث</span><input class="inp" style="width:70px;padding:8px;text-align:center" id="amd-s-${s.id}" type="number" min="10" max="300" step="5" value="${m.secs}">
+${own?`<button class="btn gray xs" onclick="aMedReset('${s.id}')">إلغاء الخاص</button>`:''}
+</div></div>`}).join('')}
+</div>
+<button class="btn sm mt" onclick="aSaveMedStores()">حفظ حدود المتاجر</button></div>`;
+}
+const medClamp=(v,a,b,d)=>Math.max(a,Math.min(b,Math.round(+v)||d));
+function aSaveMedDef(){
+MED.imgs=medClamp(($('#amd-imgs')||{}).value,1,12,6);
+MED.vids=medClamp(($('#amd-vids')||{}).value,0,4,2);
+MED.secs=medClamp(($('#amd-secs')||{}).value,10,300,60);
+appSave();toast('حُفظت الحدود الافتراضية للوسائط لكل المتاجر ✓','ok');render();
+}
+function aSaveMedStores(){
+STORES.forEach(s=>{
+const vi=$('#amd-v-'+s.id);if(!vi)return;
+MED.stores[s.id]={imgs:medClamp(($('#amd-i-'+s.id)||{}).value,1,12,MED.imgs),vids:medClamp(vi.value,0,4,MED.vids),secs:medClamp(($('#amd-s-'+s.id)||{}).value,10,300,MED.secs)};
+});
+appSave();toast('حُفظت حدود الوسائط الخاصة بكل متجر ✓','ok');render();
+}
+function aMedReset(sid){delete MED.stores[sid];appSave();toast('أُلغي الحد الخاص — المتجر يتبع الافتراضي الآن','ok');render()}
 function pgAReqs(){
 const pend=DB.reqs.filter(r=>r.status==='pending');
 const done=DB.reqs.filter(r=>r.status!=='pending');
@@ -2745,14 +2998,19 @@ toast(ios?'للتثبيت على الآيفون: زر المشاركة ⬆️ ث
 window.addEventListener('appinstalled',()=>{DPROMPT=null;toast('أهلاً بتطبيق ضمين على جهازك 📲💚','ok');try{renderTop()}catch(e){}});
 
 /* ===== حفظ الجلسة والسلة والمفضلة — تجربة تطبيق حقيقي ===== */
-function appSave(){try{localStorage.setItem('dameen_v1',JSON.stringify({ses:SES,cart:CART,gfav:GFav}))}catch(e){}}
+function appSave(){try{localStorage.setItem('dameen_v1',JSON.stringify({ses:SES,cart:CART,gfav:GFav,med:MED,imp:IMP}))}catch(e){}}
 function appRestore(){try{
-const d=JSON.parse(localStorage.getItem('dameen_v1')||'null');if(!d)return;
+const d=JSON.parse(localStorage.getItem('dameen_v1')||'null');
+if(d){
 if(d.ses&&d.ses.phone&&USERS[d.ses.phone]&&!USERS[d.ses.phone].pend&&!USERS[d.ses.phone].rejected){
 const u=USERS[d.ses.phone];SES={phone:d.ses.phone,role:u.role,store:u.store||null};
 if(SES.role==='merchant'){const own=STORES.find(x=>x.owner===SES.phone);SES.store=own?own.id:SES.store}}
-CART=(d.cart||[]).filter(c=>c&&P(c.pid)&&c.qty>0).map(c=>({pid:c.pid,qty:Math.min(c.qty,P(c.pid).stock)}));
+CART=(d.cart||[]).filter(c=>c&&P(c.pid)&&c.qty>0).map(c=>({pid:c.pid,qty:Math.min(c.qty,P(c.pid).stock),ans:c.ans||[]}));
 GFav=(d.gfav||[]).filter(x=>x&&P(x));
+if(d.med)MED=Object.assign({imgs:6,vids:2,secs:60,stores:{}},d.med);
+if(d.imp)IMP=Object.assign({total:0,n:0,users:{},stores:{}},d.imp);
+}
+if(!d||!d.imp)impSeed();
 }catch(e){}}
 appRestore();
 
@@ -2762,4 +3020,3 @@ render();
 if(appMode())setTimeout(()=>toast('أهلاً بك في تطبيق ضمين 👋','ok'),1200);
 window.addEventListener('beforeunload',appSave);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)appSave()});
-
