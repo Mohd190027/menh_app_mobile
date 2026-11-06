@@ -159,7 +159,8 @@ notif:{ord:true,off:true,dis:true,rev:true},hidePhone:false,email:'noura@mail.co
 '0500000009':{name:'تركي الثقفي',role:'merchant',pass:'1234',store:'s7',since:NOW-864e5*20},
 '0500000010':{name:'أم خالد السالم',role:'merchant',pass:'1234',store:'s8',since:NOW-864e5*90},
 '0500000011':{name:'فيصل الحربي',role:'merchant',pass:'1234',store:'s9',since:NOW-864e5*120,notif:{ord:true,dis:true}},
-'0500000012':{name:'لينا العسيري',role:'merchant',pass:'1234',store:'s10',since:NOW-864e5*100,notif:{ord:true,dis:true}}};
+'0500000012':{name:'لينا العسيري',role:'merchant',pass:'1234',store:'s10',since:NOW-864e5*100,notif:{ord:true,dis:true}},
+'0500000013':{name:'خالد المطيري',role:'staff',pass:'1234',since:NOW-864e5*30,notif:{ord:true,dis:true},email:'khaled.m@dameen.sa',staffTitle:'مشرف متاجر ونزاعات'}};
 
 /* ================= قاعدة البيانات الحيّة ================= */
 const DB={
@@ -221,12 +222,25 @@ appSave();}
 function impAnim(){const el=$('#impnum');if(!el)return;const target=IMP.total||0;const t0=performance.now();
 const stepFn=t=>{const k=Math.min(1,(t-t0)/1400);el.textContent=ard(r2(target*(1-Math.pow(1-k,3))));if(k<1)requestAnimationFrame(stepFn)};
 requestAnimationFrame(stepFn);}
-function impactBlock(){return `<div class="impwrap">
-<span class="implbl">🌟 العدّاد المجتمعي الشفاف — أثر ضمين</span>
-<div class="impnum"><span id="impnum">${ard(IMP.total)}</span><small>ريال سعودي</small></div>
-<div class="improw"><span>من <b>${ar(IMP.n)}</b> عملية شراء ناجحة عبر ضمين</span><span>·</span><span><b>٠٫٥٠ ر.س</b> عن كل عملية</span></div>
-<p>مع كل عملية شراء ناجحة تقتطع ضمين ٠٫٥٠ ريال من <b>حصة أرباح المنصة</b> — لا من جيب العميل ولا من التاجر — وتعتمدها لأعمال الخير. العدّاد يتحدّث لحظياً مع كل عملية، والشفافية كاملة أمام جميع الأطراف.</p>
-</div>`;}
+function impactBlock(){return `<button class="impbar" type="button" onclick="impInfo()" title="اضغط لعرض تفاصيل العدّاد المجتمعي">
+<span class="impstar">🌟</span>
+<span class="impmain"><span class="implb">🌟 العدّاد المجتمعي الشفاف — أثر ضمين</span>
+<span class="impval"><b id="impnum">${ard(IMP.total)}</b><small>ر.س معتمدة لأعمال الخير</small></span></span>
+<span class="impsep"></span>
+<span class="impmeta"><span>من <b>${ar(IMP.n)}</b> عملية شراء ناجحة عبر ضمين</span><span>اقتطاع <b>٠٫٥٠ ر.س</b> عن كل عملية — لا من العميل ولا التاجر</span></span>
+<span class="impq">؟</span>
+</button>`;}
+function impInfo(){openModal(`<div class="mhead"><b>🌟 العدّاد المجتمعي الشفاف</b><button class="x" onclick="closeModal()">✕</button></div>
+<div class="mbody">
+<div class="impbig"><span class="n">${ard(IMP.total)}</span><small>ريال سعودي معتمدة لأعمال الخير</small><span class="tag wht">من ${ar(IMP.n)} عملية شراء ناجحة</span></div>
+<p class="hint" style="line-height:2;margin-top:11px">مع كل عملية شراء ناجحة تقتطع ضمين <b>٠٫٥٠ ريال من حصة أرباح المنصة</b> — لا من جيب العميل ولا من التاجر — وتعتمدها لأعمال الخير. العدّاد يتحدّث لحظياً مع كل عملية، والشفافية كاملة أمام جميع الأطراف.</p>
+<div class="impsteps">
+<div class="ipstep"><i>🛒</i><div><b>عملية شراء ناجحة</b><span>يُحجز مبلغ العميل في الخزنة المستقلة حتى استلامه وتقييمه</span></div></div>
+<div class="ipstep"><i>💎</i><div><b>اقتطاع ٠٫٥٠ ريال</b><span>من عمولة ضمين على الصفقة — لا يزيد سعر المنتج أمام العميل أبداً</span></div></div>
+<div class="ipstep"><i>🤲</i><div><b>اعتماد لأعمال الخير</b><span>يتحدّث العدّاد لحظياً ويظهر بشفافية للعميل والتاجر والإدارة معاً</span></div></div>
+</div>
+<button class="btn wide mt" onclick="closeModal()">فهمت، شكراً 💚</button>
+</div>`);}
 function impHero(){return `<div class="imphero">
 <div class="spread"><b style="font-size:13.5px">🌟 مساهماتي الخيرية</b><span class="tag wht">من أرباح ضمين — لا من مالك</span></div>
 <div style="display:flex;align-items:baseline;gap:8px;margin-top:6px"><span class="bignum">${ard(IMP.users[SES.phone]||0)}</span><span style="font-size:12px;font-weight:800">ر.س</span></div>
@@ -312,16 +326,19 @@ else if(page==='a-hub')VIEW={page:'a-hub'};
 else if(page==='a-over')VIEW={page:'a-hub'};
 else if(page==='a-reqs'){VIEW={page:'a-stores',atab:'reqs'};ASTT='reqs'}
 else if(page==='a-stores')VIEW={page:'a-stores',atab:arg||ASTT||'stores'}
+else if(page==='e-reqs'){VIEW={page:'e-stores',atab:'reqs'};ASTT='reqs'}
+else if(page==='e-stores')VIEW={page:'e-stores',atab:arg||ASTT||'stores'}
 else{VIEW={page};if(page==='home')LASTSEC=null}
 if(VIEW.page.startsWith('m-')&&(!SES||SES.role!=='merchant')){toast('سجّل دخولك بحساب تاجر أولاً','err');openAuth('merchant');return}
-if(VIEW.page.startsWith('a-')&&(!SES||SES.role!=='admin')){toast('هذه الصفحة مخصصة للإدارة','err');openAuth('admin');return}
+if(VIEW.page.startsWith('a-')&&(!SES||SES.role!=='admin')){toast('هذه الصفحة مخصصة للإدارة العليا','err');openAuth('admin');return}
+if(VIEW.page.startsWith('e-')&&(!SES||SES.role!=='staff')){toast('هذه الصفحة مخصصة لموظفي الإدارة','err');openAuth('staff');return}
 closeModal();render();window.scrollTo({top:0,behavior:'smooth'});
 }
 function render(){
 const app=$('#app');
 const R={home:pgHome,search:pgSearch,section:pgSection,store:pgStore,product:pgProduct,cart:pgCart,orders:pgOrders,dlib:pgDLib,disputes:pgDisputes,account:pgAccount,favs:pgFavs,
 'm-dash':pgMDash,'m-prods':pgMProds,'m-orders':pgMOrders,'m-wallet':pgMWallet,'m-disputes':pgMDisputes,'m-set':pgMSet,
-'a-hub':pgAHub,'a-stores':pgAStoresPage,'a-disputes':pgADisputes,'a-cats':pgACats,'a-rev':pgARev};
+'a-hub':pgAHub,'a-stores':pgAStoresPage,'a-disputes':pgADisputes,'a-cats':pgACats,'a-rev':pgARev,'e-hub':pgEHub,'e-stores':pgAStoresPage,'e-disputes':pgADisputes};
 app.innerHTML=(R[VIEW.page]||pgHome)();
 renderTop();renderFab();appSave();
 if(VIEW.page==='home')setTimeout(impAnim,60);
@@ -358,6 +375,10 @@ ${mnav('m-dash','📊 لوحة التحكم')}${mnav('m-prods','🧺 المنت�
 }else if(SES.role==='admin'){
 h=`<div class="topin">${brand}${sb}<nav class="nav">
 ${mnav('a-hub','📊 مركز الإدارة')}${mnav('a-stores','🏪 المتاجر')}${mnav('a-disputes','⚖️ التحكيم')}${mnav('a-cats','🗂️ الأقسام')}${mnav('a-rev','📈 الإيرادات')}
+</nav>${bellBtn()}${roleDD()}</div>`;
+}else if(SES.role==='staff'){
+h=`<div class="topin">${brand}${sb}<nav class="nav">
+${mnav('e-hub','🧑‍💼 مركز الموظف')}${mnav('e-stores','🏪 المتاجر')}${mnav('e-disputes','⚖️ النزاعات')}
 </nav>${bellBtn()}${roleDD()}</div>`;
 }else{ /* عميل مسجّل: القائمة الكاملة */
 const u=me();
@@ -399,15 +420,16 @@ else{el.style.width='';el.style.left='';el.style.insetInlineEnd=end+'px'}
 }
 function bellBtn(){const n=DB.notifs.filter(x=>x.to===SES.phone&&!x.read).length;
 return `<button class="iconbtn" onclick="openBell()" title="الإشعارات">🔔${n?`<span class="bdg">${ar(n)}</span>`:''}</button>`}
-function roleDD(){const u=me();const roleTxt={customer:'عميل',merchant:'تاجر',admin:'الإدارة'}[SES.role];
+function roleDD(){const u=me();const roleTxt={customer:'عميل',merchant:'تاجر',admin:'الإدارة',staff:'موظف إدارة'}[SES.role];
 return `<div class="dd" onclick="event.stopPropagation();this.classList.toggle('open')">
 <div class="avat">${u.name[0]}</div>
 <div class="ddmenu">
 <div style="padding:9px 11px"><b style="font-size:13px">${esc(u.name)}</b><div class="hint">${ar(SES.phone)} · ${roleTxt}</div></div>
 <div class="sep"></div>
 ${SES.role!=='customer'?`<div class="it" onclick="switchRole('customer')">🛍️ التسوق كعميل</div>`:''}
-${SES.role!=='merchant'?`<div class="it" onclick="switchRole('merchant')">🏪 لوحة التاجر</div>`:''}
+${SES.role!=='merchant'&&(u.role==='merchant'||u.role==='admin')?`<div class="it" onclick="switchRole('merchant')">🏪 لوحة التاجر</div>`:''}
 ${SES.role!=='admin'&&u.role==='admin'?`<div class="it" onclick="switchRole('admin')">🛡️ مركز الإدارة</div>`:''}
+${SES.role!=='staff'&&u.role==='staff'?`<div class="it" onclick="switchRole('staff')">🧑‍💼 لوحة الموظف</div>`:''}
 ${appMode()?'':'<div class="it" onclick="installApp()">📲 ثبّت التطبيق</div>'}
 <div class="it" onclick="go('account')">⚙️ حسابي وإعداداتي</div>
 <div class="sep"></div>
@@ -422,7 +444,8 @@ if(own){SES.role='merchant';SES.store=own.id;go('m-dash')}
 else if(me().role==='admin'){SES.role='merchant';SES.store='s1';go('m-dash')}
 else{toast('لا يوجد متجر مرتبط بحسابك — استخدم حساب التاجر التجريبي','amb');openAuth('merchant')}
 return}
-if(r==='admin'){if(me().role==='admin'){SES.role='admin';go('a-over')}else{toast('الإدارة تدخل بحساب المشرف العام فقط','err');openAuth('admin')}}
+if(r==='admin'){if(me().role==='admin'){SES.role='admin';go('a-over')}else{toast('الإدارة العليا تدخل بحساب المشرف العام فقط','err');openAuth('admin')}}
+if(r==='staff'){if(me().role==='staff'){SES.role='staff';go('e-hub')}else{toast('لوحة الموظف لفريق الإدارة المعتمد فقط','err')}}
 }
 function logout(){SES=null;VIEW={page:'home'};go('home');toast('تم تسجيل الخروج، تجوّل بحرية 👋')}
 
@@ -437,17 +460,18 @@ function authBody(){
 const hero=`<div class="authhero"><button class="ax" onclick="closeModal()" title="إغلاق">✕</button><div class="alg">ض</div><h2>أهلاً بك في ضمين</h2><p>مالك يُحجز في خزنة مستقلة، والتاجر لا يستلم إلا بعد استلامك وتقييمك</p></div>`;
 const tabs=`<div class="atabs"><button class="atab ${AUTH.tab==='login'?'on':''}" onclick="authTab('login')">🔑 تسجيل الدخول</button><button class="atab ${AUTH.tab==='reg'?'on':''}" onclick="authTab('reg')">✨ حساب جديد</button></div>`;
 if(AUTH.tab==='login')return `${hero}${tabs}
-<div class="fld"><label>رقم الجوال أو البريد الإلكتروني</label><input class="inp" id="lg-id" placeholder="05xxxxxxxx أو name@mail.com" value="${AUTH.hint==='merchant'?'0500000002':AUTH.hint==='admin'?'0500000003':'0500000001'}"></div>
+<div class="fld"><label>رقم الجوال أو البريد الإلكتروني</label><input class="inp" id="lg-id" placeholder="05xxxxxxxx أو name@mail.com" value="${AUTH.hint==='merchant'?'0500000002':AUTH.hint==='admin'?'0500000003':AUTH.hint==='staff'?'0500000013':'0500000001'}"></div>
 <div class="fld mt"><label>كلمة المرور</label><input class="inp" type="password" id="lg-pw" placeholder="••••" value="1234" onkeydown="if(event.key==='Enter')doLogin()"></div>
 <button class="btn wide mt" onclick="doLogin()">🔑 دخول</button>
 <div class="orline">أو</div>
 <button class="gbtn" onclick="gAuth()">${GICON} المتابعة بحساب Google</button>
 <div class="switchbox">
 <p class="hint" style="font-weight:800;text-align:center;margin-bottom:7px">🧪 حسابات التجربة السريعة</p>
-<div class="fgrid" style="grid-template-columns:1fr 1fr 1fr;gap:7px">
+<div class="fgrid" style="grid-template-columns:1fr 1fr;gap:7px">
 <button class="btn soft sm" onclick="quickLogin('customer')">🛍️ عميل</button>
 <button class="btn soft sm" onclick="quickLogin('merchant')">🏪 تاجر</button>
-<button class="btn soft sm" onclick="quickLogin('admin')">🛡️ إدارة</button>
+<button class="btn soft sm" onclick="quickLogin('admin')">🛡️ الإدارة العليا</button>
+<button class="btn soft sm" onclick="quickLogin('staff')">🧑‍💼 موظف إدارة</button>
 </div></div>
 <p class="authfoot">ليس لديك حساب؟ <a onclick="authTab('reg')">أنشئ حسابك الآن</a></p>`;
 if(AUTH.reg==='customer')return `${hero}${tabs}
@@ -494,7 +518,7 @@ if(AUTH.reg==='store')return `${hero}${tabs}
 <button class="btn wide mt" onclick="doRegStore()">📨 إرسال طلب الاعتماد للإدارة</button>
 <p class="authfoot"><a onclick="regTab('customer')">↩ عودة لتسجيل العميل</a> · <a onclick="authTab('login')">تسجيل الدخول</a></p>`;
 return `${hero}${tabs}
-<div class="demo mb"><b style="font-size:12px">🛡️ طلب انضمام لفريق الإدارة</b><p class="hint" style="margin-top:3px">تراجع الإدارة العليا طلبك بكامل تفاصيله — بعد الموافقة تدخل مركز الإدارة بصلاحيات كاملة، وتسجيل الدخول موحّد للجميع.</p></div>
+<div class="demo mb"><b style="font-size:12px">🛡️ طلب انضمام لفريق الإدارة</b><p class="hint" style="margin-top:3px">تراجع الإدارة العليا طلبك بكامل تفاصيله — بعد الموافقة تدخل لوحة موظف الإدارة بصلاحيات المتاجر والنزاعات، وتسجيل الدخول موحّد للجميع.</p></div>
 <div class="fld"><label>الاسم الكامل</label><input class="inp" id="ad-nm" placeholder="مثال: خالد المطيري"></div>
 <div class="fgrid mt">
 <div class="fld"><label>رقم الجوال</label><input class="inp" id="ad-ph" placeholder="05xxxxxxxx"></div>
@@ -519,7 +543,7 @@ if(u.pend){toast('طلب تسجيلك ('+(u.pend==='store'?'متجرك':'حسا�
 if(u.rejected){toast('رفضت الإدارة طلب تسجيلك: '+u.rejected,'err');return}
 SES={phone:k,role:u.role,store:u.store||null};
 closeModal();toast('أهلاً بك '+esc(u.name)+' 👋','ok');
-if(u.role==='merchant')go('m-dash');else if(u.role==='admin')go('a-over');else{render()}
+if(u.role==='merchant')go('m-dash');else if(u.role==='admin')go('a-over');else if(u.role==='staff')go('e-hub');else{render()}
 }
 function doRegister(){
 const nm=($('#rg-nm').value||'').trim(),ph=($('#rg-ph').value||'').trim(),em=($('#rg-em').value||'').trim().toLowerCase(),pw=($('#rg-pw').value||'').trim(),pw2=($('#rg-pw2').value||'').trim();
@@ -551,6 +575,7 @@ DB.reqs.unshift({id:rid,kind:'store',own,store:nm,email:em.toLowerCase(),phone:p
 USERS[ph]={name:own,role:'merchant',pass:pw,pend:'store',reqId:rid,email:em.toLowerCase(),since:Date.now(),notif:{ord:true,dis:true}};
 REQDOC=null;closeModal();reqSent('store',nm);
 pushNotif('0500000003','📋','طلب تسجيل متجر جديد','«'+nm+'» بانتظار مراجعتك واعتمادك في طلبات التسجيل',['a-reqs']);
+pushNotif('0500000013','📋','طلب تسجيل متجر جديد','«'+nm+'» بانتظار مراجعتك واعتمادك في قسم المتاجر',['e-reqs']);
 }
 function doRegAdmin(){
 const nm=($('#ad-nm').value||'').trim(),ph=($('#ad-ph').value||'').trim(),em=($('#ad-em').value||'').trim(),role=$('#ad-role').value,code=($('#ad-code').value||'').trim(),pw=($('#ad-pw').value||'').trim(),pw2=($('#ad-pw2').value||'').trim();
@@ -560,9 +585,10 @@ if(pw.length<4||pw!==pw2){toast('راجع كلمة المرور وتأكيدها
 if(USERS[ph]){toast(USERS[ph].pend==='admin'?'أرسلت طلب إدارة بهذا الجوال مسبقاً — قيد المراجعة':'هذا الجوال مسجل — سجّل دخولك','amb');return}
 const rid='rq-'+(100+DB.reqs.length+1);
 DB.reqs.unshift({id:rid,kind:'admin',own:nm,email:em.toLowerCase(),phone:ph,role,at:Date.now(),status:'pending'});
-USERS[ph]={name:nm,role:'admin',pass:pw,pend:'admin',reqId:rid,email:em.toLowerCase(),since:Date.now(),notif:{dis:true}};
+USERS[ph]={name:nm,role:'staff',pass:pw,pend:'admin',reqId:rid,email:em.toLowerCase(),since:Date.now(),staffTitle:role,notif:{dis:true}};
 closeModal();reqSent('admin',nm);
 pushNotif('0500000003','📋','طلب انضمام لفريق الإدارة',nm+' — '+role+' بانتظار مراجعتك',['a-reqs']);
+pushNotif('0500000013','📋','طلب انضمام لفريق الإدارة',nm+' — '+role+' بانتظار مراجعة فريق الموظفين',['e-reqs']);
 }
 function reqSent(kind,nm){
 openModal(`<div class="mbody" style="padding:28px 22px;text-align:center">
@@ -573,7 +599,7 @@ openModal(`<div class="mbody" style="padding:28px 22px;text-align:center">
 <button class="btn wide mt" onclick="closeModal()">فهمت، شكراً</button></div>`);
 }
 function gAuth(){
-const accs=[{ph:'0500000001',n:'نورة العبدالله',e:'noura@mail.com',c:'#7A3B44',r:'عميلة',t:'grn'},{ph:'0500000002',n:'ريم الدوسري',e:'rima@dafi.sa',c:'#556636',r:'تاجرة',t:'amb'},{ph:'0500000003',n:'فهد العتيبي',e:'fahd@dameen.sa',c:'#1D4432',r:'إدارة',t:'nvy'}];
+const accs=[{ph:'0500000001',n:'نورة العبدالله',e:'noura@mail.com',c:'#7A3B44',r:'عميلة',t:'grn'},{ph:'0500000002',n:'ريم الدوسري',e:'rima@dafi.sa',c:'#556636',r:'تاجرة',t:'amb'},{ph:'0500000003',n:'فهد العتيبي',e:'fahd@dameen.sa',c:'#1D4432',r:'الإدارة العليا',t:'nvy'},{ph:'0500000013',n:'خالد المطيري',e:'khaled.m@dameen.sa',c:'#2E6B4F',r:'موظف إدارة',t:'amb'}];
 openModal(`<div class="mhead"><b>المتابعة بحساب Google</b><button class="x" onclick="closeModal()">✕</button></div>
 <div class="mbody">
 <div class="demo mb"><b style="font-size:11.5px">OAuth محاكى للنسخة التجريبية</b><p class="hint" style="margin-top:2px">تُحاكي هذه النافذة اختيار حساب Google دون أي اتصال خارجي — اختر حساباً مرتبطاً بضمين أو أنشئ جديداً.</p></div>
@@ -589,13 +615,13 @@ ${accs.map(a=>`<div style="display:flex;gap:11px;align-items:center;padding:10px
 function gLogin(ph){const u=USERS[ph];if(!u)return;
 SES={phone:ph,role:u.role,store:u.store||null};
 closeModal();toast('دخلت عبر Google كـ'+esc(u.name)+' 👋','ok');
-if(u.role==='merchant')go('m-dash');else if(u.role==='admin')go('a-over');else render()}
+if(u.role==='merchant')go('m-dash');else if(u.role==='admin')go('a-over');else if(u.role==='staff')go('e-hub');else render()}
 function gNew(){AUTH={tab:'reg',reg:'customer',sec:null,gname:'مستخدم Google',gemail:'user'+(1000+Date.now()%9000)+'@gmail.com',hint:''};openModal(authHTML());toast('جلبنا اسمك وبريدك من Google — أكمل جوالك وكلمة مرورك','ok')}
 function quickLogin(r){
-const map={customer:'0500000001',merchant:'0500000002',admin:'0500000003'};
+const map={customer:'0500000001',merchant:'0500000002',admin:'0500000003',staff:'0500000013'};
 const u=USERS[map[r]];SES={phone:map[r],role:u.role,store:u.store||null};
-closeModal();toast('دخلت كـ'+esc(u.name)+' ('+({customer:'عميل',merchant:'تاجر',admin:'إدارة'}[r])+')','ok');
-if(r==='merchant')go('m-dash');else if(r==='admin')go('a-over');else render();
+closeModal();toast('دخلت كـ'+esc(u.name)+' ('+({customer:'عميل',merchant:'تاجر',admin:'الإدارة',staff:'موظف إدارة'}[r])+')','ok');
+if(r==='merchant')go('m-dash');else if(r==='admin')go('a-over');else if(r==='staff')go('e-hub');else render();
 }
 
 /* ================= الإشعارات ================= */
@@ -1578,7 +1604,7 @@ setTimeout(()=>{const l=$('#chatlog');if(l)l.scrollTop=l.scrollHeight},50);
 }
 function myORole(o,g){
 if(!SES)return null;
-if(SES.role==='admin')return 'admin';
+if(SES.role==='admin'||SES.role==='staff')return 'admin';
 if(SES.role==='customer'&&o.customer===SES.phone)return 'customer';
 if(SES.role==='merchant'&&g.store===SES.store)return 'merchant';
 return null;
@@ -1778,6 +1804,7 @@ g.status='disputed';
 const own=ST(g.store).owner;
 if(own)pushNotif(own,'⚖️','نزاع جديد على طلبك','فتح العميل نزاعاً بسبب: '+COMPS[COMP.sub],['m-disputes']);
 pushNotif('0500000003','⚖️','نزاع جديد بانتظار التحكيم',ST(g.store).name+' · '+COMPS[COMP.sub],['a-disputes']);
+pushNotif('0500000013','⚖️','نزاع جديد بانتظار التحكيم',ST(g.store).name+' · '+COMPS[COMP.sub],['e-disputes']);
 toast('فُتح النزاع — المبلغ معلق حتى الحكم ⚖️','ok');
 closeModal();render();openDispute(d.id);
 }
@@ -1823,8 +1850,8 @@ setTimeout(()=>{const l=$('#chatlog');if(l)l.scrollTop=l.scrollHeight},50);
 function dispModalHTML(d){
 const s=ST(d.store),cust=USERS[d.customer],o=DB.orders.find(x=>x.id===d.order);
 const g=o.groups.find(x=>x.store===d.store);
-const canChat=SES&&((d.customer===SES.phone&&SES.role==='customer')||(d.store===SES.store&&SES.role==='merchant')||(SES.role==='admin'));
-const isAdmin=SES&&SES.role==='admin'&&d.status==='open';
+const canChat=SES&&((d.customer===SES.phone&&SES.role==='customer')||(d.store===SES.store&&SES.role==='merchant')||(SES.role==='admin'||SES.role==='staff'));
+const isAdmin=SES&&(SES.role==='admin'||SES.role==='staff')&&d.status==='open';
 return `<div class="mhead"><b>⚖️ ${esc(d.subject)} — طلب #${ar(d.order)}</b>
 ${d.status==='open'?'<span class="tag red">قيد التحكيم</span>':'<span class="tag grn">منتهٍ</span>'}
 <button class="x" onclick="OPEN_DID=null;closeModal()">✕</button></div>
@@ -1858,7 +1885,7 @@ function msgHTML(m,d){
 const cust=USERS[d.customer];
 if(m.r==='sys')return `<div class="msg r-s">⚖️ ${esc(m.t)}<div style="font-size:9px;margin-top:2px">${ago(m.at)}</div></div>`;
 const who={customer:cust?'👩 '+cust.name.split(' ')[0]:'العميل',merchant:'🏪 '+ST(d.store).name,admin:'🛡️ الإدارة'}[m.r];
-const mine=SES&&((m.r==='customer'&&d.customer===SES.phone&&SES.role==='customer')||(m.r==='merchant'&&d.store===SES.store&&SES.role==='merchant')||(m.r==='admin'&&SES.role==='admin'));
+const mine=SES&&((m.r==='customer'&&d.customer===SES.phone&&SES.role==='customer')||(m.r==='merchant'&&d.store===SES.store&&SES.role==='merchant')||(m.r==='admin'&&(SES.role==='admin'||SES.role==='staff')));
 const rcls=m.r==='customer'?'r-c':m.r==='merchant'?'r-m':'r-a';
 const mst=m.r==='merchant'?`style="--mc:${ST(d.store).color}"`:'';
 return `<div class="msg ${mine?'me':'them'} ${rcls}" ${mst}>
@@ -1877,7 +1904,7 @@ function myRoleIn(d){
 if(!SES)return null;
 if(SES.role==='customer'&&d.customer===SES.phone)return 'customer';
 if(SES.role==='merchant'&&d.store===SES.store)return 'merchant';
-if(SES.role==='admin')return 'admin';
+if(SES.role==='admin'||SES.role==='staff')return 'admin';
 return null;
 }
 function sendMsg(id){
@@ -1888,8 +1915,8 @@ const txt=($('#msgtxt')||{value:''}).value.trim();
 const img=EVP[0];
 if(!txt&&!img){toast('اكتب رسالة أو أرفق صورة','err');return}
 d.messages.push({r,t:txt||'(صورة دليل)',at:Date.now(),img});
-if(r==='customer'){const own=ST(d.store).owner;if(own)pushNotif(own,'💬','رسالة جديدة في النزاع',custName(d)+' أضاف رداً/دلياً جديداً',['m-disputes']);pushNotif('0500000003','💬','رسالة جديدة في النزاع','نزاع طلب #'+ar(d.order)+' — '+custName(d),['a-disputes'])}
-else if(r==='merchant'){pushNotif(d.customer,'💬','رد من المتجر على نزاعك',ST(d.store).name+' رد على نزاع طلب #'+ar(d.order),['disputes']);pushNotif('0500000003','💬','رسالة من التاجر في النزاع','نزاع طلب #'+ar(d.order)+' — '+ST(d.store).name,['a-disputes'])}
+if(r==='customer'){const own=ST(d.store).owner;if(own)pushNotif(own,'💬','رسالة جديدة في النزاع',custName(d)+' أضاف رداً/دلياً جديداً',['m-disputes']);pushNotif('0500000003','💬','رسالة جديدة في النزاع','نزاع طلب #'+ar(d.order)+' — '+custName(d),['a-disputes']);pushNotif('0500000013','💬','رسالة جديدة في النزاع','نزاع طلب #'+ar(d.order)+' — '+custName(d),['e-disputes'])}
+else if(r==='merchant'){pushNotif(d.customer,'💬','رد من المتجر على نزاعك',ST(d.store).name+' رد على نزاع طلب #'+ar(d.order),['disputes']);pushNotif('0500000003','💬','رسالة من التاجر في النزاع','نزاع طلب #'+ar(d.order)+' — '+ST(d.store).name,['a-disputes']);pushNotif('0500000013','💬','رسالة من التاجر في النزاع','نزاع طلب #'+ar(d.order)+' — '+ST(d.store).name,['e-disputes'])}
 else{pushNotif(d.customer,'💬','مداخلة من الإدارة','الإدارة علّقت على نزاع طلب #'+ar(d.order),['disputes']);const own=ST(d.store).owner;if(own)pushNotif(own,'💬','مداخلة من الإدارة','الإدارة علّقت على نزاع طلب #'+ar(d.order),['m-disputes'])}
 EVP=[];
 dispSelfRefresh();render();
@@ -1910,8 +1937,8 @@ function ruleAct(id,act){
 const d=DB.disputes.find(x=>x.id===id);
 const txt=($('#ruletxt')||{value:''}).value.trim();
 if(!txt){toast('اكتب تسبيب الحكم — يظهر للطرفين','err');return}
-d.ruling={act,by:'الإدارة',text:txt,at:Date.now()};d.status='resolved';
-d.messages.push({r:'sys',t:'أصدرت الإدارة حكمها: '+(act==='release'?'إفراج المبلغ للتاجر — التسبيب: ':'استرجاع المبلغ للعميلة — التسبيب: ')+txt,at:Date.now()});
+d.ruling={act,by:(SES&&SES.role==='staff')?'موظف الإدارة':'الإدارة',text:txt,at:Date.now()};d.status='resolved';
+d.messages.push({r:'sys',t:'صدر حكم '+(SES&&SES.role==='staff'?'موظف الإدارة':'الإدارة')+': '+(act==='release'?'إفراج المبلغ للتاجر — التسبيب: ':'استرجاع المبلغ للعميلة — التسبيب: ')+txt,at:Date.now()});
 const o=DB.orders.find(x=>x.id===d.order);const g=o.groups.find(x=>x.store===d.store);
 if(act==='release')doRelease(o,g,'حكم التحكيم');else doRefund(o,g,'حكم التحكيم');
 toast('أُصدر الحكم ونُفذ على الشحنة ⚖️','ok');
@@ -1920,7 +1947,7 @@ OPEN_DID=null;closeModal();render();
 /* ================= حسابي + الإعدادات ================= */
 function pgAccount(){
 if(!SES)return `<div class="pghead"><h1>👤 حسابي</h1></div><div class="empty"><div class="em">👤</div><b>سجّل دخولك للوصول لحسابك</b><span>النقاط، العناوين، الإشعارات والإعدادات كلها هنا</span><button class="btn mt" onclick="openAuth()">تسجيل الدخول</button></div>`;
-if(SES.role!=='customer')return `<div class="pghead"><h1>👤 حسابي</h1></div><div class="empty"><div class="em">🛍️</div><b>صفحة الحساب لعملاء ضمين</b><span>أنت الآن بدور ${SES.role==='merchant'?'التاجر':'الإدارة'}</span><button class="btn mt" onclick="switchRole('customer')">العودة للتسوق كعميل</button></div>`;
+if(SES.role!=='customer')return `<div class="pghead"><h1>👤 حسابي</h1></div><div class="empty"><div class="em">🛍️</div><b>صفحة الحساب لعملاء ضمين</b><span>أنت الآن بدور ${SES.role==='merchant'?'التاجر':SES.role==='staff'?'موظف الإدارة':'الإدارة العليا'}</span><button class="btn mt" onclick="switchRole('customer')">العودة للتسوق كعميل</button></div>`;
 const u=me();
 const ordersN=DB.orders.filter(o=>o.customer===SES.phone).length;
 const disOpen=DB.disputes.filter(d=>d.customer===SES.phone&&d.status==='open').length;
@@ -2189,18 +2216,15 @@ ${sec.id==='gaming'?`<div class="fld mt"><label>🎮 طبيعة المنتج و�
 <option value="hot" ${p&&p.temp==='hot'?'selected':''}>🔥 ساخن — يُجهَّز ويُسلَّم ساخناً بحافظات حرارية</option>
 </select></div>
 </div>
-<div class="acard mt" style="padding:13px;background:#1D443206">
-<b style="font-size:12.5px">🖼️🎬 الوسائط الترويجية للمنتج</b>
-<p class="hint" style="margin-top:3px">تظهر للعملاء في معرض صفحة متجرك وفي صفحة المنتج — حدودك المحددة من الإدارة: حتى <b>${ar(med.imgs)} صور</b> و<b>${ar(med.vids)} ${med.vids===1?'مقطع':'مقاطع'}</b> بمدة أقصاها <b>${ar(med.secs)} ثانية</b> للمقطع.</p>
-<b style="font-size:11.5px;display:block;margin-top:10px">🖼️ صور المنتج (${MIMGS.length}/${ar(med.imgs)}) — الأولى هي الغلاف</b>
-<div id="mpimgs">${mpImgsHTML(med)}</div>
-<div class="mt" style="display:flex;gap:7px;flex-wrap:wrap">
-<button class="btn soft xs" onclick="mImgPick()">📷 رفع صورة من جهازي</button>
-<button class="btn gray xs" onclick="mImgAuto()">🎲 صورة تلقائية</button>
+<div class="mstudio mt">
+<div class="mshead">
+<div class="msttl"><span class="msic">🎬</span><div><b>استوديو الوسائط الترويجية</b><small>صور ومقاطع منتجك تظهر للعملاء في معرض متجرك وصفحة المنتج</small></div></div>
+<div class="mschips" id="mschips">${msChipsHTML(med)}</div>
 </div>
-<b style="font-size:11.5px;display:block;margin-top:13px">🎬 مقاطع ترويجية (${MVIDS.length}/${ar(med.vids)})</b>
-<div id="mpvids">${mpVidsHTML(med)}</div>
-${med.vids>0?`<div class="hint" style="margin-top:8px">أضف رابط مقطع (MP4 مباشر) ثم اضغط «كشف المدة» — يُرفض المقطع إن تجاوز مدته ${ar(med.secs)} ثانية.</div>`:'<div class="hint" style="margin-top:8px">الإدارة لم تفعّل المقاطع الترويجية لمتجرك حالياً</div>'}
+<div class="msbody">
+<div id="mpimgs">${msImgsSec(med)}</div>
+<div id="mpvids">${msVidsSec(med)}</div>
+</div>
 </div>
 <button class="btn wide mt" onclick="mSaveProd('${pid||''}')">${p?'حفظ التعديلات':'إضافة المنتج'}</button>
 </div>`,'lg');
@@ -2219,11 +2243,19 @@ if(d===0){el.innerHTML='لا تغيير على تمويل النقاط ('+ar(np)
 el.innerHTML=d>0?`تُخصم من محفظتك <b style="color:var(--amb2)">− ${money(d)}</b> وتُحوَّل لمحفظة الإدارة (${ar(np-old)} نقطة × ${money(pv)})`:`يُسترجع لمحفظتك <b style="color:var(--grn)">+ ${money(-d)}</b> (${ar(old-np)} نقطة × ${money(pv)})`;
 }
 let MIMGS=[],MVIDS=[];
+function msChipsHTML(med){return `<span class="mschip ${MIMGS.length>=med.imgs?'full':''}">🖼️ ${ar(MIMGS.length)}/${ar(med.imgs)} صور</span><span class="mschip ${MVIDS.length>=med.vids?'full':''}">🎬 ${ar(MVIDS.length)}/${ar(med.vids)} ${med.vids===1?'مقطع':'مقاطع'}</span><span class="mschip">⏱️ حتى ${ar(med.secs)} ثانية</span>`}
+function msImgsSec(med){return `<div class="mssec">
+<div class="mssechd"><b>🖼️ صور المنتج <span class="mscount ${MIMGS.length>=med.imgs?'full':''}">${MIMGS.length>=med.imgs?'اكتملت ('+ar(med.imgs)+'/'+ar(med.imgs)+')':'متبقٍ '+ar(med.imgs-MIMGS.length)}</span></b><span>أول صورة هي الغلاف الرئيسي أمام العملاء</span></div>
+${mpImgsHTML(med)}
+<div class="msacts">
+<button class="btn sm" onclick="mImgPick()">📷 رفع صورة من جهازي</button>
+<button class="btn soft sm" onclick="mImgAuto()">🎲 صورة تلقائية من مكتبة ضمين</button>
+</div></div>`}
 function mpImgsHTML(med){
-if(!MIMGS.length)return '<div class="hint" style="padding:3px 0 5px">لا صور بعد — أول صورة ترفعها تكون الغلاف الرئيسي للمنتج.</div>';
-return `<div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:6px">${MIMGS.map((im,i)=>`<div class="mpthumb">${i===0?'<span class="cover">غلاف</span>':''}<img src="${im}" onerror="this.onerror=null;this.src='https://picsum.photos/seed/dmg${i}/200/200'"><button onclick="mImgDel(${i})" title="حذف">✕</button></div>`).join('')}</div>`;
+if(!MIMGS.length)return '<div class="msempty">🖼️ لا صور بعد — أول صورة ترفعها تصبح الغلاف الرئيسي للمنتج.</div>';
+return `<div class="msgrid">${MIMGS.map((im,i)=>`<div class="msth"><img src="${im}" alt="صورة ${ar(i+1)}" onerror="this.onerror=null;this.src='https://picsum.photos/seed/dmg${i}/200/200'"><span class="cover ${i===0?'gold':''}">${i===0?'★ الغلاف':'صورة '+ar(i+1)}</span><button class="del" onclick="mImgDel(${i})" title="حذف الصورة">✕</button></div>`).join('')}</div>`;
 }
-function mpImgsRefresh(med){const el=$('#mpimgs');if(el)el.innerHTML=mpImgsHTML(med||medOf(myStore()))}
+function mpImgsRefresh(med){med=med||medOf(myStore());const el=$('#mpimgs');if(el)el.innerHTML=msImgsSec(med);const c=$('#mschips');if(c)c.innerHTML=msChipsHTML(med)}
 function mImgDel(i){MIMGS.splice(i,1);mpImgsRefresh(medOf(myStore()))}
 function mImgPick(){
 $('#fup').onchange=e=>{const f=e.target.files[0];if(!f)return;
@@ -2235,20 +2267,23 @@ $('#fup').click();}
 function mImgAuto(){const med=medOf(myStore());
 if(MIMGS.length>=med.imgs){toast('بلغت حد '+ar(med.imgs)+' صور المحدد من الإدارة','err');return}
 MIMGS.push(ZPOOL[Math.floor(Math.random()*ZPOOL.length)]);mpImgsRefresh(med);toast('أُضيفت صورة تلقائية ('+ar(MIMGS.length)+'/'+ar(med.imgs)+') ✓','ok')}
-function mpVidsHTML(med){
-let h='';
-if(MVIDS.length)h+=`<div class="rows" style="margin-top:6px">${MVIDS.map((v,i)=>`<div class="row" style="flex-wrap:wrap;gap:7px">
-<span style="font-size:16px">🎬</span>
-<div style="flex:1;min-width:150px"><b style="font-size:11.5px;word-break:break-all">${esc(String(v.src).slice(0,48))}${String(v.src).length>48?'…':''}</b>
-<div class="hint">المدة: ${v.dur?('<b style="color:'+(v.bad?'var(--red)':'var(--grn)')+'">'+durTxt(v.dur)+'</b>'+(v.bad?' — تتجاوز الحد!':'')):'غير محددة — اضغط «كشف المدة»'} · الحد ${ar(med.secs)} ث</div></div>
-<button class="btn gray xs" onclick="mVidProbe(${i})">⏱️ كشف المدة</button>
-<button class="btn red xs" onclick="mVidDel(${i})">🗑 حذف</button>
-</div>`).join('')}</div>`;
-else h+='<div class="hint" style="padding:3px 0 5px">لا مقاطع بعد — أضف رابط مقطع MP4 مباشر بالأسفل.</div>';
-if(MVIDS.length<med.vids)h+=`<div class="mt" style="display:flex;gap:7px;flex-wrap:wrap"><input class="inp" id="mv-url" style="flex:1;min-width:200px;font-size:12px" placeholder="رابط المقطع (MP4 مباشر — https://…)" onkeydown="if(event.key==='Enter')mVidAdd()"><button class="btn sm" onclick="mVidAdd()">＋ إضافة المقطع</button></div>`;
-return h;
+function msVidsSec(med){
+let h=`<div class="mssec">
+<div class="mssechd"><b>🎬 مقاطع ترويجية <span class="mscount ${MVIDS.length>=med.vids?'full':''}">${MVIDS.length>=med.vids?'اكتملت ('+ar(med.vids)+'/'+ar(med.vids)+')':'متبقٍ '+ar(med.vids-MVIDS.length)}</span></b><span>MP4 مباشر بمدة أقصاها ${ar(med.secs)} ثانية — تُفحص آلياً من مصدرها</span></div>`;
+if(MVIDS.length)h+=`<div class="msvlist">${MVIDS.map((v,i)=>{
+const st=v.bad?{c:'bad',ic:'⛔',t:'تتجاوز الحد — استبدلها'}:v.dur?{c:'ok',ic:'✓',t:'ضمن الحد'}:{c:'wait',ic:'⏱️',t:'اضغط «كشف المدة»'};
+return `<div class="msvcard ${v.bad?'bad':''}">
+<div class="msvtop"><span class="vnum">مقطع ${ar(i+1)}</span><span class="vic">▶</span></div>
+<div class="msvbody">
+<b class="msvurl">${esc(String(v.src).slice(0,46))}${String(v.src).length>46?'…':''}</b>
+<div class="msvmeta"><span class="msdur ${st.c}">${st.ic} ${v.dur?durTxt(v.dur):'—'}</span><span class="hint">الحد ${ar(med.secs)} ث · ${st.t}</span></div>
+<div class="msvacts"><button class="btn gray xs" onclick="mVidProbe(${i})">⏱️ كشف المدة</button><button class="btn red xs" onclick="mVidDel(${i})">🗑 حذف</button></div>
+</div></div>`}).join('')}</div>`;
+else h+=med.vids>0?'<div class="msempty">🎬 لا مقاطع بعد — ألصق رابط مقطع MP4 مباشر بالأسفل ثم اضغط «إضافة المقطع».</div>':'<div class="msempty">🎛️ الإدارة لم تفعّل المقاطع الترويجية لمتجرك حالياً — راجعها لتوسيع حدودك الترويجية</div>';
+if(med.vids>0&&MVIDS.length<med.vids)h+=`<div class="msadd"><input class="inp" id="mv-url" placeholder="رابط المقطع (MP4 مباشر — https://…)" onkeydown="if(event.key==='Enter')mVidAdd()"><button class="btn sm" onclick="mVidAdd()">＋ إضافة المقطع</button></div>`;
+return h+'</div>';
 }
-function mpVidsRefresh(med){const el=$('#mpvids');if(el)el.innerHTML=mpVidsHTML(med||medOf(myStore()))}
+function mpVidsRefresh(med){med=med||medOf(myStore());const el=$('#mpvids');if(el)el.innerHTML=msVidsSec(med);const c=$('#mschips');if(c)c.innerHTML=msChipsHTML(med)}
 function mVidDel(i){MVIDS.splice(i,1);mpVidsRefresh(medOf(myStore()))}
 function mVidAdd(){
 const med=medOf(myStore());
@@ -2634,6 +2669,37 @@ function pgAHub(){
 return `<div class="pghead"><h1>🛡️ مركز إدارة ضمين</h1><span class="tag nvy">المشرف العام</span></div>
 ${pgAOver()}`;
 }
+/* ================= 🧑‍💼 لوحة موظفي الإدارة ================= */
+function pgEHub(){
+const open=DB.disputes.filter(d=>d.status==='open');
+const done=DB.disputes.filter(d=>d.status==='resolved');
+const pends=DB.reqs.filter(r=>r.status==='pending');
+const susp=STORES.filter(s=>s.susp).length;
+const st=me();
+return `<div class="pghead"><h1>🧑‍💼 مركز موظف الإدارة</h1><span class="tag amb">${esc(st.staffTitle||'مشرف متاجر ونزاعات')}</span></div>
+<div class="kpis">
+<div class="kpi amb" style="cursor:pointer" onclick="go('e-reqs')"><i>📋</i><b>${ar(pends.length)}</b><span>طلبات تسجيل بانتظار البت</span></div>
+<div class="kpi" style="cursor:pointer" onclick="go('e-stores')"><i>🏪</i><b>${ar(STORES.length)}</b><span>متجر في ضمين — ${ar(susp)} موقوف</span></div>
+<div class="kpi red" style="cursor:pointer" onclick="go('e-disputes')"><i>⚖️</i><b>${ar(open.length)}</b><span>نزاعات مفتوحة بانتظار الحكم</span></div>
+<div class="kpi grn"><i>📁</i><b>${ar(done.length)}</b><span>أحكام تحكيم صادرة</span></div>
+</div>
+<div class="grid2 mt">
+<div class="acard"><h3>🏪 قسم المتاجر</h3>
+<p class="hint mb" style="line-height:1.8">اعتماد طلبات تسجيل المتاجر الجديدة وفتحها فوراً، وإدارة المتاجر القائمة وإيقاف المخالف منها، وضبط حدود الوسائط الترويجية لكل متجر — نفس صفحة المتاجر في مركز الإدارة تماماً.</p>
+<div class="rows">
+<div class="row" style="cursor:pointer" onclick="go('e-reqs')"><div class="fx" style="font-size:13px">📋 طلبات بانتظار البت</div><span class="tag ${pends.length?'amb':'grn'}">${ar(pends.length)} طلب</span></div>
+<div class="row" style="cursor:pointer" onclick="go('e-stores')"><div class="fx" style="font-size:13px">🏪 متاجر عاملة</div><span class="tag grn">${ar(STORES.length-susp)} متجر</span></div>
+<div class="row" style="cursor:pointer" onclick="go('e-stores','stores')"><div class="fx" style="font-size:13px">⛔ متاجر موقوفة</div><span class="tag ${susp?'red':'grn'}">${ar(susp)} متجر</span></div>
+</div>
+<button class="btn soft wide mt" onclick="go('e-stores')">فتح قسم المتاجر ←</button></div>
+<div class="acard"><h3>⚖️ قسم النزاعات</h3>
+<p class="hint mb" style="line-height:1.8">قضايا التحكيم الثلاثي بدردشة الأطراف وأدلة الصور — اقرأ الحجج وأصدر حكمك بتسبيب يظهر للعميل والتاجر وينفّذ تلقائياً على المبلغ المحجوز — نفس صفحة التحكيم في مركز الإدارة تماماً.</p>
+${open.length?open.map(d=>`<div class="row" style="cursor:pointer" onclick="openDispute('${d.id}')"><div style="flex:1;min-width:0"><b style="font-size:12.5px">${esc(d.subject)}</b><div class="hint">${ST(d.store).name} · طلب #${ar(d.order)} · ${ago(d.openedAt)}</div></div><span class="tag red">يحتاج حكماً</span></div>`).join(''):'<div class="hint mb">لا نزاعات معلقة حالياً — كل شيء تحت السيطرة 🕊️</div>'}
+<button class="btn soft wide mt" onclick="go('e-disputes')">فتح قسم النزاعات ←</button></div>
+</div>
+<div class="acard mt"><h3>🤝 تكامل لحظي مع الإدارة العليا</h3>
+<p class="hint" style="line-height:1.9">أنت معتمد ضمن فريق موظفي ضمين — كل موافقة تُصدرها على متجر وكل حكم تصدره يظهر مباشرة في مركز الإدارة العليا والعكس صحيح، لأنكم تعملون على قاعدة بيانات واحدة تتحدّث لحظياً. صلاحياتك: اعتماد المتاجر وإدارتها وضبط حدود وسائطها، والبت في النزاعات — أما الأقسام والعمولات والإيرادات المالية فتبقى لمركز الإدارة العليا.</p></div>`;
+}
 /* صفحة المتاجر المستقلة: طلبات التسجيل + جميع المتاجر بتبويبين */
 function pgAStoresPage(){
 const t=['reqs','stores','media'].includes(VIEW.atab)?VIEW.atab:'stores';ASTT=t;
@@ -2793,7 +2859,7 @@ ${isS?`<div class="reqcell"><span>اسم المتجر</span><b>${esc(r.store)}</
 <div class="reqcell"><span>الجوال (يستخدم للدخول)</span><b>${ar(r.phone)}</b></div>
 <div class="reqcell"><span>البريد الإلكتروني</span><b>${esc(r.email||'—')}</b></div>
 ${isS?`<div class="reqcell"><span>السجل التجاري / الوثيقة</span><b>${esc(r.cr)}${r.crDoc?` <span class="tag grn">📎 ${esc(r.crDoc)}</span>`:''}</b></div>
-<div class="reqcell"><span>الآيبان (تحويل أرباح المتجر)</span><b>${esc(r.iban)}</b></div>`:`<div class="reqcell" style="grid-column:1/-1"><span>ملاحظة الأمان</span><b class="hint" style="font-weight:600">كلمة المرور محفوظة ولا تُعرض — تُفتح صلاحيات مركز الإدارة كاملة بعد قبولك، ويُبلَّغ صاحب الطلب بأي رفض مع سببه.</b></div>`}
+<div class="reqcell"><span>الآيبان (تحويل أرباح المتجر)</span><b>${esc(r.iban)}</b></div>`:`<div class="reqcell" style="grid-column:1/-1"><span>ملاحظة الأمان</span><b class="hint" style="font-weight:600">كلمة المرور محفوظة ولا تُعرض — تُفتح لك لوحة موظف الإدارة (المتاجر والنزاعات) بعد القبول، ويُبلَّغ صاحب الطلب بأي رفض مع سببه.</b></div>`}
 </div>
 <div class="spread mt" style="gap:8px;flex-wrap:wrap">
 <button class="btn sm" onclick="aApproveReq('${r.id}')">✓ موافقة${isS?' وفتح المتجر':' وفتح الحساب'}</button>
@@ -2812,11 +2878,11 @@ if(r.kind==='store'){const st=STORES.find(x=>x.owner===r.phone);if(st)u.store=st
 else{const st=STORES.find(x=>x.owner===r.phone);
 USERS[r.phone]=r.kind==='store'
 ?{name:r.own,role:'merchant',pass:'1234',store:st?st.id:null,since:Date.now(),email:r.email||'',notif:{ord:true,dis:true}}
-:{name:r.own,role:'admin',pass:'1234',since:Date.now(),email:r.email||'',notif:{dis:true}};
+:{name:r.own,role:'staff',pass:'1234',since:Date.now(),email:r.email||'',staffTitle:r.role||'مشرف عام',notif:{dis:true}};
 passInfo=' — كلمة المرور التجريبية 1234'}
 r.status='approved';r.at2=Date.now();
-pushNotif(r.phone,'🎉',r.kind==='store'?'اعتُمد متجرك وأصبح جاهزاً!':'مرحباً بك في فريق إدارة ضمين',r.kind==='store'?'«'+r.store+'» فُتح في '+SEC(r.sec).name+' — أضف منتجاتك من لوحة التاجر وابدأ البيع':'فُتحت لك صلاحيات مركز الإدارة كاملة — سجّل دخولك بالجوال وكلمة المرور وابدأ',r.kind==='store'?['m-dash']:['a-over']);
-toast(r.kind==='store'?'اعتُمد المتجر وأُبلغ صاحبه ✓':'قُبل طلب الإدارة وأُبلغ صاحبه'+passInfo,'ok');render();
+pushNotif(r.phone,'🎉',r.kind==='store'?'اعتُمد متجرك وأصبح جاهزاً!':'مرحباً بك في فريق إدارة ضمين',r.kind==='store'?'«'+r.store+'» فُتح في '+SEC(r.sec).name+' — أضف منتجاتك من لوحة التاجر وابدأ البيع':'فُتحت لك صلاحيات لوحة الموظف (المتاجر والنزاعات) — سجّل دخولك بالجوال وكلمة المرور وابدأ',r.kind==='store'?['m-dash']:['e-hub']);
+toast(r.kind==='store'?'اعتُمد المتجر وأُبلغ صاحبه ✓':'قُبل طلب الانضمام وأُبلغ صاحبه'+passInfo,'ok');render();
 }
 function aRejectReq(id){
 const r=DB.reqs.find(x=>x.id===id);if(!r)return;REJ=r;
