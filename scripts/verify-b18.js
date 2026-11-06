@@ -73,25 +73,42 @@ const ok = (name, cond) => {
     await pg.click('button:has-text("🏪 تاجر")');
     await pg.waitForSelector('h1:has-text("لوحة تحكم")');
 
+    /* صفحة المنتجات: أزرار الاستوديو الجديدة */
     await pg.click('button:has-text("🧺 المنتجات")');
-    await pg.click('button:has-text("＋ منتج جديد")');
-    await pg.waitForSelector('.mstudio');
-    ok('استوديو الوسائط يظهر (mstudio)', await pg.locator('.mstudio').count() === 1);
-    ok('ترويسة خضراء بتدرج + عنوان «استوديو الوسائط الترويجية»', (await pg.locator('.mshead').innerText()).includes('استوديو الوسائط الترويجية'));
-    ok('٣ شارات حدود في الترويسة', await pg.locator('.mschip').count() >= 3);
-    const chipTxt = await pg.locator('.mschip').first().innerText();
-    ok('شارة الصور تبدأ ٠/٦', chipTxt.includes('٠/٦'));
-    ok('قسمان منفصلان (صور + مقاطع)', await pg.locator('.mssec').count() === 2);
-    ok('أزرار الرفع الجديدة', await pg.locator('button:has-text("📷 رفع صورة من جهازي")').count() === 1 && await pg.locator('button:has-text("🎲 صورة تلقائية من مكتبة ضمين")').count() === 1);
+    await pg.waitForSelector('h1:has-text("منتجاتي")');
+    ok('رابط «🎬 الوسائط» في شريط التاجر', (await pg.locator('.nav button', { hasText: '🎬 الوسائط' }).count()) >= 1);
+    ok('زر «استوديو الوسائط» في رأس صفحة المنتجات', await pg.locator('button:has-text("🎬 استوديو الوسائط")').count() === 1);
+    ok('زر «🎬 وسائط» على بطاقات المنتجات', await pg.locator('button:has-text("🎬 وسائط")').count() >= 3);
 
-    /* رفع صورتين تلقائياً */
+    /* الفورم بلا استوديو — بطاقة توجيه */
+    await pg.click('button:has-text("＋ منتج جديد")');
+    await pg.waitForSelector('.mback .mcard');
+    ok('الفورم خالٍ من الاستوديو (لا mstudio داخل النافذة)', (await pg.locator('.mback .mstudio').count()) === 0);
+    ok('بطاقة توجيه داخل الفورم', (await pg.locator('.mback .acard').innerText()).includes('ستنتقل تلقائياً إلى استوديو الوسائط'));
+
+    /* حفظ منتج جديد → انتقال تلقائي للاستوديو */
+    await pg.fill('#mp-nm', 'شد كتان تجريبي — استوديو');
+    await pg.fill('#mp-pr', '120');
+    await pg.fill('#mp-pts', '10');
+    await pg.fill('#mp-ds', 'منتج تجريبي للتحقق من استوديو الوسائط');
+    await pg.click('button:has-text("إضافة المنتج")');
+    await pg.waitForSelector('.mstudio');
+    ok('انتقل تلقائياً لصفحة استوديو الوسائط', (await pg.locator('.pghead h1').innerText()).includes('استوديو الوسائط الترويجية'));
+    ok('المنتج الجديد محدد مسبقاً في المختار', (await pg.locator('.acard select option:checked').innerText()).includes('شد كتان تجريبي'));
+    ok('ترويسة الاستوديو تحمل اسم المنتج المحدد', (await pg.locator('.mshead').innerText()).includes('شد كتان تجريبي'));
+    ok('٣ شارات حدود في الترويسة', await pg.locator('.mschip').count() >= 3);
+    ok('غلاف تلقائي للمنتج الجديد (١/٦ صور)', (await pg.locator('.mschip').first().innerText()).includes('١/٦'));
+    ok('قسمان منفصلان (صور + مقاطع)', await pg.locator('.mssec').count() === 2);
+    ok('أزرار الرفع', await pg.locator('button:has-text("📷 رفع صورة من جهازي")').count() === 1 && await pg.locator('button:has-text("🎲 صورة تلقائية من مكتبة ضمين")').count() === 1);
+
+    /* رفع صورتين تلقائياً — حفظ فوري */
     await pg.click('button:has-text("🎲 صورة تلقائية")');
     await pg.click('button:has-text("🎲 صورة تلقائية")');
     await pg.waitForTimeout(300);
-    ok('مصغّرتان أنيقتان', await pg.locator('.msgrid .msth').count() === 2);
+    ok('٣ مصغّرات (الغلاف التلقائي + ٢)', await pg.locator('.msgrid .msth').count() === 3);
     ok('شارة الغلاف الذهبية على الأولى', await pg.locator('.msth .cover.gold').count() === 1);
-    ok('الشارة تتحدث فوراً إلى ٢/٦', (await pg.locator('.mschip').first().innerText()).includes('٢/٦'));
-    ok('عدّاد القسم «متبقٍ ٤»', (await pg.locator('.mscount').first().innerText()).includes('٤'));
+    ok('الشارة تتحدث فورياً إلى ٣/٦', (await pg.locator('.mschip').first().innerText()).includes('٣/٦'));
+    ok('الحفظ الفوري: كائن المنتج يحمل ٣ صور', (await pg.evaluate(() => [...PRODUCTS].find(p => p.name.includes('شد كتان تجريبي')).imgs.length)) === 3);
 
     /* إضافة مقطع */
     await pg.fill('#mv-url', 'https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4');
@@ -104,17 +121,29 @@ const ok = (name, cond) => {
     const durWait = await pg.locator('.msdur.wait').count();
     console.log(durOk ? '   ✓ كشف المدة تلقائياً: ضمن الحد (٠:١٠)' : durWait ? '   ⚠ المدد لم تُقرأ من المصدر (شبكة) — البطاقة تظل بحالة انتظار' : '   ✗ حالة غير متوقعة');
     if (!durOk && !durWait) failures.push('حالة بطاقة المقطع');
+    if (durOk) ok('الحفظ الفوري: المقطع مُنشر في كائن المنتج بمدته', (await pg.evaluate(() => { const p = [...PRODUCTS].find(p => p.name.includes('شد كتان تجريبي')); return p.vids.length === 1 && p.vids[0].dur > 0; })));
 
-    await pg.screenshot({ path: SHOTS + '/z-media-form.png' });
+    /* المختار: تبديل منتج → مزامنة مصفوفاته ثم العودة */
+    const firstOpt = await pg.locator('.acard select option').nth(1).getAttribute('value');
+    await pg.selectOption('.acard select', firstOpt);
+    await pg.waitForTimeout(400);
+    ok('تبديل المنتج يعيد مزامنة الوسائط', (await pg.locator('.msttl b').innerText()).includes((await pg.locator('.acard select option:checked').innerText()).split(' — ')[0]));
+    await pg.selectOption('.acard select', { label: (await pg.locator('.acard select option').first().innerText()) });
+    await pg.waitForTimeout(400);
+    ok('العودة للمنتج الجديد: ٣ صور ما تزال محفوظة', await pg.locator('.msgrid .msth').count() === 3);
 
-    /* حفظ المنتج */
-    await pg.fill('#mp-nm', 'شد كتان تجريبي — استوديو');
-    await pg.fill('#mp-pr', '120');
-    await pg.fill('#mp-pts', '10');
-    await pg.fill('#mp-ds', 'منتج تجريبي للتحقق من استوديو الوسائط');
-    await pg.click('button:has-text("إضافة المنتج")');
-    await pg.waitForTimeout(800);
-    ok('المنتج حُفظ وظهر في منتجاتي', (await pg.locator('text=شد كتان تجريبي').count()) >= 1);
+    await pg.screenshot({ path: SHOTS + '/z-media-page.png' });
+
+    /* فورم تعديل منتج قائم → زر «فتح الاستوديو» */
+    await pg.click('button:has-text("🧺 منتجاتي")');
+    await pg.waitForTimeout(400);
+    await pg.locator('button:has-text("✏️ تعديل")').first().click();
+    await pg.waitForSelector('.mback .acard');
+    ok('فورم التعديل: بطاقة الوسائط تعرض عدد الوسائط الحالية', (await pg.locator('.mback .acard').innerText()).includes('تُدار الآن من صفحة «استوديو الوسائط»'));
+    ok('زر «فتح الاستوديو» داخل فورم التعديل', await pg.locator('button:has-text("🎬 فتح الاستوديو")').count() === 1);
+    await pg.click('button:has-text("🎬 فتح الاستوديو")');
+    await pg.waitForTimeout(500);
+    ok('فتح الاستوديو من فورم التعديل: الصفحة تفتح بذلك المنتج', (await pg.locator('.pghead h1').innerText()).includes('استوديو الوسائط الترويجية'));
     ok('لا أخطاء JS في تيار التاجر', errs.length === 0);
     if (errs.length) console.log('   pageerror:', errs.slice(0, 2));
     await ctx.close();

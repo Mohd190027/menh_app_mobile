@@ -959,7 +959,7 @@ closeModal();render();window.scrollTo({top:0,behavior:'smooth'});
 function render(){
 const app=$('#app');
 const R={home:pgHome,search:pgSearch,section:pgSection,store:pgStore,product:pgProduct,cart:pgCart,orders:pgOrders,dlib:pgDLib,disputes:pgDisputes,account:pgAccount,favs:pgFavs,
-'m-dash':pgMDash,'m-prods':pgMProds,'m-orders':pgMOrders,'m-wallet':pgMWallet,'m-disputes':pgMDisputes,'m-set':pgMSet,
+'m-dash':pgMDash,'m-prods':pgMProds,'m-media':pgMMedia,'m-orders':pgMOrders,'m-wallet':pgMWallet,'m-disputes':pgMDisputes,'m-set':pgMSet,
 'a-hub':pgAHub,'a-stores':pgAStoresPage,'a-disputes':pgADisputes,'a-cats':pgACats,'a-rev':pgARev,'e-hub':pgEHub,'e-stores':pgAStoresPage,'e-disputes':pgADisputes};
 app.innerHTML=(R[VIEW.page]||pgHome)();
 renderTop();renderFab();appSave();
@@ -992,7 +992,7 @@ h=`<div class="topin">${brand}${sb}<button class="btn" onclick="openAuth()">تس
 }else if(SES.role==='merchant'){
 const st=ST(SES.store);
 h=`<div class="topin">${brand}${sb}<nav class="nav">
-${mnav('m-dash','📊 لوحة التحكم')}${mnav('m-prods','🧺 المنتجات')}${mnav('m-orders','📦 الطلبات')}${mnav('m-wallet','💰 المحفظة')}${mnav('m-disputes','⚖️ النزاعات')}${mnav('m-set','⚙️ الإعدادات')}
+${mnav('m-dash','📊 لوحة التحكم')}${mnav('m-prods','🧺 المنتجات')}${mnav('m-media','🎬 الوسائط')}${mnav('m-orders','📦 الطلبات')}${mnav('m-wallet','💰 المحفظة')}${mnav('m-disputes','⚖️ النزاعات')}${mnav('m-set','⚙️ الإعدادات')}
 </nav>${bellBtn()}${roleDD()}</div>`;
 }else if(SES.role==='admin'){
 h=`<div class="topin">${brand}${sb}<nav class="nav">
@@ -2744,7 +2744,7 @@ return `<div class="pghead"><h1>📊 لوحة تحكم ${esc(s.name)}</h1><span 
 function pgMProds(){
 const s=myStore(),sec=SEC(s.sec);
 const ps=PRODUCTS.filter(p=>p.store===s.id);
-return `<div class="pghead"><h1>🧺 منتجاتي (${ar(ps.length)})</h1><button class="btn sm" onclick="mProdForm()">＋ منتج جديد</button></div>
+return `<div class="pghead"><h1>🧺 منتجاتي (${ar(ps.length)})</h1><div style="display:flex;gap:7px;flex-wrap:wrap"><button class="btn soft sm" onclick="mStudioOpen()">🎬 استوديو الوسائط</button><button class="btn sm" onclick="mProdForm()">＋ منتج جديد</button></div></div>
 <div class="kpis mb">
 <div class="kpi nvy"><i>🧺</i><b>${ar(ps.length)}</b><span>منتج معروض</span></div>
 <div class="kpi amb"><i>🏷️</i><b>${ar(ps.filter(p=>p.off>0).length)}</b><span>عليه عرض نشط</span></div>
@@ -2766,10 +2766,57 @@ ${p.ptype==='chilled'?'<span class="mpstat" style="color:#2E6B8A">🧊 مبرد<
 <div class="mpacts">
 <button class="btn soft xs" onclick="mOfferForm('${p.id}')">🏷️ عروض</button>
 <button class="btn ${(p.rc?'soft':'gray')} xs" onclick="mProdRevs('${p.id}')">⭐ التقييمات${p.rc?' ('+ar(p.rc)+')':''}</button>
-<button class="btn gray xs" onclick="mProdForm('${p.id}')">✏️ تعديل</button>
+<button class="btn gray xs" onclick="mStudioOpen('${p.id}')">🎬 وسائط</button><button class="btn gray xs" onclick="mProdForm('${p.id}')">✏️ تعديل</button>
 <button class="btn red xs" onclick="mDelProd('${p.id}')">🗑️</button>
 </div></div></div>`}).join('')||`<div class="empty" style="grid-column:1/-1"><div class="em">🧺</div><b>لا منتجات بعد</b><span>أضف منتجك الأول وزوّده بنقاط ولاء تجذب العملاء</span><button class="btn mt" onclick="mProdForm()">＋ منتج جديد</button></div>`}
 </div>`;
+}
+/* ===== 🎬 استوديو الوسائط — صفحة مستقلة في قسم التاجر ===== */
+let MSPID=null;
+function mStudioOpen(pid){MSPID=pid||null;closeModal();go('m-media')}
+function msSel(pid){MSPID=pid;render()}
+function msSave(){
+const p=MSPID?P(MSPID):null;if(!p)return;
+const med=medOf(myStore());
+p.imgs=MIMGS.slice(0,med.imgs);
+p.vids=MVIDS.filter(v=>!v.bad).map(v=>({src:v.src,dur:Math.round(v.dur||0)}));
+appSave();
+}
+function pgMMedia(){
+const s=myStore(),med=medOf(s);
+const ps=PRODUCTS.filter(p=>p.store===s.id);
+if(!ps.length)return `<div class="pghead"><h1>🎬 استوديو الوسائط الترويجية</h1><button class="btn sm" onclick="mProdForm()">＋ منتج جديد</button></div>
+<div class="empty"><div class="em">🎬</div><b>لا منتجات بعد في متجرك</b><span>أنشئ منتجك الأول من صفحة «المنتجات» ثم عُد هنا لإضافة صوره ومقاطعه الترويجية</span><button class="btn mt" onclick="go('m-prods')">🧺 الذهاب للمنتجات</button></div>`;
+if(!MSPID||!P(MSPID)||P(MSPID).store!==s.id)MSPID=ps[0].id;
+const cur=P(MSPID);
+MIMGS=(cur.imgs||[]).slice();
+MVIDS=(cur.vids||[]).map(v=>({src:v.src,dur:+v.dur||0,bad:false}));
+const tImgs=ps.reduce((a,p)=>a+(p.imgs||[]).length,0),tVids=ps.reduce((a,p)=>a+(p.vids||[]).length,0),noV=ps.filter(p=>!(p.vids||[]).length).length;
+return `<div class="pghead"><h1>🎬 استوديو الوسائط الترويجية</h1><div style="display:flex;gap:7px;flex-wrap:wrap"><button class="btn gray sm" onclick="go('m-prods')">🧺 منتجاتي</button><button class="btn sm" onclick="mProdForm()">＋ منتج جديد</button></div></div>
+<div class="kpis mb">
+<div class="kpi grn"><i>🖼️</i><b>${ar(tImgs)}</b><span>صورة في متجرك</span></div>
+<div class="kpi nvy"><i>🎬</i><b>${ar(tVids)}</b><span>مقطع ترويجي</span></div>
+<div class="kpi amb"><i>🎛️</i><b>${ar(med.imgs)} · ${ar(med.vids)}</b><span>حدود الإدارة (صور · مقاطع)</span></div>
+<div class="kpi red"><i>⏱️</i><b>${ar(med.secs)} ث</b><span>أقصى مدة للمقطع</span></div>
+</div>
+<div class="acard" style="display:flex;gap:11px;align-items:flex-end;flex-wrap:wrap;margin-bottom:14px">
+<div class="fld" style="flex:1;min-width:230px;margin:0"><label>📦 اختر المنتج الذي تريد إدارة وسائطه</label>
+<select class="inp" onchange="msSel(this.value)">
+${ps.map(p=>`<option value="${p.id}" ${p.id===MSPID?'selected':''}>${esc(p.name)} — ${ar((p.imgs||[]).length)} صور · ${ar((p.vids||[]).length)} مقاطع</option>`).join('')}
+</select></div>
+<div class="hint" style="padding-bottom:9px">💾 كل إضافة أو حذف تُحفظ فورياً في «${esc(cur.name)}» — لا تحتاج زر حفظ</div>
+</div>
+<div class="mstudio">
+<div class="mshead">
+<div class="msttl"><span class="msic">🎬</span><div><b>وسائط «${esc(cur.name)}»</b><small>صور ومقاطع المنتج تظهر للعملاء في معرض متجرك وصفحة المنتج</small></div></div>
+<div class="mschips" id="mschips">${msChipsHTML(med)}</div>
+</div>
+<div class="msbody">
+<div id="mpimgs">${msImgsSec(med)}</div>
+<div id="mpvids">${msVidsSec(med)}</div>
+</div>
+</div>
+<p class="hint" style="margin-top:10px">🖼️ أول صورة هي الغلاف الرئيسي أمام العملاء · 🎬 المقطع الذي تتجاوز مدته حد الإدارة لا يُنشر للعملاء حتى تختصره أو تحذفه · 🎛️ الحدود تُحدَّث لحظياً من إعدادات الإدارة لمتجرك</p>`;
 }
 function mProdForm(pid){
 MPID=pid||null;
@@ -2777,9 +2824,6 @@ const s=myStore(),sec=SEC(s.sec);
 const p=pid?P(pid):null;
 MPQ=p&&p.qs?JSON.parse(JSON.stringify(p.qs)):[];
 MPQOPEN=false;
-MIMGS=p&&p.imgs?p.imgs.slice():[];
-MVIDS=p&&p.vids?JSON.parse(JSON.stringify(p.vids)):[];
-const med=medOf(s);
 openModal(`<div class="mhead"><b>${p?'تعديل منتج':'منتج جديد'}</b><button class="x" onclick="closeModal()">✕</button></div>
 <div class="mbody">
 <div class="fld"><label>اسم المنتج</label><input class="inp" id="mp-nm" value="${p?esc(p.name):''}" placeholder="مثال: عباية كتان مطرزة"></div>
@@ -2838,15 +2882,11 @@ ${sec.id==='gaming'?`<div class="fld mt"><label>🎮 طبيعة المنتج و�
 <option value="hot" ${p&&p.temp==='hot'?'selected':''}>🔥 ساخن — يُجهَّز ويُسلَّم ساخناً بحافظات حرارية</option>
 </select></div>
 </div>
-<div class="mstudio mt">
-<div class="mshead">
-<div class="msttl"><span class="msic">🎬</span><div><b>استوديو الوسائط الترويجية</b><small>صور ومقاطع منتجك تظهر للعملاء في معرض متجرك وصفحة المنتج</small></div></div>
-<div class="mschips" id="mschips">${msChipsHTML(med)}</div>
-</div>
-<div class="msbody">
-<div id="mpimgs">${msImgsSec(med)}</div>
-<div id="mpvids">${msVidsSec(med)}</div>
-</div>
+<div class="acard mt" style="padding:12px 14px;display:flex;gap:11px;align-items:center;flex-wrap:wrap;background:#C9A2270D;border:1px dashed #C9A22755">
+<span style="font-size:22px">🎬</span>
+<div style="flex:1;min-width:180px"><b style="font-size:12.5px">صور ومقاطع المنتج الترويجية</b>
+<div class="hint" style="margin-top:2px">${pid?`لديه ${ar((p.imgs||[]).length)} صورة و${ar((p.vids||[]).length)} مقطع — تُدار الآن من صفحة «استوديو الوسائط»`:'بعد إضافة المنتج ستنتقل تلقائياً إلى استوديو الوسائط لإضافة صوره ومقاطعه'}</div></div>
+${pid?`<button class="btn sm" onclick="mStudioOpen('${pid}')">🎬 فتح الاستوديو</button>`:''}
 </div>
 <button class="btn wide mt" onclick="mSaveProd('${pid||''}')">${p?'حفظ التعديلات':'إضافة المنتج'}</button>
 </div>`,'lg');
@@ -2878,17 +2918,17 @@ if(!MIMGS.length)return '<div class="msempty">🖼️ لا صور بعد — أ�
 return `<div class="msgrid">${MIMGS.map((im,i)=>`<div class="msth"><img src="${im}" alt="صورة ${ar(i+1)}" onerror="this.onerror=null;this.src='https://picsum.photos/seed/dmg${i}/200/200'"><span class="cover ${i===0?'gold':''}">${i===0?'★ الغلاف':'صورة '+ar(i+1)}</span><button class="del" onclick="mImgDel(${i})" title="حذف الصورة">✕</button></div>`).join('')}</div>`;
 }
 function mpImgsRefresh(med){med=med||medOf(myStore());const el=$('#mpimgs');if(el)el.innerHTML=msImgsSec(med);const c=$('#mschips');if(c)c.innerHTML=msChipsHTML(med)}
-function mImgDel(i){MIMGS.splice(i,1);mpImgsRefresh(medOf(myStore()))}
+function mImgDel(i){MIMGS.splice(i,1);msSave();mpImgsRefresh(medOf(myStore()))}
 function mImgPick(){
 $('#fup').onchange=e=>{const f=e.target.files[0];if(!f)return;
 const rd=new FileReader();rd.onload=()=>{$('#fup').value='';
 const med=medOf(myStore());
 if(MIMGS.length>=med.imgs){toast('بلغت حد '+ar(med.imgs)+' صور المحدد من الإدارة','err');return}
-MIMGS.push(rd.result);mpImgsRefresh(med);toast('أُضيفت الصورة ('+ar(MIMGS.length)+'/'+ar(med.imgs)+') ✓','ok')};rd.readAsDataURL(f)};
+MIMGS.push(rd.result);msSave();mpImgsRefresh(med);toast('أُضيفت الصورة ('+ar(MIMGS.length)+'/'+ar(med.imgs)+') ✓','ok')};rd.readAsDataURL(f)};
 $('#fup').click();}
 function mImgAuto(){const med=medOf(myStore());
 if(MIMGS.length>=med.imgs){toast('بلغت حد '+ar(med.imgs)+' صور المحدد من الإدارة','err');return}
-MIMGS.push(ZPOOL[Math.floor(Math.random()*ZPOOL.length)]);mpImgsRefresh(med);toast('أُضيفت صورة تلقائية ('+ar(MIMGS.length)+'/'+ar(med.imgs)+') ✓','ok')}
+MIMGS.push(ZPOOL[Math.floor(Math.random()*ZPOOL.length)]);msSave();mpImgsRefresh(med);toast('أُضيفت صورة تلقائية ('+ar(MIMGS.length)+'/'+ar(med.imgs)+') ✓','ok')}
 function msVidsSec(med){
 let h=`<div class="mssec">
 <div class="mssechd"><b>🎬 مقاطع ترويجية <span class="mscount ${MVIDS.length>=med.vids?'full':''}">${MVIDS.length>=med.vids?'اكتملت ('+ar(med.vids)+'/'+ar(med.vids)+')':'متبقٍ '+ar(med.vids-MVIDS.length)}</span></b><span>MP4 مباشر بمدة أقصاها ${ar(med.secs)} ثانية — تُفحص آلياً من مصدرها</span></div>`;
@@ -2906,7 +2946,7 @@ if(med.vids>0&&MVIDS.length<med.vids)h+=`<div class="msadd"><input class="inp" i
 return h+'</div>';
 }
 function mpVidsRefresh(med){med=med||medOf(myStore());const el=$('#mpvids');if(el)el.innerHTML=msVidsSec(med);const c=$('#mschips');if(c)c.innerHTML=msChipsHTML(med)}
-function mVidDel(i){MVIDS.splice(i,1);mpVidsRefresh(medOf(myStore()))}
+function mVidDel(i){MVIDS.splice(i,1);msSave();mpVidsRefresh(medOf(myStore()))}
 function mVidAdd(){
 const med=medOf(myStore());
 if(MVIDS.length>=med.vids){toast('بلغت حد '+ar(med.vids)+' مقاطع المحدد من الإدارة','err');return}
@@ -2914,6 +2954,7 @@ const src=($('#mv-url')||{}).value||'';
 if(!/^https?:\/\/.+/i.test(src.trim())){toast('ألصق رابط مقطع صحيحاً يبدأ بـ http','err');return}
 if(MVIDS.some(v=>v.src===src.trim())){toast('هذا المقطع مضاف مسبقاً','err');return}
 MVIDS.push({src:src.trim(),dur:0,bad:false});
+msSave();
 mpVidsRefresh(med);
 mVidProbe(MVIDS.length-1);
 }
@@ -2921,10 +2962,10 @@ function mVidProbe(i){
 const v=MVIDS[i];if(!v)return;const med=medOf(myStore());
 toast('جارٍ فحص المقطع من مصدره…','amb');
 probeVid(v.src,secs=>{
-if(secs==null){v.dur=0;v.bad=false;mpVidsRefresh(med);toast('تعذّر قراءة المدة تلقائياً — تأكد من رابط MP4 مباشر، ويُسمح بالحفظ وتبقى المدة غير محددة','amb');return}
+if(secs==null){v.dur=0;v.bad=false;msSave();mpVidsRefresh(med);toast('تعذّر قراءة المدة تلقائياً — تأكد من رابط MP4 مباشر، ويُسمح بالحفظ وتبقى المدة غير محددة','amb');return}
 v.dur=Math.round(secs);
-if(secs>med.secs+0.5){v.bad=true;mpVidsRefresh(med);toast('مدة المقطع '+durTxt(secs)+' تتجاوز حد الإدارة '+ar(med.secs)+' ثانية — اختصر المقطع أو احذفه','err');return}
-v.bad=false;mpVidsRefresh(med);toast('مدة المقطع '+durTxt(secs)+' — ضمن الحد ✓','ok');
+if(secs>med.secs+0.5){v.bad=true;msSave();mpVidsRefresh(med);toast('مدة المقطع '+durTxt(secs)+' تتجاوز حد الإدارة '+ar(med.secs)+' ثانية — اختصر المقطع أو احذفه','err');return}
+v.bad=false;msSave();mpVidsRefresh(med);toast('مدة المقطع '+durTxt(secs)+' — ضمن الحد ✓','ok');
 });
 }
 function probeVid(url,cb){
@@ -2993,21 +3034,17 @@ if(!['chilled','instant'].includes(ptypeVal))ptypeVal='std';
 }
 fragile=fragile||($('#mp-frag2')&&$('#mp-frag2').value==='1');
 const tempv=$('#mp-temp')?$('#mp-temp').value:'std';
-const med=medOf(s);
-if(MVIDS.length>med.vids){toast('عدد المقاطع ('+ar(MVIDS.length)+') يتجاوز حد الإدارة '+ar(med.vids)+' — احذف الزائد','err');return}
-if(MVIDS.some(v=>v.bad)){toast('في مقاطع تتجاوز مدتها حد الإدارة '+ar(med.secs)+' ثانية — اختصرها أو احذفها','err');return}
-let imgs=MIMGS.slice(0,med.imgs);
-if(!imgs.length)imgs=[ZPOOL[Math.floor(Math.random()*ZPOOL.length)]];
 if(dPts!==0){DB.storeWallets[s.id]=r2((DB.storeWallets[s.id]||0)-cost);
 DB.aPtsWallet=r2((DB.aPtsWallet||0)+cost);
 DB.ptsFunding.unshift({store:s.id,amt:cost,pts:dPts,pname:nm,at:Date.now()})}
 if(pid){const p=P(pid);Object.assign(p,{name:nm,cat:$('#mp-cat').value,price:pr,off,stock:st,desc:$('#mp-ds').value.trim(),specs,pts,ptype:ptypeVal||p.ptype||'std',giftOk:$('#mp-gift')?$('#mp-gift').checked:!!p.giftOk,fragile,customOk,temp:tempv,qs:MPQ.map(x=>({...x}))});
 if(digi)p.digi=digi;if(ipOK)p.ipOK=true;
-p.imgs=imgs;p.vids=MVIDS.map(v=>({src:v.src,dur:Math.round(v.dur||0)}));
 toast('حُفظ تعديل المنتج ✓'+(dPts?` — ${dPts>0?'خُصمت':'استُرجعت'} ${money(Math.abs(cost))} تمويل نقاط`:''),'ok')}
-else{PRODUCTS.unshift({id:'p'+(Date.now()%100000),store:s.id,name:nm,cat:$('#mp-cat').value,price:pr,off,stock:st,pts,ptype:ptypeVal||'std',giftOk:$('#mp-gift')?$('#mp-gift').checked:false,fragile,customOk,digi,ipOK,sold:0,rt:0,rc:0,imgs:imgs,vids:MVIDS.map(v=>({src:v.src,dur:Math.round(v.dur||0)})),temp:tempv,desc:$('#mp-ds').value.trim()||nm,specs,specsFallback:{},ratings:[],qs:MPQ.map(x=>({...x}))});
-toast('أُضيف المنتج لمتجرك ✓'+(pts?` — خُصمت ${money(cost)} تمويل ${ar(pts)} نقطة`:''),'ok')}
-MPID=null;closeModal();render();
+else{PRODUCTS.unshift({id:'p'+(Date.now()%100000),store:s.id,name:nm,cat:$('#mp-cat').value,price:pr,off,stock:st,pts,ptype:ptypeVal||'std',giftOk:$('#mp-gift')?$('#mp-gift').checked:false,fragile,customOk,digi,ipOK,sold:0,rt:0,rc:0,imgs:[ZPOOL[Math.floor(Math.random()*ZPOOL.length)]],vids:[],temp:tempv,desc:$('#mp-ds').value.trim()||nm,specs,specsFallback:{},ratings:[],qs:MPQ.map(x=>({...x}))});
+toast('أُضيف المنتج لمتجرك ✓ — أضف صوره ومقاطعه من استوديو الوسائط 🎬'+(pts?` — خُصمت ${money(cost)} تمويل ${ar(pts)} نقطة`:''),'ok')}
+MPID=null;
+if(pid){closeModal();render()}
+else{MSPID=PRODUCTS[0].id;closeModal();go('m-media')}
 }
 /* ===== العروض بنسبة حرة ===== */
 let OFFPID=null;
