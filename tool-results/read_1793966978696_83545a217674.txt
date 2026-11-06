@@ -1,0 +1,526 @@
+     1→'use client';
+     2→/* ضمين — pages/orders.tsx
+     3→ * صفحة «طلباتي» ومكوناتها: مجموعة الشحنة (Ogroup)، بيانات الشحنة للناقل (ShipBlock)،
+     4→ * شريط البوليصة (LogiStrip)، محادثة الطلب المراقبة (OChatModal/Omsg)، التقييم والتحرير الفوري،
+     5→ * نافذة الشكوى/النزاع (CompBody)، وOTP الخدمات الميدانية (OtpBox) —
+     6→ * منقول حرفياً من dameen.js بنفس عناصر DOM والفئات والنصوص والأرقام والمنطق:
+     7→ *   السطور ٩٥٤-١٠٢٦: otpBox/mSendOTP/checkOTP/sendMyLoc/mAskExtra/mAskExtraGo/payExtra
+     8→ *   السطور ١٤٦٩-١٨١٠: GLBL/GSTEPS/gstep/pgOrders/ogroup/confirmReceive/shipBlock/shipCopy/logiStrip/
+     9→ *     openOChat/myORole/ochatHTML/omsgHTML/ochatRefresh/sendOMsg/openRate/oStarPick/submitOrderRate/
+    10→ *     doRelease/doRefund/openComplaint/compBody/compExtra/compRefresh/pickCompImg/submitComplaint
+    11→ * ochatRefresh أصبحت bumpUI('ochat') وcompRefresh أصبحت bumpUI('compbody') —
+    12→ * والنافذتان تقرآن useUI وتعيدان بناء محتواهما بمفتاح النبضة (Fragment key) = نفس أثر
+    13→ * innerHTML في الأصل، وتمرير المحادثة للأسفل في useEffect يعمل بعد كل تحديث.
+    14→ */
+    15→import { Fragment, useEffect } from 'react';
+    16→import { $, ar, ard, money, r2, dt, ago, clock, chatGuard, secOf, catComm, impRefund, P, ST, SEC, USERS, DB, toast } from '../core';
+    17→import { SES, OCHAT, ORATE, COMP, COMPS, me, go, render, pushNotif, openModal, closeModal, bumpUI, useUI, setOCHAT, setORATE, setCOMP } from '../store';
+    18→import { openAuth } from '../auth';
+    19→import { Img, Stars } from '../ui';
+    20→
+    21→/* GLBL/GSTEPS (السطران ١٤٦٩-١٤٧٠) */
+    22→export const GLBL={pending:'بانتظار القبول',preparing:'قيد التحضير',shipped:'تم الشحن',received:'استُلم — قيد الفحص',released:'حُرر المبلغ',disputed:'قيد التحكيم',refunded:'استُرجع المبلغ'};
+    23→export const GSTEPS=['القبول','التحضير','الشحن','الاستلام','التحرير'];
+    24→
+    25→/* openDispute (السطر ١٨٤٤ في الأصل) معرّفة في صفحة النزاعات src/dameen/pages/disputes.tsx
+    26→ * ولم تُحوَّل بعد (كعب حالياً). نداء الأصل محفوظ حرفياً عبر تحميل ديناميكي متأخر:
+    27→ * يعمل بصمت الآن (الكعب لا يصدّر الدالة)، ويُفعَّل تلقائياً فور تصدير disputes.tsx
+    28→ * للدالة بنفس الاسم والتوقيع openDispute(id). */
+    29→function openDispute(id){import('./disputes').then(m=>{const f=(m as any).openDispute;if(typeof f==='function')f(id)}).catch(()=>{})}
+    30→
+    31→/* gstep (السطر ١٤٧١) */
+    32→export function gstep(g){return{pending:0,preparing:1,shipped:2,received:3,released:4}[g.status]}
+    33→
+    34→/* pgOrders (السطر ١٤٧٢) */
+    35→export function PgOrders(){
+    36→if(!SES)return <><div className="pghead"><h1>🧾 طلباتي</h1></div><div className="empty"><div className="em">🔐</div><b>سجّل دخولك لمتابعة طلباتك</b><span>ستجد هنا كل شحنة بحالتها وعدّاد الحماية</span><button className="btn mt" onClick={()=>openAuth(undefined)}>تسجيل الدخول</button></div></>;
+    37→const os=DB.orders.filter(o=>o.customer===SES.phone);
+    38→if(!os.length)return <><div className="pghead"><h1>🧾 طلباتي</h1></div><div className="empty"><div className="em">📦</div><b>لا طلبات بعد</b><span>أول طلب لك سيظهر هنا بحالاته المباشرة</span><button className="btn mt" onClick={()=>go('home',undefined)}>ابدأ التسوق</button></div></>;
+    39→return <>
+    40→<div className="pghead"><h1>🧾 طلباتي</h1><span className="tag grn">{ar(os.length)} طلبات</span></div>
+    41→{os.map((o:any)=>(<div className="ocard" key={o.id}>
+    42→<div className="spread" style={{flexWrap:'wrap'}}>
+    43→<div><b className="fx" style={{fontSize:'14px'}}>طلب #{ar(o.id)}</b><div className="hint">{dt(o.at)} · {({mada:'مدى',visa:'فيزا/ماستركارد',apple:'Apple Pay',tabby:'تقسيط تابي',tamara:'تقسيط تمارا',bal:'محفظة ضمين'}[o.pay])||'دفع إلكتروني'}{o.paidBy?' ('+o.paidBy+')':null}{o.inst?' — '+ar(o.inst.n)+' دفعات × '+ard(o.inst.each)+' ر.س':null}</div></div>
+    44→{o.coupon&&o.coupon.amt?<span className="tag amb">كوبون −{money(o.coupon.amt)}</span>:null}
+    45→{o.ptsUsed?<span className="tag amb">نقاط −{money(o.ptsAmt)}</span>:null}
+    46→{o.freeDl?<span className="tag grn">🚚 توصيل مجاني (نقاط)</span>:null}
+    47→{o.tax?<span className="tag gry">ض.ق.م ١٥٪: {money(o.tax)}</span>:null}
+    48→</div>
+    49→<div className="hint">📍 {o.addr}</div>
+    50→{o.groups.map((g:any,gi:number)=>(<Ogroup key={gi} o={o} g={g} gi={gi}/>))}
+    51→</div>))}
+    52→</>;
+    53→}
+    54→
+    55→/* ogroup (السطر ١٤٨٩) */
+    56→export function Ogroup({o,g,gi}:any){
+    57→const s=ST(g.store),sec=SEC(s.sec);
+    58→const st=g.status;
+    59→const dis=DB.disputes.find(d=>d.order===o.id&&d.store===g.store);
+    60→const archived=g.chat&&(g.chatArchived||['received','released','refunded','disputed'].includes(st));
+    61→return <div className="ogroup">
+    62→<div className="spread" style={{flexWrap:'wrap'}}>
+    63→<div style={{display:'flex',alignItems:'center',gap:'9px'}}>
+    64→<div className="cghead" style={{'--c':s.color,background:s.color+'14',border:0,padding:'4px 12px 4px 9px',borderRadius:'11px'} as any}><div className="lg" style={{width:'24px',height:'24px',fontSize:'11px'}}>{s.name[0]}</div></div>
+    65→<div><b style={{fontSize:'12.5px',color:s.color}}>{s.name}</b><div className="hint">شحنة مستقلة · حماية {sec.win}</div></div>
+    66→</div>
+    67→{st==='disputed'?<span className="tag red">⚖️ قيد التحكيم</span>:st==='refunded'?<span className="tag gry">💸 استُرجع المبلغ</span>:<span className={'tag '+(st==='released'?'grn':'amb')}>{GLBL[st]}</span>}
+    68→</div>
+    69→<div className="oitems">{g.items.map((it:any,i:number)=>{const p=P(it.pid);return <span className="oitag" key={i} onClick={()=>go('product',it.pid)}>{p?<Img src={p.imgs[0]} cls='' alt=''/>:null} {ar(it.qty)}× {p?p.name:'—'}</span>})}</div>
+    70→{g.logi?logiStrip(o,g):null}
+    71→{shipBlock(o,g,gi)}
+    72→{g.booking?<div className="hint" style={{marginTop:'7px',background:'#A45A3A12',border:'1px dashed #A45A3A55',borderRadius:'11px',padding:'8px 11px',lineHeight:1.8}}>🎪 <b>حجز مناسبتك:</b> {g.booking.date} · التركيب {g.booking.setup}{g.booking.tear?' · الفك '+g.booking.tear:null}{g.booking.dl==='pickup'?' · 🚶 استلام من مقر المتجر بلا توصيل':' · 🚚 فريق المتجر يوصل ويركّب'}{g.booking.geo?' · 📍 موقع المناسبة محدد لفريق التنسيق':null}{g.booking.note?' · '+g.booking.note:null}</div>:null}
+    73→{g.gift?<div className="giftrow">🎁 إهداء إلى: <b>{g.gift.name||'مستلم'}</b> · {ar(g.gift.phone)} · {g.gift.city||'—'} — صدرت البوليصة باسم المستلم فتوصله الهدية مباشرة</div>:null}
+    74→{g.digi?<div className="giftrow" style={{background:'#50489E12',borderColor:'#50489E66'}}>⚡ طلب رقمي — سُلّم فوراً إلى <a style={{color:'#50489E',fontWeight:800,cursor:'pointer'}} onClick={()=>go('dlib',undefined)}>مكتبتك الرقمية</a> والكود/الملف جاهز للعرض والتحميل</div>:null}
+    75→{g.custom?<div className="giftrow" style={{background:'#A45A3A12',borderColor:'#A45A3A66'}}>✏️ طلب قابل للتعديل — راسل متجرك عبر محادثة الطلب بأي تعديل (أي مبلغ إضافي يُحجز بضمان ضمين حتى الاستلام)</div>:null}
+    76→{g.extra?<div className="giftrow" style={{background:'#1D44320d',borderColor:'#1D443255'}}>💰 أُضيف للشحنة مبلغ تعديلات محجوز بالخزنة: <b>{money(g.extra)}</b></div>:null}
+    77→{g.ans&&g.ans.length?<div className="hint" style={{marginTop:'6px'}}>❓ إجاباتك للمتجر: {g.ans.map((x:any,xi:number)=><Fragment key={xi}>{xi?' · ':null}{x.q} ← <b>{x.a}</b></Fragment>)}</div>:null}
+    78→{g.pans&&g.pans.length?<div className="hint" style={{marginTop:'6px'}}>❓ إجاباتك على أسئلة المنتجات: {g.pans.map((x:any,xi:number)=><Fragment key={xi}>{xi?' · ':null}{x.pn} — {x.ans.map((y:any,yi:number)=><Fragment key={yi}>{yi?'، ':null}{y.q} ← <b>{y.a}</b></Fragment>)}</Fragment>)}</div>:null}
+    79→{g.chat?<div className="mt" style={{display:'flex',gap:'7px',flexWrap:'wrap',alignItems:'center'}}><button className="btn soft sm" onClick={()=>openOChat(o.id,gi)}>💬 محادثة الطلب{g.chatDeleted?' — محذوفة لمخالفة':(g.chatArchived||['received','released','refunded','disputed'].includes(st))?' — مؤرشفة':' ('+ar(g.chat.length)+' رسالة)'}</button>{g.viol&&(g.viol.customer+g.viol.merchant)?<span className="tag red">{ar(g.viol.customer+g.viol.merchant)} رسالة محجوبة أمنياً</span>:null}</div>:null}
+    80→{st!=='disputed'&&st!=='refunded'?<div className="osteps">{GSTEPS.map((l,i)=><div key={i} className={'st '+(i<gstep(g)?'on':i===gstep(g)?(st==='received'?'cur on':'on'):'')}><i></i>{l}</div>)}</div>:null}
+    81→{st==='received'?<>
+    82→<div className="spread mt" style={{flexWrap:'wrap'}}>
+    83→<span className="cd" data-cd={g.complaintUntil}><b>⏳ {clock(g.complaintUntil-Date.now())}</b> متبقٍ من نافذة الحماية — بعدها يُحرر المبلغ تلقائياً</span></div>
+    84→<div className="spread mt" style={{gap:'8px',flexWrap:'wrap'}}>
+    85→<button className="btn sm" onClick={()=>openRate(o.id,gi)}>⭐ قيّم وحرر فوراً</button>
+    86→<button className="btn red sm" onClick={()=>openComplaint(o.id,gi)}>⚠️ فتح نزاع</button>
+    87→</div>
+    88→</>:null}
+    89→{st==='shipped'?(g.ship&&g.ship.mode==='field'?<OtpBox o={o} g={g} gi={gi}/>:<button className="btn sm mt" onClick={()=>confirmReceive(o.id,gi)}>📦 استلمت الشحنة — ابدأ الفحص</button>):null}
+    90→{st==='pending'?<div className="hint mt">بانتظار قبول المتجر للطلب…</div>:null}
+    91→{st==='preparing'?<div className="hint mt">🧵 المتجر يحضّر طلبك الآن</div>:null}
+    92→{st==='disputed'&&dis?<button className="btn red sm mt" onClick={()=>openDispute(dis.id)}>💬 متابعة النزاع والدردشة</button>:null}
+    93→{st==='refunded'?<div className="hint mt">💸 استُرجع كامل مبلغ الشحنة ({money(g.sub)}) إلى محفظة ضمين — استخدمه في طلبك القادم.</div>:null}
+    94→{st==='released'&&g.payout?<div className="mt" style={{background:'#1D443208',border:'1px dashed #1D443233',borderRadius:'12px',padding:'9px 13px',fontSize:'11.5px'}}>
+    95→<b style={{color:'var(--grn)'}}>🔓 تفصيل التحرير</b> — إجمالي الشحنة {money(g.payout.sub)} · عمولة ضمين: {money(g.payout.comm)} · صافي التاجر: {money(g.payout.net)}{g.rated?<> · تقييمك: <Stars r={g.rated.stars}/></>:null}</div>:null}
+    96→<div className="hint" style={{marginTop:'7px'}}>إجمالي الشحنة: <b>{money(r2(g.sub+g.dl))}</b>{g.dl?' (شحن '+money(g.dl)+')':null}</div>
+    97→</div>;
+    98→}
+    99→
+   100→/* otpBox (السطر ٩٥٤) — يُرسم داخل Ogroup عندما تكون الشحنة خدمة ميدانية (كما في الأصل) */
+   101→export function OtpBox({o,g,gi}:any){
+   102→return <div className="otpbox">
+   103→<div className="spread" style={{flexWrap:'wrap'}}><b style={{fontSize:'12px'}}>🎯 تأكيد إتمام الخدمة بكود OTP</b>
+   104→{g.otp?<span className="tag grn">الكود وصل جوالك: <b style={{letterSpacing:'2px'}}>{ar(g.otp)}</b></span>:<span className="tag amb">بانتظار كود فريق التنسيق بعد التركيب</span>}</div>
+   105→<p className="hint" style={{margin:'6px 0 9px',lineHeight:1.8}}>لا تُحرر مستحقات متجر الديكور والفعاليات إلا بإدخال كود التأكيد منك عند اكتمال التركيب في موقع المناسبة — حماية للطرفين، وبقية مبلغك محجوز بالخزنة حتى ذلك الحين.</p>
+   106→<div style={{display:'flex',gap:'8px',alignItems:'center',flexWrap:'wrap'}}>
+   107→<input className="inp" id={'otpin-'+o.id} style={{width:'120px',textAlign:'center',letterSpacing:'4px',fontWeight:800}} maxLength={4} placeholder="٠٠٠٠"/>
+   108→<button className="btn sm" onClick={()=>checkOTP(o.id,gi)}>✅ تأكيد إتمام الخدمة</button>
+   109→{g.otpBad?<span className="tag red">{ar(g.otpBad)} محاولة خاطئة</span>:null}
+   110→</div></div>;
+   111→}
+   112→
+   113→/* mSendOTP (السطر ٩٦٤) */
+   114→export function mSendOTP(oid,gi){
+   115→const o=DB.orders.find(x=>x.id===oid) as any;const g=o.groups[gi];
+   116→g.otp=String(Math.floor(1000+Math.random()*9000));
+   117→g.otpAt=Date.now();
+   118→if(g.chat&&!g.chatDeleted)g.chat.push({r:'sys',t:'🎯 أرسل فريق التنسيق كود تأكيد إتمام الخدمة — أدخله بعد اكتمال التركيب ليُحرر مستحق المتجر.',at:Date.now()});
+   119→pushNotif(o.customer,'🎯','كود تأكيد إتمام الخدمة','كودك لطلب #'+ar(oid)+': '+g.otp+' — أدخله في التطبيق بعد اكتمال التركيب في موقع المناسبة',['orders']);
+   120→toast('أُرسل كود التأكيد للعميل (محاكاة SMS) ✓','ok');render();
+   121→}
+   122→
+   123→/* checkOTP (السطر ٩٧٢) — String() حول indexOf لسلامة الأنواع، والناتج نفسه حرفياً */
+   124→export function checkOTP(oid,gi){
+   125→const o=DB.orders.find(x=>x.id===oid) as any;const g=o.groups[gi];
+   126→const raw=(($('#otpin-'+oid)||{value:''}).value)||'';
+   127→const norm=String(raw).replace(/[٠-٩]/g,d=>String('٠١٢٣٤٥٦٧٨٩'.indexOf(d))).trim();
+   128→if(!g.otp){toast('لم يرسل المتجر كود التأكيد بعد','amb');return}
+   129→if(norm!==g.otp){g.otpBad=(g.otpBad||0)+1;toast('الكود غير صحيح — تأكد منه مع فريق التنسيق ('+ar(g.otpBad)+' محاولات)','err');render();return}
+   130→g.otpOk=true;g.status='received';g.complaintUntil=Date.now();
+   131→doRelease(o,g,'كود تأكيد العميل (OTP)',false);
+   132→toast('تم تأكيد إتمام الخدمة وحُرر مستحق المتجر 🎯','ok');render();
+   133→}
+   134→
+   135→/* sendMyLoc (السطر ٩٨٣) */
+   136→export function sendMyLoc(){
+   137→if(!OCHAT)return;
+   138→const o=DB.orders.find(x=>x.id===OCHAT.oid) as any;const g=o.groups[OCHAT.gi];
+   139→const u=me() as any;
+   140→const done=(geo,txt)=>{
+   141→g.chat.push({r:'customer',loc:{geo,txt},at:Date.now()});
+   142→pushNotif(ST(g.store).owner,'📍','العميل شارك موقعه','وصل موقع العميل في محادثة طلب #'+ar(o.id)+' — لتوجيه الفريق بدقة',['m-orders']);
+   143→toast(geo?'شاركت موقعك الحالي مع المتجر ✓':'شاركت عنوانك المحفوظ كرسالة موقع (تعذر GPS)','ok');
+   144→ochatRefresh()};
+   145→const fallback=()=>{const a=(u.addrs||[]).find(x=>x.def)||(u.addrs||[])[0];done(null,(a&&a.a)?a.a:'موقعي')};
+   146→if(navigator.geolocation)navigator.geolocation.getCurrentPosition(p=>done({lat:+p.coords.latitude.toFixed(4),lng:+p.coords.longitude.toFixed(4)},'موقعي الحالي'),fallback,{timeout:8000});
+   147→else fallback();
+   148→}
+   149→
+   150→/* mAskExtra (السطر ٩٩٦) + mAskExtraGo (السطر ١٠٠٥) */
+   151→export function mAskExtra(){
+   152→if(!OCHAT)return;
+   153→openModal(<MAskExtraModal/>,undefined);
+   154→}
+   155→function MAskExtraModal(){
+   156→return <>
+   157→<div className="mhead"><b>💰 طلب مبلغ إضافي (تعديل)</b><button className="x" onClick={()=>closeModal()}>✕</button></div>
+   158→<div className="mbody">
+   159→<div className="demo mb"><b style={{fontSize:'12px'}}>سعّر التعديل الذي اتفقت عليه مع العميل</b><p className="hint" style={{marginTop:'3px',lineHeight:1.8}}>يُرسل طلب الدفع داخل المحادثة — يدفع العميل بضمان ضمين، ويُحجز المبلغ مع بقية قيمة الطلب في الخزنة حتى الاستلام والتحرير.</p></div>
+   160→<div className="fgrid"><div className="fld"><label>المبلغ (ر.س)</label><input className="inp" id="ex-amt" type="number" min="1" defaultValue={25}/></div>
+   161→<div className="fld"><label>السبب (يظهر للعميل)</label><input className="inp" id="ex-note" placeholder="مثال: إضافة اسم مطرز على البوكس"/></div></div>
+   162→<button className="btn amb wide mt" onClick={()=>mAskExtraGo()}>إرسال طلب الدفع للعميل</button>
+   163→</div>
+   164→</>;
+   165→}
+   166→export function mAskExtraGo(){
+   167→if(!OCHAT)return closeModal();
+   168→const o=DB.orders.find(x=>x.id===OCHAT.oid) as any;const g=o.groups[OCHAT.gi];
+   169→const amt=Math.max(1,+((($('#ex-amt')||{value:0}).value)||0));
+   170→const note=(($('#ex-note')||{value:''}).value||'').trim();
+   171→g.chat.push({r:'merchant',payreq:{amt,note,paid:false},at:Date.now()});
+   172→pushNotif(o.customer,'💰','طلب التاجر مبلغاً إضافياً','قدّم متجر '+ST(g.store).name+' تعديلاً بـ'+money(amt)+' على طلبك #'+ar(o.id)+' — راجعه في محادثة الطلب',['orders']);
+   173→closeModal();toast('أُرسل طلب الدفع إلى العميل ✓','ok');openOChat(OCHAT.oid,OCHAT.gi);
+   174→}
+   175→
+   176→/* payExtra (السطر ١٠١٤) */
+   177→export function payExtra(oid,gi,mi){
+   178→const o=DB.orders.find(x=>x.id===oid) as any;if(!o)return;const g=o.groups[gi];const m=g.chat[mi];
+   179→if(!m||!m.payreq||m.payreq.paid)return;
+   180→const u=me() as any;const amt=m.payreq.amt;
+   181→if((u.bal||0)>=amt){u.bal=r2((u.bal||0)-amt);m.payreq.via='محفظة ضمين'}
+   182→else{m.payreq.via='بطاقة مدى (Moyasar)'}
+   183→m.payreq.paid=true;
+   184→g.sub=r2(g.sub+amt);g.extra=r2((g.extra||0)+amt);
+   185→g.chat.push({r:'sys',t:'💰 حُجز مبلغ التعديل '+money(amt)+' في خزنة ضمين — إجمالي قيمة الشحنة الآن '+money(r2(g.sub+(g.dl||0)))+'، والمبلغ كله ضمن الحماية حتى الاستلام.',at:Date.now()});
+   186→pushNotif(ST(g.store).owner,'💰','دفع العميل مبلغ التعديل','حُجز '+money(amt)+' إضافية في طلب #'+ar(oid)+' — ضمن حماية ضمين حتى التحرير',['m-orders']);
+   187→toast('حُجز مبلغ التعديل في الخزنة بضمان ضمين ✓','ok');ochatRefresh();render();
+   188→}
+   189→
+   190→/* confirmReceive (السطر ١٥٣٠) */
+   191→export function confirmReceive(oid,gi){
+   192→const o=DB.orders.find(x=>x.id===oid) as any;const g=o.groups[gi];
+   193→g.status='received';g.complaintUntil=Date.now()+secOf(g.store).winMin*60e3;
+   194→if(g.logi)g.logi.events.push({t:'أكّد العميل التسليم — تحديث حالة تلقائي عبر Webhook',at:Date.now()});
+   195→if(g.chat&&!g.chatArchived&&!g.chatDeleted){g.chatArchived=true;g.chat.push({r:'sys',t:'🗄️ أُرشفت المحادثة فور تسليم الشحنة — للاعتراض على الشحنة افتح نزاعاً خلال نافذة الحماية.',at:Date.now()})}
+   196→pushNotif(o.customer,'🛡️','بدأت نافذة الحماية','افحص طلبك #'+ar(oid)+' — لديك '+secOf(g.store).win,['orders']);
+   197→const own=ST(g.store).owner;if(own)pushNotif(own,'📦','أكّد العميل الاستلام','بدأت نافذة حماية طلب #'+ar(oid)+' — يُحرر المبلغ تلقائياً بانتهائها',['m-orders']);
+   198→toast('بدأت نافذة الفحص — '+secOf(g.store).win+' 🛡️','ok');render();
+   199→}
+   200→
+   201→/* shipBlock (السطر ١٥٤١) — بيانات الشحنة لشركة الشحن */
+   202→export function ShipBlock({o,g,gi}:any){
+   203→if(!g.logi||!g.logi.mode||g.logi.mode==='field'||g.logi.mode==='digital')return null;
+   204→const cust=(USERS[o.customer]||{}) as any;
+   205→const its=g.items.map((it:any)=>({p:P(it.pid) as any,qty:it.qty})).filter((x:any)=>x.p);
+   206→const frag=its.filter((x:any)=>x.p.fragile).map((x:any)=>x.p.name);
+   207→const cold=its.filter((x:any)=>x.p.ptype==='chilled'||x.p.temp==='chilled').map((x:any)=>x.p.name);
+   208→const hot=its.filter((x:any)=>x.p.ptype==='instant'||x.p.temp==='hot').map((x:any)=>x.p.name);
+   209→const sans=(g.ans||[]).map((x:any)=>x.q+': '+x.a).join(' · ');
+   210→const pans=(g.pans||[]).map((x:any)=>x.pn+' — '+x.ans.map((y:any)=>y.q+': '+y.a).join('، ')).join(' · ');
+   211→return <div className="shipblk">
+   212→<div className="spread" style={{flexWrap:'wrap'}}><b style={{fontSize:'12px'}}>📋 بيانات الشحنة — لشركة الشحن ({g.logi.courier})</b>
+   213→<button className="btn gray xs" onClick={()=>shipCopy(o.id,gi)}>📋 نسخ للشحن</button></div>
+   214→<div className="srow2"><span>المستلم</span><b>{cust.name||'عميل ضمين'}{cust.phone?' · '+ar(o.customer):null}</b></div>
+   215→<div className="srow2"><span>العنوان</span><b>{o.addr||'—'}</b></div>
+   216→<div className="srow2"><span>المسار</span><b>من {ST(g.store).city||'—'} إلى {o.city||'—'}{g.logi.wb?' · بوليصة '+ar(g.logi.wb):null}</b></div>
+   217→<div className="srow2"><span>الطرود</span><b>{ar(g.items.reduce((a,x)=>a+x.qty,0))} قطعة · {ar(its.length)} منتج</b></div>
+   218→{frag.length?<div className="srow2"><span>تعليمات التداول</span><b style={{color:'#B3541E'}}>⚠️ قابل للكسر: {frag.join('، ')} — تغليف حماية إلزامي</b></div>:null}
+   219→{cold.length?<div className="srow2"><span>سلسلة التبريد</span><b style={{color:'#2E6B8A'}}>🧊 مبرد: {cold.join('، ')} — نقل مبرد إلزامي</b></div>:null}
+   220→{hot.length?<div className="srow2"><span>التسليم الحار</span><b style={{color:'#A45A3A'}}>🔥 يُسلّم ساخناً: {hot.join('، ')} — حافظات حرارية</b></div>:null}
+   221→{sans?<div className="srow2"><span>إجابات أسئلة المتجر</span><b>{sans}</b></div>:null}
+   222→{pans?<div className="srow2"><span>اختيارات العميل للمنتجات</span><b>{pans}</b></div>:null}
+   223→</div>;
+   224→}
+   225→export function shipBlock(o:any,g:any,gi:any){return <ShipBlock o={o} g={g} gi={gi}/>}
+   226→
+   227→/* shipCopy (السطر ١٥٦٤) */
+   228→export function shipCopy(oid,gi){
+   229→const o=DB.orders.find(x=>x.id===oid) as any;if(!o)return;const g=o.groups[gi];if(!g||!g.logi)return;
+   230→const cust=(USERS[o.customer]||{}) as any;
+   231→const its=g.items.map((it:any)=>({p:P(it.pid) as any,qty:it.qty})).filter((x:any)=>x.p);
+   232→const frag=its.filter((x:any)=>x.p.fragile).map((x:any)=>x.p.name);
+   233→const cold=its.filter((x:any)=>x.p.ptype==='chilled'||x.p.temp==='chilled').map((x:any)=>x.p.name);
+   234→const hot=its.filter((x:any)=>x.p.ptype==='instant'||x.p.temp==='hot').map((x:any)=>x.p.name);
+   235→const txt=['بيانات شحنة ضمين — طلب #'+o.id,
+   236→'شركة الشحن: '+(g.logi.courier||'—')+(g.logi.wb?' · بوليصة '+g.logi.wb:''),
+   237→'المستلم: '+(cust.name||'عميل ضمين')+' · '+o.customer,
+   238→'العنوان: '+(o.addr||'—'),
+   239→'المسار: من '+(ST(g.store).city||'—')+' إلى '+(o.city||'—'),
+   240→'المحتويات: '+its.map((x:any)=>x.qty+'× '+x.p.name).join('، '),
+   241→frag.length?'⚠️ قابل للكسر: '+frag.join('، ')+' — تغليف حماية إلزامي':'',
+   242→cold.length?'🧊 مبرد: '+cold.join('، ')+' — نقل مبرد إلزامي':'',
+   243→hot.length?'🔥 يُسلّم ساخناً: '+hot.join('، ')+' — حافظات حرارية':'',
+   244→(g.ans||[]).map((x:any)=>x.q+': '+x.a).join(' | '),
+   245→(g.pans||[]).map((x:any)=>x.pn+' — '+x.ans.map((y:any)=>y.q+': '+y.a).join('، ')).join(' | ')
+   246→].filter(Boolean).join('\n');
+   247→const done=()=>toast('نُسخت بيانات الشحنة لتسليمها لشركة الشحن ✓','ok');
+   248→if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(done,done);else done();
+   249→}
+   250→
+   251→/* logiStrip (السطر ١٥٨٧) — شريط البوليصة والتتبع بالحالات */
+   252→export function LogiStrip({o,g}:any){
+   253→const l=g.logi,s=ST(g.store);
+   254→const modeTxt=l.mode==='chilled'?'🧊 جارٍ جدولة توصيل مبرد مع أقرب شركة توصيل مبرد متعاقدة (موعد مسبق)':l.mode==='instant'?'🛵 جارٍ البحث عن مندوب فوري — وقت التوصيل المتوقع: ٤٥ دقيقة':'🚚 تتبع بالحالات فقط — بلا خريطة مباشرة حفاظاً على خصوصية الطرفين';
+   255→return <div className="lgstrip">
+   256→<div className="spread" style={{flexWrap:'wrap'}}><b>{l.wb?'📄 بوليصة '+ar(l.wb)+' · ':null}{l.courier}</b><span className="hint">من {s.city||'—'} إلى {o.city||'مدينتك'}</span></div>
+   257→{modeTxt}
+   258→{g.ship&&g.ship.charge?<div className="hint">رسوم الشحن المدفوعة: {money(g.ship.charge)} ← تُحوّل لحساب الشريك اللوجستي</div>:(g.ship&&g.ship.source==='merchant'?<div className="hint">الشحن على حساب المتجر 🎁 — وما يتحمله يُقتطع من صافيه ولا يمس العمولة</div>:null)}
+   259→{g.ship&&g.ship.fragile?<div className="hint" style={{color:'#B3541E',fontWeight:700}}>⚠️ قابل للكسر — العلامة منقولة آلياً لشركة الشحن: تغليف خاص إلزامي (رسوم حماية ١٥ ر.س ضمن الشحن)</div>:null}
+   260→{l.events.slice(-3).map((e:any,i:number)=><div key={i} className="lgev">⚡ {e.t} · {ago(e.at)}</div>)}
+   261→</div>;
+   262→}
+   263→export function logiStrip(o:any,g:any){return <LogiStrip o={o} g={g}/>}
+   264→
+   265→/* openOChat (السطر ١٦٠٠) — يضبط OCHAT عبر المطاوعة ثم يفتح نافذة المحادثة */
+   266→export function openOChat(oid,gi){
+   267→const o=DB.orders.find(x=>x.id===oid) as any;if(!o)return;const g=o.groups[gi];if(!g.chat)return;
+   268→setOCHAT({oid,gi});openModal(<OChatModal/>,'lg');
+   269→}
+   270→
+   271→/* myORole (السطر ١٦٠٥) */
+   272→export function myORole(o,g){
+   273→if(!SES)return null;
+   274→if(SES.role==='admin'||SES.role==='staff')return 'admin';
+   275→if(SES.role==='customer'&&o.customer===SES.phone)return 'customer';
+   276→if(SES.role==='merchant'&&g.store===SES.store)return 'merchant';
+   277→return null;
+   278→}
+   279→
+   280→/* ochatHTML (السطر ١٦١٢) → OChatModal — تقرأ useUI('ochat') وتعيد بناء محتواها بمفتاح
+   281→ * النبضة عند كل bumpUI('ochat') (بديل إعادة بناء $('.mcard').innerHTML في ochatRefresh)،
+   282→ * وتمرير المحادثة للأسفل في useEffect يعمل بعد كل تحديث (بديل setTimeout في openOChat
+   283→ * وسطر scrollTop في ochatRefresh). */
+   284→export function OChatModal(){
+   285→const t=useUI('ochat');
+   286→useEffect(()=>{const l=$('#chatlog');if(l)l.scrollTop=l.scrollHeight},[t]);
+   287→const o=DB.orders.find(x=>x.id===OCHAT.oid) as any;const g=o&&o.groups[OCHAT.gi];
+   288→const s=ST(g.store),cust=USERS[o.customer];
+   289→const r=myORole(o,g);
+   290→const archived=g.chatArchived||['received','released','refunded','disputed'].includes(g.status);
+   291→const canWrite=(r==='customer'||r==='merchant')&&!g.chatDeleted&&!archived;
+   292→return <Fragment key={t}>
+   293→<div className="mhead"><b>💬 محادثة الطلب #{ar(o.id)} — {s.name}</b>
+   294→{g.chatDeleted?<span className="tag red">محذوفة لمخالفة</span>:archived?<span className="tag gry">🗄️ مؤرشفة</span>:<span className="tag grn">نشطة</span>}
+   295→<button className="x" onClick={()=>{setOCHAT(null);closeModal()}}>✕</button></div>
+   296→<div className="parties">
+   297→<span className="party" style={{'--pc':'var(--grn)'} as any}><i></i> 👩 {cust?cust.name:'العميل'}</span>
+   298→<span className="party" style={{'--pc':s.color} as any}><i></i> 🏪 {s.name}</span>
+   299→<span className="party" style={{'--pc':'var(--navy)'} as any}><i></i> 🛡️ الإدارة تُتابع تلقائياً</span>
+   300→</div>
+   301→<div className="cwrap">
+   302→<div className="chatlog" id="chatlog">
+   303→{g.chat.map((m:any,i:number)=><Omsg key={i} m={m} g={g} mi={i}/>)}
+   304→</div>
+   305→{canWrite?<><div className="chatbar">{r==='customer'?<button className="btn soft xs" onClick={()=>sendMyLoc()}>📍 مشاركة موقعي مع المتجر</button>:null}{r==='merchant'?<button className="btn amb xs" onClick={()=>mAskExtra()}>💰 طلب مبلغ إضافي (تعديل)</button>:null}</div>
+   306→<div className="composer">
+   307→<textarea id="omsg" placeholder="اكتب تفاصيل طلبك أو استفسارك… (محادثة مراقبة: تُحجب الأرقام والروابط ووسائل التواصل الخارجية تلقائياً)"></textarea>
+   308→<button className="btn" onClick={()=>sendOMsg()}>إرسال ➤</button>
+   309→</div></>:<div className="composer"><div className="hint" style={{padding:'8px',lineHeight:1.8}}>{g.chatDeleted?'🚫 حُذفت المحادثة نهائياً بعد رصد ٣ مخالفات لسياسة التواصل خارج التطبيق — للاعتراض راسل دعم ضمين.':archived?'🗄️ أُرشفت المحادثة فور تسليم الشحنة — للاعتراض افتح نزاعاً خلال نافذة الحماية.':r==='admin'?'🛡️ أنت بوضع المراقبة — الإدارة تطلع ولا تشارك':'🔒 سجّل دخولك كأحد طرفي الطلب للمشاركة'}</div></div>}
+   310→</div>
+   311→</Fragment>;
+   312→}
+   313→export {OChatModal as ochatHTML};
+   314→
+   315→/* omsgHTML (السطر ١٦٣٦) → Omsg — cgi تُلتقط وقت الرسم كما يُضمَّن OCHAT.gi في نص الأصل */
+   316→export function Omsg({m,g,mi}:any){
+   317→if(m.r==='sys')return <div className="msg r-s">🔔 {m.t}<div style={{fontSize:'9px',marginTop:'2px'}}>{ago(m.at)}</div></div>;
+   318→const o=DB.orders.find(x=>x.id===OCHAT.oid) as any;
+   319→const who=m.r==='customer'?(USERS[o.customer]?USERS[o.customer].name.split(' ')[0]:'العميل'):ST(g.store).name;
+   320→const mine=SES&&((m.r==='customer'&&SES.role==='customer'&&o.customer===SES.phone)||(m.r==='merchant'&&SES.role==='merchant'&&g.store===SES.store));
+   321→const stamp=<div style={{fontSize:'9px',marginTop:'3px',opacity:.7}}>{ago(m.at)}</div>;
+   322→const mcs=m.r==='merchant'?({'--mc':ST(g.store).color} as any):undefined;
+   323→const cgi=OCHAT.gi;
+   324→if(m.loc)return <div className={'msg '+(mine?'me':'them')+' '+(m.r==='customer'?'r-c':'r-m')} style={mcs}>
+   325→<span className="who">{m.r==='customer'?'👩 '+who:'🏪 '+who} · 📍 مشاركة موقع</span>
+   326→<span className="locpin">📍 {m.loc.txt}{m.loc.geo?' ('+ard(m.loc.geo.lat)+'، '+ard(m.loc.geo.lng)+')':null}</span>
+   327→{stamp}</div>;
+   328→if(m.payreq){const custSide=SES&&SES.role==='customer';
+   329→return <div className={'msg '+(mine?'me':'them')+' '+(m.r==='merchant'?'r-m':'r-c')} style={mcs}>
+   330→<span className="who">{m.r==='merchant'?'🏪 '+who:'👩 '+who} · 💰 طلب مبلغ إضافي</span>
+   331→<div className="payreq"><b>تعديل بـ {money(m.payreq.amt)}</b>{m.payreq.note?<span className="hint">{m.payreq.note}</span>:null}
+   332→{m.payreq.paid?<span className="tag grn">✓ سُدد وحُجز في الخزنة — {m.payreq.via||'محفظة ضمين'}</span>:custSide?<button className="btn amb xs" onClick={()=>payExtra(o.id,cgi,mi)}>🔒 ادفع {money(m.payreq.amt)} بضمان ضمين</button>:<span className="tag amb">بانتظار دفع العميل</span>}
+   333→</div>{stamp}</div>}
+   334→return <div className={'msg '+(mine?'me':'them')+' '+(m.r==='customer'?'r-c':'r-m')} style={mcs}><span className="who">{m.r==='customer'?'👩 '+who:'🏪 '+who}</span>{m.t}{stamp}</div>;
+   335→}
+   336→
+   337→/* ochatRefresh (السطر ١٦٥٠) — كانت تعيد بناء $('.mcard').innerHTML وتمرر للأسفل
+   338→ * ⇒ الآن bumpUI('ochat') والتمرير في useEffect داخل OChatModal.
+   339→ * تصفير OCHAT مع السكوت عند فقدان الشحنة/المحادثة يبقى كما في الأصل حرفياً. */
+   340→export function ochatRefresh(){
+   341→if(!OCHAT)return;
+   342→const o=DB.orders.find(x=>x.id===OCHAT.oid) as any;const g=o&&o.groups[OCHAT.gi];
+   343→if(!g||!g.chat){setOCHAT(null);return}
+   344→bumpUI('ochat');
+   345→}
+   346→
+   347→/* sendOMsg (السطر ١٦٥٧) */
+   348→export function sendOMsg(){
+   349→const o=DB.orders.find(x=>x.id===OCHAT.oid) as any;const g=o.groups[OCHAT.gi];
+   350→const r=myORole(o,g);
+   351→if(r!=='customer'&&r!=='merchant'){toast('الإدارة تتابع المحادثة ولا تشارك فيها','amb');return}
+   352→const txt=($('#omsg').value||'').trim();
+   353→if(!txt){toast('اكتب رسالتك أولاً','err');return}
+   354→const v=chatGuard(txt);
+   355→if(!v.ok){
+   356→g.viol[r]=(g.viol[r]||0)+1;
+   357→const n=g.viol[r];
+   358→g.chat.push({r:'sys',t:'🚫 حُجبت رسالة ('+v.why+') — تحذير '+ar(n)+' من ٣: التواصل خارج ضمين ممنوع، وأي رقم أو رابط أو وسيلة تواصل تُحجب تلقائياً.',at:Date.now()});
+   359→pushNotif('0500000003','🛡️','محاولة تواصل خارج التطبيق','رُصدت رسالة محجوبة ('+v.why+') في محادثة طلب #'+ar(o.id)+' — '+ST(g.store).name,['a-over']);
+   360→const other=r==='customer'?ST(g.store).owner:o.customer;
+   361→if(other)pushNotif(other,'🚫','تنبيه أمني','رُصدت محاولة مشاركة بيانات تواصل في محادثة طلب #'+ar(o.id)+' — يُمنع التواصل خارج ضمين حمايةً للطرفين',['orders']);
+   362→$('#omsg').value='';
+   363→if(n>=3){
+   364→g.chatDeleted=true;
+   365→g.chat=[{r:'sys',t:'حُذفت المحادثة نهائياً — رُصدت ٣ محاولات لمخالفة سياسة التواصل خارج التطبيق. للاعتراض راسل دعم ضمين.',at:Date.now()}];
+   366→pushNotif('0500000003','⛔','حُذفت محادثة طلب','تجاوز أحد الطرفين ٣ مخالفات في طلب #'+ar(o.id)+' — '+ST(g.store).name,['a-over']);
+   367→toast('حُذفت المحادثة بعد ٣ مخالفات ⛔','err');
+   368→}else toast('حُجبت رسالتك ('+v.why+') — التواصل خارج ضمين ممنوع ⚠️','err');
+   369→ochatRefresh();render();return;
+   370→}
+   371→g.chat.push({r,t:txt,at:Date.now()});
+   372→const other=r==='customer'?ST(g.store).owner:o.customer;
+   373→if(other)pushNotif(other,'💬','رسالة جديدة في طلب #'+ar(o.id),(r==='customer'?(USERS[o.customer]?USERS[o.customer].name.split(' ')[0]:'العميل'):ST(g.store).name)+' راسلك بخصوص طلبك',['orders']);
+   374→$('#omsg').value='';ochatRefresh();
+   375→}
+   376→
+   377→/* openRate (السطر ١٦٨٧) + oStarPick (١٦٩٥) + submitOrderRate (١٦٩٦) */
+   378→export function openRate(oid,gi){setORATE({stars:0,oid,gi});
+   379→openModal(<RateModal/>,undefined);}
+   380→function RateModal(){
+   381→return <>
+   382→<div className="mhead"><b>⭐ التقييم والتحرير الفوري</b><button className="x" onClick={()=>closeModal()}>✕</button></div>
+   383→<div className="mbody">
+   384→<p className="hint mb">تقييمك يحرر المبلغ للتاجر فوراً ويمنحك <b>+١٠ نقاط</b> إضافية — يمكنك أيضاً الانتظار حتى تنتهي نافذة الحماية تلقائياً.</p>
+   385→<div className="starin" id="ostars">{[1,2,3,4,5].map(i=><span key={i} onClick={()=>oStarPick(i)}>★</span>)}</div>
+   386→<textarea className="inp" id="ortxt" placeholder="كيف كانت تجربتك مع المنتج والتغليف والسرعة؟" style={{minHeight:'74px',margin:'10px 0'}}></textarea>
+   387→<button className="btn amb wide" onClick={()=>submitOrderRate()}>🚀 أرسل التقييم وحرر المبلغ</button>
+   388→</div>
+   389→</>;
+   390→}
+   391→export function oStarPick(n){ORATE.stars=n;document.querySelectorAll('#ostars span').forEach((s,i)=>s.classList.toggle('on',i<n))}
+   392→export function submitOrderRate(){
+   393→if(!ORATE.stars){toast('اختر النجوم أولاً','err');return}
+   394→const o=DB.orders.find(x=>x.id===ORATE.oid) as any;const g=o.groups[ORATE.gi];
+   395→g.rated={stars:ORATE.stars,txt:($('#ortxt').value||'').trim()};
+   396→doRelease(o,g,'تقييم العميل',true);
+   397→closeModal();toast('شكراً! حُرر المبلغ للتاجر وكسبت نقاطك ⭐','ok');render();
+   398→}
+   399→
+   400→/* doRelease (السطر ١٧٠٤) — محرك ضمين: توزيع صافٍ/عمولة/لوجستيات/نقاط حرفياً */
+   401→export function doRelease(o,g,by,bonus?){
+   402→if(g.status!=='received')return;
+   403→g.status='released';g.releasedAt=Date.now();g.releasedBy=by;
+   404→const comm=r2(g.items.reduce((a,it)=>{const pd=P(it.pid) as any;return a+it.price*it.qty*catComm(ST(g.store).sec,pd?pd.cat:'')/100},0));
+   405→const sh=g.ship||{mode:'std',cost:(g.dl||0),charge:(g.dl||0),subsidy:0,source:'customer'};
+   406→const mShip=sh.source==='merchant'?r2(sh.subsidy||0):0;
+   407→const ptsShip=sh.source==='pts'?r2(sh.cost||0):0;
+   408→let net=r2(g.sub-comm-mShip);if(net<0)net=0;
+   409→DB.aRevenue=r2(DB.aRevenue+comm);
+   410→const rm=DB.revMonths[DB.revMonths.length-1];rm.v=r2(rm.v+comm);
+   411→DB.logiWallet=r2((DB.logiWallet||0)+(sh.charge||0)+mShip+ptsShip);
+   412→if(ptsShip)DB.aPtsWallet=r2((DB.aPtsWallet||0)-ptsShip);
+   413→DB.storeWallets[g.store]=r2((DB.storeWallets[g.store]||0)+net);
+   414→g.payout={sub:g.sub,comm,net,ship:{charge:sh.charge||0,merchant:mShip,pts:ptsShip}};
+   415→const u=USERS[o.customer] as any;
+   416→const giftPts=g.items.reduce((a,it)=>{const pd=P(it.pid) as any;return a+((pd&&pd.pts)||0)*it.qty},0);
+   417→const pts=Math.floor(net/10)+(bonus?10:0);
+   418→if(u){u.pts=(u.pts||0)+pts+giftPts;
+   419→u.ptsLog.unshift({t:'تحرير طلب #'+o.id+(bonus?' + مكافأة تقييم':''),v:pts,at:Date.now()});
+   420→if(giftPts)u.ptsLog.unshift({t:'نقاط هدية على منتجات الطلب #'+o.id,v:giftPts,at:Date.now()})}
+   421→pushNotif(o.customer,'🔓','تم تحرير مبلغ طلبك','صافي '+money(net)+' حُوِّل إلى '+ST(g.store).name+' — كسبت '+ar(pts)+' نقطة ولاء',['orders']);
+   422→const own=ST(g.store).owner;if(own)pushNotif(own,'💰','تحرير دفعة جديدة','استلمت '+money(net)+' صافي الطلب #'+ar(o.id)+' (عمولة ضمين '+money(comm)+(mShip?' + دعمك للشحن '+money(mShip):'')+')',['m-wallet']);
+   423→}
+   424→
+   425→/* doRefund (السطر ١٧٢٧) */
+   426→export function doRefund(o,g,by){
+   427→g.status='refunded';g.refundedAt=Date.now();g.refundedBy=by;
+   428→const back=r2(g.sub+((g.ship&&g.ship.charge)||(g.dl||0)));
+   429→const u=USERS[o.customer] as any;if(u){u.bal=r2((u.bal||0)+back)}
+   430→pushNotif(o.customer,'💸','استُرجع مبلغ طلبك','أُعيد '+money(back)+' إلى محفظة ضمين الخاصة بك (المنتجات + الشحن)',['account']);
+   431→const own=ST(g.store).owner;if(own)pushNotif(own,'↩️','استرجاع مبلغ شحنة','حكم التحكيم لطلب #'+ar(o.id)+': استرجاع كامل المبلغ للعميل',['m-disputes']);
+   432→impRefund(o,g);
+   433→}
+   434→
+   435→/* openComplaint (السطر ١٧٤٧) — إسناد COMP الكلي عبر المطاوعة ثم إكمال الحقول كما في الأصل */
+   436→export function openComplaint(oid,gi){
+   437→setCOMP({sub:'damaged',img:null});(COMP as any).oid=oid;(COMP as any).gi=gi;
+   438→openModal(<CompModal/>,undefined);
+   439→}
+   440→function CompModal(){
+   441→return <>
+   442→<div className="mhead"><b>⚠️ فتح نزاع على الشحنة</b><button className="x" onClick={()=>closeModal()}>✕</button></div>
+   443→<div className="mbody" id="compbody"><CompBody/></div>
+   444→</>;
+   445→}
+   446→
+   447→/* compBody (السطر ١٧٥١) → CompBody — تقرأ useUI('compbody') وتعيد بناء محتواها
+   448→ * بمفتاح النبضة (بديل compRefresh: إعادة بناء #compbody) */
+   449→export function CompBody(){
+   450→const t=useUI('compbody');
+   451→return <Fragment key={t}>
+   452→<div className="demo mb"><b style={{fontSize:'12.5px'}}>🛡️ لا تقلق — مبلغك ما زال محجوزاً</b>
+   453→<p className="hint" style={{marginTop:'2px'}}>افتح النزاع خلال نافذة الحماية وسيبقى المبلغ معلقاً حتى تصدر الإدارة حكمها بدردشة ثلاثية الأطراف.</p></div>
+   454→<div className="fld"><label>سبب النزاع</label>
+   455→<select className="inp" defaultValue={COMP.sub} onChange={e=>{COMP.sub=e.target.value;(COMP as any).img=null;compRefresh()}}>
+   456→{Object.entries(COMPS).map(([k,v])=><option key={k} value={k}>{v}</option>)}
+   457→</select></div>
+   458→<div className="mt" id="compx">{compExtra()}</div>
+   459→<div className="spread mt">
+   460→<button className="btn gray sm" onClick={()=>closeModal()}>إلغاء</button>
+   461→<button className="btn red" onClick={()=>submitComplaint()}>⚖️ افتح النزاع</button>
+   462→</div>
+   463→</Fragment>;
+   464→}
+   465→
+   466→/* compExtra (السطر ١٧٦٣) */
+   467→export function compExtra(){
+   468→if(COMP.sub==='damaged')return <>
+   469→<div className="fld"><label>صف الضرر بدقة</label><textarea className="inp" id="cp-txt" style={{minHeight:'64px'}} placeholder="مثال: شد واضح عند الطرف الأيسر مع خيط مقطوع…"></textarea></div>
+   470→<div className="mt"><button className="btn soft sm" onClick={()=>pickCompImg()}>📎 إرفاق صورة الضرر (مطلوبة)</button>
+   471→{(COMP as any).img?<span className="tag red" style={{marginInlineStart:'6px'}}>✓ مرفقة</span>:<span className="hint"> — ستظهر كدليل في الدردشة</span>}</div>
+   472→</>;
+   473→if(COMP.sub==='notmatch')return <>
+   474→<div className="fgrid">
+   475→<div className="fld"><label>ماذا طلبت؟</label><input className="inp" id="cp-want" placeholder="مثال: بوكس أخضر زيتي"/></div>
+   476→<div className="fld"><label>ماذا وصلك؟</label><input className="inp" id="cp-got" placeholder="مثال: كحلي غامق"/></div>
+   477→</div>
+   478→<div className="fld mt"><label>تفاصيل إضافية</label><textarea className="inp" id="cp-txt" style={{minHeight:'54px'}}></textarea></div>
+   479→<div className="mt"><button className="btn soft sm" onClick={()=>pickCompImg()}>📎 إرفاق صورة للمقارنة (اختياري)</button>
+   480→{(COMP as any).img?<span className="tag red" style={{marginInlineStart:'6px'}}>✓ مرفقة</span>:null}</div>
+   481→</>;
+   482→return <>
+   483→<div className="fld"><label>اشرح ما حدث بدقة</label><textarea className="inp" id="cp-txt" style={{minHeight:'74px'}} placeholder="كل التفاصيل تساعد الإدارة على الحكم العادل…"></textarea></div>
+   484→<div className="mt"><button className="btn soft sm" onClick={()=>pickCompImg()}>📎 إرفاق صورة (اختياري)</button>
+   485→{(COMP as any).img?<span className="tag red" style={{marginInlineStart:'6px'}}>✓ مرفقة</span>:null}</div>
+   486→</>;
+   487→}
+   488→
+   489→/* compRefresh (السطر ١٧٨١) — كانت تعيد بناء #compbody ⇒ الآن bumpUI('compbody') */
+   490→export function compRefresh(){bumpUI('compbody')}
+   491→
+   492→/* pickCompImg (السطر ١٧٨٢) — عبر حقل #fup المخفي كما في الأصل حرفياً
+   493→ * (الوصول للخاصية بالقوس ['onchange'] = إسناد .onchange في الأصل نفسه: يستبدل أي معالج
+   494→ *  سابق ولا يكدّس المعالجات — نفس السلوك حرفياً) */
+   495→export function pickCompImg(){
+   496→$('#fup')['onchange']=e=>{const f=e.target.files[0];if(!f)return;
+   497→const rd=new FileReader();rd.onload=()=>{(COMP as any).img=rd.result;$('#fup').value='';compRefresh();toast('أُرفقت الصورة ✓','ok')};rd.readAsDataURL(f)};
+   498→$('#fup').click();
+   499→}
+   500→
+   501→/* submitComplaint (السطر ١٧٨٧) */
+   502→export function submitComplaint(){
+   503→const o=DB.orders.find(x=>x.id===(COMP as any).oid) as any;const g=o.groups[(COMP as any).gi];
+   504→let txt='';
+   505→if(COMP.sub==='notmatch'){
+   506→const w=($('#cp-want')||{value:''}).value.trim(),gt=($('#cp-got')||{value:''}).value.trim();
+   507→if(!w||!gt){toast('أكمل حقلَي «ماذا طلبت / ماذا وصلك»','err');return}
+   508→txt='طلبت: '+w+' — لكن وصلني: '+gt+'. '+(($('#cp-txt')||{value:''}).value.trim());
+   509→}else{
+   510→txt=($('#cp-txt')||{value:''}).value.trim();
+   511→if(!txt){toast('اكتب شرحاً للسبب أولاً','err');return}
+   512→}
+   513→if(COMP.sub==='damaged'&&!(COMP as any).img){toast('إرفاق صورة الضرر إلزامي لهذا السبب','err');return}
+   514→const d={id:'d'+(DB.disputes.length+10),order:o.id,store:g.store,customer:SES.phone,subject:COMPS[COMP.sub],openedAt:Date.now(),status:'open',ruling:null,
+   515→messages:[{r:'sys',t:'فتح العميل نزاعاً على الطلب #'+ar(o.id)+' ('+ST(g.store).name+') بسبب: '+COMPS[COMP.sub],at:Date.now()},
+   516→{r:'customer',t:txt,at:Date.now()+1000,img:(COMP as any).img||undefined}]} as any;
+   517→DB.disputes.unshift(d);
+   518→g.status='disputed';
+   519→const own=ST(g.store).owner;
+   520→if(own)pushNotif(own,'⚖️','نزاع جديد على طلبك','فتح العميل نزاعاً بسبب: '+COMPS[COMP.sub],['m-disputes']);
+   521→pushNotif('0500000003','⚖️','نزاع جديد بانتظار التحكيم',ST(g.store).name+' · '+COMPS[COMP.sub],['a-disputes']);
+   522→pushNotif('0500000013','⚖️','نزاع جديد بانتظار التحكيم',ST(g.store).name+' · '+COMPS[COMP.sub],['e-disputes']);
+   523→toast('فُتح النزاع — المبلغ معلق حتى الحكم ⚖️','ok');
+   524→closeModal();render();openDispute(d.id);
+   525→}
+   526→

@@ -1,0 +1,432 @@
+     1→'use client';
+     2→/* ضمين — pages/admin.tsx
+     3→ * مركز الإدارة (a-hub) + مركز الموظف (e-hub) + صفحة المتاجر وطلبات التسجيل (a-stores/e-stores)
+     4→ * + التحكيم (a-disputes/e-disputes) + الأقسام (a-cats) + الإيرادات (a-rev) —
+     5→ * منقول حرفياً من dameen.js (السطور ٢٧٠٥-٣٠٧٧): نفس العناصر والفئات والنصوص والأرقام،
+     6→ * والمعالجات تصبح خصائص React — بلا أي تغيير في التصميم.
+     7→ * ملاحظة: ASTT=t في الأصل (سطر ٢٧٤٢) لا يمكن تنفيذه — روابط الاستيراد للقراءة فقط
+     8→ * ولا توجد مطاوعة setASTT في store.ts (انظر التقرير).
+     9→ */
+    10→import { $, ar, ard, money, r2, dt, ago, toast, SEC, ST, SECTIONS, CATS, PRODUCTS, STORES, USERS, DB, MED, medOf, ptsVal, fdPts, IMP } from '../core';
+    11→import { VIEW, REJ, CATDEL, me, render, pushNotif, openModal, closeModal, appSave, setREJ, setCATDEL, go as _go } from '../store';
+    12→import { AcouponCard } from './merchant2';
+    13→import { OpenDispute } from './disputes';
+    14→import { openOChat } from './orders';
+    15→import { heldFor } from './merchant1';
+    16→
+    17→/* go الأصلية تُستدعى بوسيط واحد في مواضع عدة هنا — alias بنفس الدالة بلا أي تغيير سلوكي */
+    18→const go = _go as (page: string, arg?: any) => void;
+    19→
+    20→/* ================= 🛡️ مركز إدارة ضمين (السطر ٢٧٠٥) ================= */
+    21→export function PgAHub(){
+    22→return <>
+    23→<div className="pghead"><h1>🛡️ مركز إدارة ضمين</h1><span className="tag nvy">المشرف العام</span></div>
+    24→<PgAOver/>
+    25→</>;
+    26→}
+    27→/* ================= 🧑‍💼 لوحة موظفي الإدارة (السطر ٢٧١٠) ================= */
+    28→export function PgEHub(){
+    29→const open=DB.disputes.filter(d=>d.status==='open');
+    30→const done=DB.disputes.filter(d=>d.status==='resolved');
+    31→const pends=DB.reqs.filter(r=>r.status==='pending');
+    32→const susp=STORES.filter(s=>s.susp).length;
+    33→const st=me();
+    34→return <>
+    35→<div className="pghead"><h1>🧑‍💼 مركز موظف الإدارة</h1><span className="tag amb">{st.staffTitle||'مشرف متاجر ونزاعات'}</span></div>
+    36→<div className="kpis">
+    37→<div className="kpi amb" style={{cursor:'pointer'}} onClick={()=>go('e-reqs')}><i>📋</i><b>{ar(pends.length)}</b><span>طلبات تسجيل بانتظار البت</span></div>
+    38→<div className="kpi" style={{cursor:'pointer'}} onClick={()=>go('e-stores')}><i>🏪</i><b>{ar(STORES.length)}</b><span>متجر في ضمين — {ar(susp)} موقوف</span></div>
+    39→<div className="kpi red" style={{cursor:'pointer'}} onClick={()=>go('e-disputes')}><i>⚖️</i><b>{ar(open.length)}</b><span>نزاعات مفتوحة بانتظار الحكم</span></div>
+    40→<div className="kpi grn"><i>📁</i><b>{ar(done.length)}</b><span>أحكام تحكيم صادرة</span></div>
+    41→</div>
+    42→<div className="grid2 mt">
+    43→<div className="acard"><h3>🏪 قسم المتاجر</h3>
+    44→<p className="hint mb" style={{lineHeight:'1.8'}}>اعتماد طلبات تسجيل المتاجر الجديدة وفتحها فوراً، وإدارة المتاجر القائمة وإيقاف المخالف منها، وضبط حدود الوسائط الترويجية لكل متجر — نفس صفحة المتاجر في مركز الإدارة تماماً.</p>
+    45→<div className="rows">
+    46→<div className="row" style={{cursor:'pointer'}} onClick={()=>go('e-reqs')}><div className="fx" style={{fontSize:'13px'}}>📋 طلبات بانتظار البت</div><span className={'tag '+(pends.length?'amb':'grn')}>{ar(pends.length)} طلب</span></div>
+    47→<div className="row" style={{cursor:'pointer'}} onClick={()=>go('e-stores')}><div className="fx" style={{fontSize:'13px'}}>🏪 متاجر عاملة</div><span className="tag grn">{ar(STORES.length-susp)} متجر</span></div>
+    48→<div className="row" style={{cursor:'pointer'}} onClick={()=>go('e-stores','stores')}><div className="fx" style={{fontSize:'13px'}}>⛔ متاجر موقوفة</div><span className={'tag '+(susp?'red':'grn')}>{ar(susp)} متجر</span></div>
+    49→</div>
+    50→<button className="btn soft wide mt" onClick={()=>go('e-stores')}>فتح قسم المتاجر ←</button></div>
+    51→<div className="acard"><h3>⚖️ قسم النزاعات</h3>
+    52→<p className="hint mb" style={{lineHeight:'1.8'}}>قضايا التحكيم الثلاثي بدردشة الأطراف وأدلة الصور — اقرأ الحجج وأصدر حكمك بتسبيب يظهر للعميل والتاجر وينفّذ تلقائياً على المبلغ المحجوز — نفس صفحة التحكيم في مركز الإدارة تماماً.</p>
+    53→{open.length?open.map(d=><div className="row" style={{cursor:'pointer'}} onClick={()=>OpenDispute(d.id)} key={d.id}><div style={{flex:'1',minWidth:'0'}}><b style={{fontSize:'12.5px'}}>{d.subject}</b><div className="hint">{ST(d.store).name} · طلب #{ar(d.order)} · {ago(d.openedAt)}</div></div><span className="tag red">يحتاج حكماً</span></div>):<div className="hint mb">لا نزاعات معلقة حالياً — كل شيء تحت السيطرة 🕊️</div>}
+    54→<button className="btn soft wide mt" onClick={()=>go('e-disputes')}>فتح قسم النزاعات ←</button></div>
+    55→</div>
+    56→<div className="acard mt"><h3>🤝 تكامل لحظي مع الإدارة العليا</h3>
+    57→<p className="hint" style={{lineHeight:'1.9'}}>أنت معتمد ضمن فريق موظفي ضمين — كل موافقة تُصدرها على متجر وكل حكم تصدره يظهر مباشرة في مركز الإدارة العليا والعكس صحيح، لأنكم تعملون على قاعدة بيانات واحدة تتحدّث لحظياً. صلاحياتك: اعتماد المتاجر وإدارتها وضبط حدود وسائطها، والبت في النزاعات — أما الأقسام والعمولات والإيرادات المالية فتبقى لمركز الإدارة العليا.</p></div>
+    58→</>;
+    59→}
+    60→/* ================= صفحة المتاجر المستقلة (السطر ٢٧٤١) ================= */
+    61→export function PgAStoresPage(){
+    62→const t=['reqs','stores','media'].includes((VIEW as any).atab)?(VIEW as any).atab:'stores';
+    63→/* الأصل: ASTT=t; — إسناد رابط الاستيراد ممنوع في ESM ولا توجد مطاوعة setASTT في store */
+    64→const pends=DB.reqs.filter(r=>r.status==='pending').length;
+    65→const tab=(k,l,n?)=><button className={t===k?'on':''} onClick={()=>astTab(k)}>{l}{n?' ('+ar(n)+')':null}</button>;
+    66→return <>
+    67→<div className="pghead"><h1>🏪 المتاجر</h1><span className="tag nvy">طلبات التسجيل وإدارة المتاجر</span></div>
+    68→<div className="tabs" style={{marginTop:'8px'}}>{tab('reqs','📋 طلبات التسجيل',pends)}{tab('stores','🏪 جميع المتاجر',STORES.length)}{tab('media','🎛️ حدود الوسائط')}</div>
+    69→{t==='reqs'?<PgAReqs/>:t==='media'?<PgAMedia/>:<PgAStores/>}
+    70→</>;
+    71→}
+    72→export function astTab(t){(VIEW as any).atab=t;render()}
+    73→const vaultNow=()=>r2(DB.orders.reduce((a,o)=>a+o.groups.filter(g=>['pending','preparing','shipped','received','disputed'].includes(g.status)).reduce((x,g:any)=>x+g.sub+((g.ship&&g.ship.charge)||(g.dl||0)),0),0));
+    74→/* ================= نظرة عامة على الإدارة (السطر ٢٧٥١) ================= */
+    75→export function PgAOver(){
+    76→const open=DB.disputes.filter(d=>d.status==='open');
+    77→const chats=[];DB.orders.forEach(o=>o.groups.forEach((g:any,gi)=>{if(g.chat&&g.chat.length)chats.push({o,g,gi})}));
+    78→chats.sort((a,b)=>(((b.g.chat||[]).slice(-1)[0]||{}).at||0)-(((a.g.chat||[]).slice(-1)[0]||{}).at||0));
+    79→const vTot=DB.orders.reduce((a,o)=>a+o.groups.reduce((x,g:any)=>x+(g.viol?g.viol.customer+g.viol.merchant:0),0),0);
+    80→const releasedTotal=DB.orders.reduce((a,o)=>a+o.groups.reduce((x,g:any)=>x+(g.payout?g.payout.sub:0),0),0);
+    81→const pends=DB.reqs.filter(r=>r.status==='pending');
+    82→return <>
+    83→<div className="kpis">
+    84→<div className="kpi grn"><i>🧾</i><b>{money(DB.aRevenue)}</b><span>إجمالي عمولات ضمين (حسب التصنيف)</span></div>
+    85→<div className="kpi amb"><i>🔒</i><b>{money(vaultNow())}</b><span>مبالغ محجوزة حالياً</span></div>
+    86→<div className="kpi nvy"><i>🔓</i><b>{money(releasedTotal)}</b><span>إجمالي الشحنات المحررة</span></div>
+    87→<div className="kpi red"><i>⚖️</i><b>{ar(open.length)}</b><span>نزاعات بانتظار حكمك</span></div>
+    88→<div className="kpi" style={{cursor:'pointer'}} onClick={()=>go('a-stores')}><i>🏪</i><b>{ar(STORES.length)}</b><span>متجر في ضمين</span></div>
+    89→<div className="kpi"><i>👥</i><b>{ar(Object.keys(USERS).length)}</b><span>مستخدم مسجل</span></div>
+    90→<div className="kpi" style={{cursor:'pointer'}} onClick={()=>go('a-stores','media')}><i>🌟</i><b>{money(IMP.total)}</b><span>أثر مجتمعي شفاف (من أرباح ضمين)</span></div>
+    91→</div>
+    92→<div className="grid2 mt">
+    93→<div className="acard"><h3>⚖️ طابور التحكيم</h3>
+    94→{open.length?open.map(d=><div className="row" style={{cursor:'pointer'}} onClick={()=>OpenDispute(d.id)} key={d.id}>
+    95→<div style={{flex:'1'}}><b>{d.subject}</b><div className="hint">{ST(d.store).name} · طلب #{ar(d.order)} · {ago(d.openedAt)}</div></div>
+    96→<span className="tag red">يحتاج حكماً</span></div>):<div className="hint mb">لا نزاعات معلقة — كل شيء تحت السيطرة 🕊️</div>}
+    97→<button className="btn soft wide" onClick={()=>go('a-disputes')}>كل النزاعات ←</button></div>
+    98→<div className="acard"><h3>🏪 المتاجر وطلبات التسجيل</h3>
+    99→<div className="rows">
+   100→<div className="row"><div className="fx" style={{fontSize:'13px'}}>🏪 متاجر ضمين</div><span className={'tag '+(STORES.filter(s=>s.susp).length?'amb':'grn')}>{ar(STORES.length)} متجر · {ar(STORES.filter(s=>s.susp).length)} موقوف</span></div>
+   101→<div className="row"><div className="fx" style={{fontSize:'13px'}}>📋 طلبات تسجيل بانتظار البت</div><span className={'tag '+(pends.length?'amb':'grn')}>{ar(pends.length)} طلب</span></div>
+   102→</div>
+   103→<button className="btn soft wide mt" onClick={()=>go('a-stores')}>فتح صفحة المتاجر وطلبات التسجيل ←</button>
+   104→<button className="btn soft wide mt" onClick={()=>go('a-stores','media')}>🎛️ حدود الوسائط الترويجية للمتاجر ←</button>
+   105→</div></div>
+   106→<div className="acard mt"><h3>💬 مراقبة محادثات الطلبات {vTot?<span className="tag red">{ar(vTot)} مخالفة محجوبة</span>:<span className="tag grn">بلا مخالفات</span>}</h3>
+   107→<p className="hint mb">محادثات العميل × التاجر مرتبطة بالطلب — تُحجب الأرقام والروابط ووسائل التواصل الخارجية تلقائياً، وتُحذف المحادثة بعد ٣ مخالفات مع تنبيه فوري للإدارة.</p>
+   108→<div className="rows">{chats.slice(0,5).length?chats.slice(0,5).map(({o,g,gi})=>{const last=[...(g.chat||[])].reverse().find(m=>m.r!=='sys');
+   109→const ltxt=last?(last.loc?('📍 '+last.loc.txt):(last.payreq?('💰 طلب مبلغ إضافي بـ'+money(last.payreq.amt)):String(last.t))):'';
+   110→return <div className="row" style={{cursor:'pointer'}} onClick={()=>openOChat(o.id,gi)} key={o.id+'-'+gi}>
+   111→<div style={{flex:'1',minWidth:'0'}}><b>طلب #{ar(o.id)} · {ST(g.store).name} × {USERS[o.customer]?USERS[o.customer].name.split(' ')[0]:'عميل'}</b>
+   112→<div className="hint">{last?ltxt.slice(0,60)+(ltxt.length>60?'…':''):'—'} · {ar((g.chat||[]).length)} رسالة{g.chatDeleted?' · ⛔ محذوفة لمخالفة':g.chatArchived?' · 🗄️ مؤرشفة':null}</div></div>
+   113→{(g.viol&&(g.viol.customer+g.viol.merchant))?<span className="tag red">{ar(g.viol.customer+g.viol.merchant)} 🚫</span>:<span className="tag grn">سليمة</span>}</div>}):<div className="hint">لا محادثات طلبات بعد</div>}</div></div>
+   114→</>;
+   115→}
+   116→/* ================= ⚖️ التحكيم (السطر ٢٧٩٠) ================= */
+   117→export function PgADisputes(){
+   118→const open=DB.disputes.filter(d=>d.status==='open');
+   119→const done=DB.disputes.filter(d=>d.status==='resolved');
+   120→return <>
+   121→<div className="pghead"><h1>⚖️ التحكيم</h1><span className={'tag '+(open.length?'red':'grn')}>{ar(open.length)} مفتوح · {ar(done.length)} محسوم</span></div>
+   122→<b className="fx" style={{fontSize:'14px',color:'var(--red)'}}>⏳ بانتظار الحكم — افتح الدردشة واطّلع على أدلة الطرفين</b>
+   123→{open.length?open.map(d=>{const o=DB.orders.find(x=>x.id===d.order);const g=o.groups.find(x=>x.store===d.store);
+   124→return <div className="ocard" style={{borderInlineStart:'4px solid var(--red)'}} key={d.id}>
+   125→<div className="spread" style={{flexWrap:'wrap'}}>
+   126→<div><b className="fx" style={{fontSize:'13.5px'}}>{d.subject}</b>
+   127→<div className="hint">{USERS[d.customer]?USERS[d.customer].name:'عميل'} × {ST(d.store).name} · طلب #{ar(d.order)} · {money(g.sub)} معلقة</div></div>
+   128→<span className="tag red">مبلغ معلق {money(g.sub)}</span></div>
+   129→<button className="btn red sm mt" onClick={()=>OpenDispute(d.id)}>🛡️ فتح القضية وإصدار الحكم</button></div>}):<div className="empty" style={{padding:'26px'}}><div className="em">🕊️</div><b>لا قضايا مفتوحة</b></div>}
+   130→<div className="hr" style={{margin:'20px 0'}}></div>
+   131→<b className="fx" style={{fontSize:'14px',color:'var(--grn)'}}>📁 أحكام صادرة</b>
+   132→{done.length?done.map(d=><div className="ocard" style={{borderInlineStart:'4px solid var(--grn)'}} key={d.id}>
+   133→<div className="spread" style={{flexWrap:'wrap'}}>
+   134→<div><b className="fx" style={{fontSize:'13px'}}>{d.subject} — طلب #{ar(d.order)}</b>
+   135→<div className="hint">{d.ruling.act==='release'?'إفراج للتاجر':'استرجاع للعميل'} · {dt(d.ruling.at)}</div></div>
+   136→<button className="btn gray xs" onClick={()=>OpenDispute(d.id)}>عرض الملف</button></div>
+   137→<div className={'verd '+(d.ruling.act==='release'?'rel':'ref')} style={{margin:'8px 0 0'}}><h4>التسبيب</h4><div className="why">{d.ruling.text}</div></div></div>):<div className="hint mt">لا أحكام سابقة</div>}
+   138→</>;
+   139→}
+   140→/* ================= 🏪 جميع المتاجر (السطر ٢٨١١) ================= */
+   141→export function PgAStores(){
+   142→return <>
+   143→<div className="spread" style={{margin:'2px 0 12px'}}><b className="fx" style={{fontSize:'14.5px'}}>🏪 إدارة المتاجر</b><span className="tag gry">{ar(STORES.length)} متجر مسجل</span></div>
+   144→<div className="acard"><div className="rows">
+   145→{STORES.map(s=><div className="row" key={s.id}>
+   146→<div style={{width:'44px',height:'44px',borderRadius:'13px',background:s.color,color:'#fff',display:'grid',placeItems:'center',fontFamily:'Alexandria',fontWeight:800,flexShrink:0}}>{s.name[0]}</div>
+   147→<div style={{flex:'1',minWidth:'0'}}><b>{s.name}</b>
+   148→<div className="hint">{SEC(s.sec).name} · {USERS[s.owner]?USERS[s.owner].name:'—'} · ★ {ard(s.rt)} · {ar(s.sales)} عملية</div></div>
+   149→<div style={{display:'flex',gap:'6px',alignItems:'center',flexWrap:'wrap'}}>
+   150→<span className="fx" style={{fontSize:'12.5px',color:'var(--grn)'}}>{money(DB.storeWallets[s.id]||0)}</span>
+   151→{s.susp?<><span className="tag red">موقوف</span><button className="btn gray xs" onClick={()=>aSusp(s.id)}>إلغاء الإيقاف</button></>:<><span className="tag grn">يعمل</span><button className="btn red xs" onClick={()=>aSusp(s.id)}>إيقاف</button></>}
+   152→</div></div>)}
+   153→</div></div>
+   154→</>;
+   155→}
+   156→export function aSusp(sid){const s=ST(sid);s.susp=!s.susp;
+   157→pushNotif(s.owner,s.susp?'⛔':'✅',s.susp?'أُوقف متجرك مؤقتاً':'أُلغي إيقاف متجرك',s.susp?'راجع فريق الامتثال في ضمين':'عاد متجرك للعمل بشكل طبيعي',['m-set']);
+   158→toast(s.susp?'أُوقف المتجر مؤقتاً':'أُعيد تشغيل المتجر','ok');render()}
+   159→/* ===== 🎛️ حدود الوسائط الترويجية — تحددها الإدارة لكل متجر (السطر ٢٨٢٩) ===== */
+   160→export function PgAMedia(){
+   161→return <>
+   162→<div className="spread" style={{margin:'2px 0 12px'}}><b className="fx" style={{fontSize:'14.5px'}}>🎛️ حدود الوسائط الترويجية</b><span className="tag gry">تُطبَّق على منتجات كل متجر</span></div>
+   163→<p className="hint mb" style={{lineHeight:'1.8'}}>تحدد الإدارة لكل متجر عدد الصور الترويجية وعدد المقاطع المرئية وأقصى مدة لكل مقطع في كل منتج — يلتزم بها التاجر في نموذج إضافة وتعديل المنتجات، وتظهر الوسائط للعملاء داخل صفحة المتجر بشكل أنيق.</p>
+   164→<div className="acard"><h3>الحدود الافتراضية (لكل المتاجر)</h3>
+   165→<div className="fgrid">
+   166→<div className="fld"><label>🖼️ عدد الصور لكل منتج</label><input className="inp" id="amd-imgs" type="number" min="1" max="12" defaultValue={MED.imgs}/></div>
+   167→<div className="fld"><label>🎬 عدد المقاطع لكل منتج</label><input className="inp" id="amd-vids" type="number" min="0" max="4" defaultValue={MED.vids}/></div>
+   168→<div className="fld"><label>⏱️ أقصى مدة للمقطع (ثانية)</label><input className="inp" id="amd-secs" type="number" min="10" max="300" step="5" defaultValue={MED.secs}/></div>
+   169→</div>
+   170→<button className="btn sm mt" onClick={()=>aSaveMedDef()}>حفظ الحدود الافتراضية</button></div>
+   171→<div className="acard mt"><h3>حدود خاصة بكل متجر</h3>
+   172→<p className="hint mb">عدّل الأرقام ثم اضغط حفظ — المتجر الذي لا تعدّله يتبع الافتراضي، و«إلغاء الخاص» يعيده للافتراضي.</p>
+   173→<div className="rows">
+   174→{STORES.map(s=>{const m=medOf(s);const own=!!MED.stores[s.id];
+   175→return <div className="row" style={{flexWrap:'wrap',gap:'8px'}} key={s.id}>
+   176→<div style={{flex:'1',minWidth:'140px',display:'flex',gap:'9px',alignItems:'center'}}>
+   177→<div style={{width:'36px',height:'36px',borderRadius:'11px',background:s.color,color:'#fff',display:'grid',placeItems:'center',fontWeight:800,flexShrink:0}}>{s.name[0]}</div>
+   178→<div><b style={{fontSize:'12.5px'}}>{s.name}</b><div className="hint">{own?'حد خاص من الإدارة':'يتبع الافتراضي'}</div></div></div>
+   179→<div style={{display:'flex',gap:'6px',alignItems:'center',flexWrap:'wrap'}}>
+   180→<span className="hint">🖼️</span><input className="inp" style={{width:'62px',padding:'8px',textAlign:'center'}} id={'amd-i-'+s.id} type="number" min="1" max="12" defaultValue={m.imgs}/>
+   181→<span className="hint">🎬</span><input className="inp" style={{width:'62px',padding:'8px',textAlign:'center'}} id={'amd-v-'+s.id} type="number" min="0" max="4" defaultValue={m.vids}/>
+   182→<span className="hint">⏱️ث</span><input className="inp" style={{width:'70px',padding:'8px',textAlign:'center'}} id={'amd-s-'+s.id} type="number" min="10" max="300" step="5" defaultValue={m.secs}/>
+   183→{own?<button className="btn gray xs" onClick={()=>aMedReset(s.id)}>إلغاء الخاص</button>:null}
+   184→</div></div>})}
+   185→</div>
+   186→<button className="btn sm mt" onClick={()=>aSaveMedStores()}>حفظ حدود المتاجر</button></div>
+   187→</>;
+   188→}
+   189→const medClamp=(v,a,b,d)=>Math.max(a,Math.min(b,Math.round(+v)||d));
+   190→export function aSaveMedDef(){
+   191→MED.imgs=medClamp(($('#amd-imgs')||{}).value,1,12,6);
+   192→MED.vids=medClamp(($('#amd-vids')||{}).value,0,4,2);
+   193→MED.secs=medClamp(($('#amd-secs')||{}).value,10,300,60);
+   194→appSave();toast('حُفظت الحدود الافتراضية للوسائط لكل المتاجر ✓','ok');render();
+   195→}
+   196→export function aSaveMedStores(){
+   197→STORES.forEach(s=>{
+   198→const vi=$('#amd-v-'+s.id);if(!vi)return;
+   199→MED.stores[s.id]={imgs:medClamp(($('#amd-i-'+s.id)||{}).value,1,12,MED.imgs),vids:medClamp(vi.value,0,4,MED.vids),secs:medClamp(($('#amd-s-'+s.id)||{}).value,10,300,MED.secs)};
+   200→});
+   201→appSave();toast('حُفظت حدود الوسائط الخاصة بكل متجر ✓','ok');render();
+   202→}
+   203→export function aMedReset(sid){delete MED.stores[sid];appSave();toast('أُلغي الحد الخاص — المتجر يتبع الافتراضي الآن','ok');render()}
+   204→/* ================= 📋 طلبات التسجيل (السطر ٢٨٧١) ================= */
+   205→function PgAReqs(){
+   206→const pend=DB.reqs.filter(r=>r.status==='pending');
+   207→const done=DB.reqs.filter(r=>r.status!=='pending');
+   208→return <>
+   209→<div className="spread" style={{margin:'2px 0 12px'}}><b className="fx" style={{fontSize:'14.5px'}}>📋 طلبات التسجيل</b><span className={'tag '+(pend.length?'amb':'grn')}>{ar(pend.length)} بانتظار البت · {ar(done.length)} منتهي</span></div>
+   210→<p className="hint mb" style={{lineHeight:'1.8'}}>كل من يسجّل متجراً جديداً أو يطلب الانضمام لفريق الإدارة تظهر بياناته كاملة هنا — توافق فتفتح حسابه فوراً ويُبلَّغ، أو ترفض بسببٍ يظهر لصاحب الطلب. تسجيل الدخول موحّد للجميع (جوال أو بريد + كلمة مرور).</p>
+   211→{pend.length?pend.map(r=><ReqCard r={r} key={r.id}/>):<div className="empty"><div className="em">📭</div><b>لا طلبات معلقة</b><span>ستظهر هنا طلبات فتح المتاجر والانضمام للإدارة فور ورودها</span></div>}
+   212→{done.length?<><div className="hr" style={{margin:'20px 0 10px'}}></div><b className="fx" style={{fontSize:'13.5px'}}>📁 الطلبات المنتهية</b>
+   213→<div className="rows mt">{done.map((r:any)=><div className="row" style={{flexWrap:'wrap',gap:'6px'}} key={r.id}>
+   214→<div style={{flex:'1',minWidth:'170px'}}><b>{r.kind==='store'?'🏪 '+r.store:'🛡️ '+r.own}</b><div className="hint">{r.kind==='store'?r.own+' · '+SEC(r.sec).name:r.role||'فريق الإدارة'} · {ago(r.at)}</div></div>
+   215→<span className={'tag '+(r.status==='approved'?'grn':'red')}>{r.status==='approved'?'مقبول ✓':'مرفوض ✗'}</span>
+   216→{r.status==='rejected'&&r.why?<span className="hint">السبب: {r.why}</span>:null}
+   217→{r.status==='rejected'?<button className="btn gray xs" onClick={()=>aApproveReq(r.id)}>إعادة فتح وقبول</button>:null}
+   218→</div>)}</div></>:null}
+   219→</>;
+   220→}
+   221→/* بطاقة طلب تسجيل (السطر ٢٨٨٥) */
+   222→export function ReqCard({r}){
+   223→const isS=r.kind==='store';
+   224→return <div className="acard" style={{borderInlineStart:'4px solid '+(isS?SEC(r.sec).color:'var(--navy)')}}>
+   225→<div className="spread" style={{flexWrap:'wrap',gap:'8px'}}>
+   226→<div><b className="fx" style={{fontSize:'14px'}}>{isS?'🏪 '+r.store+' — طلب متجر جديد':'🛡️ '+r.own+' — طلب انضمام للإدارة'}</b>
+   227→<div className="hint">{r.own}{isS?' · '+SEC(r.sec).name:''} · وصل {ago(r.at)}</div></div>
+   228→<span className="tag amb">بانتظار الموافقة</span></div>
+   229→<div className="reqgrid">
+   230→{isS?<><div className="reqcell"><span>اسم المتجر</span><b>{r.store}</b></div>
+   231→<div className="reqcell"><span>العالم المختار</span><b style={{color:SEC(r.sec).color}}>{SEC(r.sec).icon} {SEC(r.sec).name}</b></div></>:<><div className="reqcell"><span>القسم الإشرافي المطلوب</span><b>{r.role||'—'}</b></div>
+   232→<div className="reqcell"><span>رمز الدعوة</span><b>{r.code||'—'} {r.code==='DMN-2026'?<span className="tag grn">سليم ✓</span>:<span className="tag red">غير صحيح</span>}</b></div></>}
+   233→<div className="reqcell"><span>الجوال (يستخدم للدخول)</span><b>{ar(r.phone)}</b></div>
+   234→<div className="reqcell"><span>البريد الإلكتروني</span><b>{r.email||'—'}</b></div>
+   235→{isS?<><div className="reqcell"><span>السجل التجاري / الوثيقة</span><b>{r.cr}{r.crDoc?<>{' '}<span className="tag grn">📎 {r.crDoc}</span></>:null}</b></div>
+   236→<div className="reqcell"><span>الآيبان (تحويل أرباح المتجر)</span><b>{r.iban}</b></div></>:<div className="reqcell" style={{gridColumn:'1/-1'}}><span>ملاحظة الأمان</span><b className="hint" style={{fontWeight:600}}>كلمة المرور محفوظة ولا تُعرض — تُفتح لك لوحة موظف الإدارة (المتاجر والنزاعات) بعد القبول، ويُبلَّغ صاحب الطلب بأي رفض مع سببه.</b></div>}
+   237→</div>
+   238→<div className="spread mt" style={{gap:'8px',flexWrap:'wrap'}}>
+   239→<button className="btn sm" onClick={()=>aApproveReq(r.id)}>✓ موافقة{isS?' وفتح المتجر':' وفتح الحساب'}</button>
+   240→<button className="btn red sm" onClick={()=>aRejectReq(r.id)}>✗ رفض الطلب</button></div></div>;
+   241→}
+   242→/* الموافقة على طلب (السطر ٢٩٠٥) */
+   243→export function aApproveReq(id){
+   244→const r:any=DB.reqs.find(x=>x.id===id);if(!r)return;
+   245→let passInfo='';
+   246→if(r.kind==='store'){
+   247→let n=STORES.length+1;while(ST('s'+n))n++;const sid='s'+n;
+   248→STORES.push({id:sid,name:r.store,sec:r.sec,owner:r.phone,color:SEC(r.sec).color,desc:'متجر جديد — بانتظار أول منتجاته وهويته',rt:0,sales:0,susp:false,open:true,city:'الرياض',dlMode:'customer',freeMin:0,iban:r.iban,cr:r.cr,crDoc:r.crDoc||''} as any);
+   249→DB.storeWallets[sid]=0;}
+   250→const u=USERS[r.phone];
+   251→if(u){u.pend=null;delete u.rejected;
+   252→if(r.kind==='store'){const st=STORES.find(x=>x.owner===r.phone);if(st)u.store=st.id}}
+   253→else{const st=STORES.find(x=>x.owner===r.phone);
+   254→USERS[r.phone]=r.kind==='store'
+   255→?{name:r.own,role:'merchant',pass:'1234',store:st?st.id:null,since:Date.now(),email:r.email||'',notif:{ord:true,dis:true}}
+   256→:{name:r.own,role:'staff',pass:'1234',since:Date.now(),email:r.email||'',staffTitle:r.role||'مشرف عام',notif:{dis:true}};
+   257→passInfo=' — كلمة المرور التجريبية 1234'}
+   258→r.status='approved';r.at2=Date.now();
+   259→pushNotif(r.phone,'🎉',r.kind==='store'?'اعتُمد متجرك وأصبح جاهزاً!':'مرحباً بك في فريق إدارة ضمين',r.kind==='store'?'«'+r.store+'» فُتح في '+SEC(r.sec).name+' — أضف منتجاتك من لوحة التاجر وابدأ البيع':'فُتحت لك صلاحيات لوحة الموظف (المتاجر والنزاعات) — سجّل دخولك بالجوال وكلمة المرور وابدأ',r.kind==='store'?['m-dash']:['e-hub']);
+   260→toast(r.kind==='store'?'اعتُمد المتجر وأُبلغ صاحبه ✓':'قُبل طلب الانضمام وأُبلغ صاحبه'+passInfo,'ok');render();
+   261→}
+   262→/* الرفض بسبب (السطر ٢٩٢٤) */
+   263→function RejModal({r}){
+   264→return <>
+   265→<div className="mhead"><b>✗ رفض طلب {r.kind==='store'?'المتجر «'+r.store+'»':'الإدارة — '+r.own}</b><button className="x" onClick={()=>closeModal()}>✕</button></div>
+   266→<div className="mbody">
+   267→<div className="fld"><label>سبب الرفض (يظهر لصاحب الطلب مع إشعار)</label><textarea className="inp" id="rj-why" style={{minHeight:'76px'}} placeholder="مثال: وثيقة السجل التجاري غير واضحة — أعد إرفاقها"></textarea></div>
+   268→<div className="spread mt"><button className="btn gray sm" onClick={()=>closeModal()}>تراجع</button><button className="btn red sm" onClick={()=>doRejectReq()}>تأكيد الرفض</button></div></div>
+   269→</>;
+   270→}
+   271→export function aRejectReq(id){
+   272→const r=DB.reqs.find(x=>x.id===id);if(!r)return;setREJ(r);
+   273→openModal(<RejModal r={r}/>,undefined);}
+   274→export function doRejectReq(){
+   275→if(!REJ)return;
+   276→const why=($('#rj-why').value||'').trim()||'لم يستوفِ الطلب شروط الاعتماد في ضمين';
+   277→REJ.status='rejected';REJ.why=why;REJ.at2=Date.now();
+   278→const u=USERS[REJ.phone];if(u){u.pend=null;u.rejected=why}
+   279→pushNotif(REJ.phone,'✗',REJ.kind==='store'?'رُفض طلب افتتاح متجرك':'رُفض طلب انضمامك للإدارة',why,null);
+   280→closeModal();toast('رُفض الطلب وأُبلغ صاحبه بالسبب','ok');render();
+   281→}
+   282→/* ================= 🗂️ الأقسام والتصنيفات (السطر ٢٩٣٩) ================= */
+   283→export function PgACats(){
+   284→return <>
+   285→<div className="pghead"><h1>🗂️ الأقسام والتصنيفات</h1><span className="tag grn">عمولة ضمين تُحدَّد لكل تصنيف</span></div>
+   286→<p className="hint mb" style={{lineHeight:'1.8'}}>أضف وعدّل واحذف تصنيفات العوالم الأربعة، وغيّر اسم أي قسم بزر ✏️، وحدد عمولة كل تصنيف بنفسك — تُطبَّق العمولة لحظة تحرير أي شحنة على منتجات ذلك التصنيف، وتُحسم من التاجر فقط ولا تُضاف على العميل أبداً.</p>
+   287→<div className="grid2">
+   288→{SECTIONS.map(sec=><div className="acard" style={{borderTop:'3px solid '+sec.color}} key={sec.id}>
+   289→<div className="spread"><h3 style={{color:sec.color}}>{sec.icon} {sec.name}</h3><div style={{display:'flex',gap:'6px',alignItems:'center',flexWrap:'wrap'}}><span className="tag" style={{background:sec.color+'18',color:sec.color}}>{ar(CATS[sec.id].length)} تصنيف</span><button className="btn gray xs" onClick={()=>secRename(sec.id)}>✏️ تغيير الاسم</button></div></div>
+   290→<div className="rows mt">
+   291→{CATS[sec.id].map((c,i)=>{const pc=PRODUCTS.filter(p=>{const s=ST(p.store);return s&&s.sec===sec.id&&p.cat===c.n}).length;
+   292→return <div className="row" style={{flexWrap:'wrap',gap:'6px'}} key={sec.id+'-'+i}>
+   293→<div style={{flex:'1',minWidth:'120px'}}><input className="inp" style={{padding:'7px 10px',fontSize:'12px'}} id={'cn-'+sec.id+'-'+i} defaultValue={c.n}/></div>
+   294→<div style={{display:'flex',alignItems:'center',gap:'5px'}}><span className="hint" style={{whiteSpace:'nowrap',fontWeight:700}}>عمولة</span>
+   295→<input className="inp" style={{width:'72px',padding:'7px 6px',fontSize:'12px',textAlign:'center'}} type="number" min="0" max="20" step="0.25" id={'cc-'+sec.id+'-'+i} defaultValue={c.comm}/><span className="hint">٪</span></div>
+   296→<div style={{display:'flex',gap:'5px',alignItems:'center',flexWrap:'wrap'}}>
+   297→<span className={'tag '+(pc?'grn':'')} style={pc?null:{background:'#0000000a',color:'var(--mut)'}}>{ar(pc)} منتج</span>
+   298→<button className="btn sm" title="حفظ التعديلات" onClick={()=>catSave(sec.id,i)}>💾</button>
+   299→<button className={'btn '+(CATDEL===sec.id+'-'+i?'red':'gray')+' xs'} onClick={()=>catDel(sec.id,i)}>{CATDEL===sec.id+'-'+i?'متأكد؟':'🗑'}</button></div></div>})}
+   300→</div>
+   301→<div style={{display:'grid',gridTemplateColumns:'1.7fr .7fr auto',gap:'7px',alignItems:'end',marginTop:'11px'}}>
+   302→<div className="fld"><label>تصنيف جديد</label><input className="inp" style={{padding:'8px 10px',fontSize:'12px'}} id={'nc-'+sec.id} placeholder="اسم التصنيف"/></div>
+   303→<div className="fld"><label>عمولته ٪</label><input className="inp" style={{padding:'8px 6px',fontSize:'12px',textAlign:'center'}} type="number" min="0" max="20" step="0.25" id={'ncc-'+sec.id} defaultValue="2.5"/></div>
+   304→<button className="btn soft sm" onClick={()=>catAdd(sec.id)}>＋ إضافة</button>
+   305→</div>
+   306→</div>)}
+   307→</div>
+   308→</>;
+   309→}
+   310→export function catSave(sec,i){
+   311→const c=CATS[sec][i];
+   312→const nm=($('#cn-'+sec+'-'+i).value||'').trim();
+   313→const cm=+($('#cc-'+sec+'-'+i).value||0);
+   314→if(nm.length<2){toast('اسم التصنيف قصير','err');return}
+   315→if(!(cm>=0&&cm<=20)){toast('العمولة يجب أن تكون بين ٠ و ٢٠٪','err');return}
+   316→if(CATS[sec].some((x,j)=>j!==i&&x.n===nm)){toast('يوجد تصنيف بنفس الاسم في هذا العالم','err');return}
+   317→if(nm!==c.n){PRODUCTS.forEach(p=>{const s=ST(p.store);if(s&&s.sec===sec&&p.cat===c.n)p.cat=nm});c.n=nm}
+   318→c.comm=+cm.toFixed(2);setCATDEL(null);
+   319→toast('حُفظ التصنيف «'+nm+'» — عمولته '+ard(c.comm)+'٪ ✓','ok');render();
+   320→}
+   321→export function catDel(sec,i){
+   322→if(CATDEL!==sec+'-'+i){setCATDEL(sec+'-'+i);render();toast('اضغط «متأكد؟» مرة أخرى لحذف التصنيف','amb');return}
+   323→const c=CATS[sec][i];setCATDEL(null);
+   324→const pc=PRODUCTS.filter(p=>{const s=ST(p.store);return s&&s.sec===sec&&p.cat===c.n}).length;
+   325→if(pc){toast('لا يمكن الحذف — انقل منتجاته ('+ar(pc)+') لتصنيف آخر أولاً','err');render();return}
+   326→CATS[sec].splice(i,1);toast('حُذف التصنيف «'+c.n+'» ✓','ok');render();
+   327→}
+   328→export function catAdd(sec){
+   329→const nm=($('#nc-'+sec).value||'').trim();
+   330→const cm=+($('#ncc-'+sec).value||0);
+   331→if(nm.length<2){toast('اكتب اسم التصنيف','err');return}
+   332→if(!(cm>=0&&cm<=20)){toast('العمولة يجب أن تكون بين ٠ و ٢٠٪','err');return}
+   333→if(CATS[sec].some(x=>x.n===nm)){toast('التصنيف موجود مسبقاً في هذا العالم','err');return}
+   334→CATS[sec].push({n:nm,comm:+cm.toFixed(2)});
+   335→toast('أُضيف التصنيف «'+nm+'» بعمولة '+ard(cm)+'٪ ✓','ok');render();
+   336→}
+   337→/* تغيير اسم القسم (العالم) — يُطبَّق فوراً في كل ضمين (السطر ٢٩٩٢) */
+   338→function SecRenameModal({sec,sid}){
+   339→return <>
+   340→<div className="mhead"><b>✏️ تغيير اسم القسم</b><button className="x" onClick={()=>closeModal()}>✕</button></div>
+   341→<div className="mbody">
+   342→<div className="demo mb"><b style={{fontSize:'12px'}}>الاسم الجديد يُطبَّق فوراً في كل ضمين</b>
+   343→<p className="hint" style={{marginTop:'3px'}}>القائمة العلوية، بطاقات الرئيسية، صفحات القسم، اختيار عالم التاجر الجديد، وبطاقات الطلبات — كلها تقرأ الاسم من هنا.</p></div>
+   344→<div className="fld"><label>اسم القسم</label><input className="inp" id="sn-nm" defaultValue={sec.name}/></div>
+   345→<div className="fld mt"><label>الوصف المختصر (يظهر تحت الاسم)</label><input className="inp" id="sn-ds" defaultValue={sec.desc}/></div>
+   346→<div className="spread mt"><button className="btn gray sm" onClick={()=>closeModal()}>تراجع</button><button className="btn" onClick={()=>secSaveName(sid)}>حفظ الاسم</button></div></div>
+   347→</>;
+   348→}
+   349→export function secRename(sid){
+   350→const sec=SEC(sid);
+   351→openModal(<SecRenameModal sec={sec} sid={sid}/>,undefined);
+   352→}
+   353→export function secSaveName(sid){
+   354→const sec=SEC(sid);
+   355→const nm=($('#sn-nm').value||'').trim(),ds=($('#sn-ds').value||'').trim();
+   356→if(nm.length<4){toast('اسم القسم قصير جداً (٤ أحرف فأكثر)','err');return}
+   357→const old=sec.name;
+   358→sec.name=nm;if(ds)sec.desc=ds;
+   359→closeModal();toast('حُفظ اسم القسم: «'+old+'» ← «'+nm+'» ✓','ok');render();
+   360→}
+   361→/* ================= 📈 إيرادات ضمين (السطر ٣٠١٠) ================= */
+   362→export function PgARev(){
+   363→const mx=Math.max(...DB.revMonths.map(m=>m.v));
+   364→let gmv=0,relSub=0,relNet=0,relComm=0,shipC=0,shipM=0,shipP=0,refunds=0;
+   365→DB.orders.forEach(o=>o.groups.forEach((g:any)=>{
+   366→const ch=(g.ship&&g.ship.charge)||(g.dl||0);
+   367→gmv+=g.sub+ch;
+   368→if(g.status==='refunded')refunds+=g.sub+ch;
+   369→if(g.payout&&g.status==='released'){relSub+=g.payout.sub;relNet+=g.payout.net;relComm+=g.payout.comm;
+   370→if(g.payout.ship){shipC+=g.payout.ship.charge||0;shipM+=g.payout.ship.merchant||0;shipP+=g.payout.ship.pts||0}}}));
+   371→const held=vaultNow();
+   372→const otpHeld=r2(DB.orders.reduce((a,o)=>a+o.groups.filter((g:any)=>g.ship&&g.ship.mode==='field'&&g.status==='shipped').reduce((x,g)=>x+g.sub,0),0));
+   373→const storesBal=r2(Object.values(DB.storeWallets).reduce((a,b)=>a+b,0));
+   374→const ptsLiab=r2(Object.values(USERS).reduce((a:any,u:any)=>a+(u.pts||0),0)*ptsVal());
+   375→const custBal=r2(Object.values(USERS).reduce((a:any,u:any)=>a+(u.bal||0),0));
+   376→const relFlow=r2(relSub+shipC);
+   377→const fr=[
+   378→['🛒 إجمالي قيمة الطلبات في المنصة (منتجات + شحن دفعه العملاء)',money(gmv)],
+   379→['🔒 المحجوز في خزنة الضمان الآن (حماية المشترين)',money(held)],
+   380→['🎪 مستحقات خدمات ميدانية معلقة بانتظار كود تأكيد العميل (OTP)',money(otpHeld)],
+   381→['🔓 المحرر للتجار حتى اليوم (صافي حقهم)',money(relNet)],
+   382→['🧾 عمولات ضمين المحصلة (تحولت لحساب التطبيق)',money(relComm)],
+   383→['🚚 رسوم شحن دفعها العملاء (تحولت للوجستيات)',money(shipC)],
+   384→['🤝 دعم شحن تحمله التجار (مجاني / مناصفة / سقف)',money(shipM)],
+   385→['🌟 دعم شحن من نقاط الولاء (حساب الإدارة)',money(shipP)],
+   386→['🏦 رصيد حساب الشريك اللوجستي (OTO/Torod)',money(DB.logiWallet||0)],
+   387→['↩️ مسترجع للعملاء (محافظ ضمين لديهم)',money(refunds)],
+   388→['🧾 ضريبة القيمة المضافة المحصلة (١٥٪)',money(DB.vat||0)],
+   389→['⭐ التزامات النقاط لدى العملاء (نقاطهم × قيمة النقطة)',money(ptsLiab)],
+   390→['👛 أرصدة عملاء جاهزة للاستخدام من محافظهم',money(custBal)],
+   391→['🏪 محافظ التجار المتاحة للسحب',money(storesBal)],
+   392→['💰 محفظة الإدارة من تمويلات النقاط',money(DB.aPtsWallet||0)]];
+   393→return <>
+   394→<div className="pghead"><h1>📈 إيرادات ضمين</h1><span className="tag grn">عمولات كل تصنيف تُحوَّل للإدارة لحظة التحرير</span></div>
+   395→<div className="kpis mb">
+   396→<div className="kpi grn"><i>🧾</i><b>{money(DB.aRevenue)}</b><span>إجمالي العمولات حتى اليوم</span></div>
+   397→<div className="kpi amb"><i>🔒</i><b>{money(held)}</b><span>محجوز في الخزنة الآن</span></div>
+   398→<div className="kpi nvy"><i>🏪</i><b>{money(storesBal)}</b><span>صافي أرصدة التجار</span></div>
+   399→<div className="kpi amb"><i>🌟</i><b>{money(DB.aPtsWallet||0)}</b><span>محفظة الإدارة من تمويل النقاط</span></div>
+   400→<div className="kpi nvy"><i>🚚</i><b>{money(DB.logiWallet||0)}</b><span>حساب الشريك اللوجستي (OTO/Torod)</span></div>
+   401→<div className="kpi"><i>🧾</i><b>{money(DB.vat||0)}</b><span>ضريبة القيمة المضافة المحصلة (١٥٪)</span></div>
+   402→</div>
+   403→<div className="acard"><h3>📒 الملخص المالي الشامل — كل ما يخص المبالغ في ضمين</h3>
+   404→<div className="rows">{fr.map(([l,v],i)=><div className="row" style={{flexWrap:'wrap',gap:'4px'}} key={i}><div className="tx" style={{flex:'1',minWidth:'180px'}}>{l}</div><b className="fx" style={{fontSize:'12.5px',whiteSpace:'nowrap'}}>{v}</b></div>)}</div>
+   405→<div className="hr"></div>
+   406→<div className="demo"><b style={{fontSize:'11.5px'}}>⚖️ معادلة الخزنة — أين ذهب كل مبلغ؟</b>
+   407→<p className="hint" style={{marginTop:'4px',lineHeight:'2'}}>إجمالي الطلبات <b>{money(gmv)}</b> = محجوز الآن لصالح الشحنات الجارية <b>{money(held)}</b> + محرر بضمان (منتجات <b>{money(relSub)}</b> + شحن دفعه العملاء <b>{money(shipC)}</b>) + مسترجع للعملاء <b>{money(refunds)}</b>{Math.abs(gmv-held-relFlow-refunds)<1?<>{' — '}<b style={{color:'var(--grn)'}}>✓ الدفاتر متوازنة</b></>:null}</p>
+   408→<p className="hint" style={{lineHeight:'1.9'}}>عمولة المنصة تُقتطع من نصيب التاجر فقط (وتُحدَّد لكل تصنيف من صفحة الأقسام) — ولا تُضاف على العميل أبداً، بينما دعم التجار ونقاطهم للشحن ({money(r2(shipM+shipP))}) يُقتطع من صافيهم ويُحوَّل للوجستيات.</p></div>
+   409→</div>
+   410→<div className="acard mt"><h3>عمولات آخر ٥ أشهر (ألف ر.س)</h3>
+   411→<div className="rvbars">{DB.revMonths.map(m=><div className="rv" key={m.m}><span>{ard(m.v)}</span><i style={{height:Math.max(8,m.v/mx*100)+'%'}}></i><b>{m.m}</b></div>)}</div>
+   412→</div>
+   413→<div className="acard mt"><h3>🌟 إعدادات برنامج النقاط — أرقامك أنت</h3>
+   414→<div className="setrow"><div className="ic">⭐</div><div className="tx"><b>قيمة النقطة الواحدة (ر.س)</b><span>يموّلها التاجر من محفظته — اختر الرقم الذي يناسبك من ٠٫٠١ إلى ١</span></div>
+   415→<div style={{display:'flex',gap:'6px',flexShrink:0,alignItems:'center'}}><input className="inp" id="pv-inp" type="number" step="0.01" min="0.01" max="1" defaultValue={ptsVal()} style={{width:'84px',padding:'8px',textAlign:'center'}}/><button className="btn sm" onClick={()=>setPtsVal($('#pv-inp').value)}>حفظ</button></div></div>
+   416→<div className="setrow"><div className="ic">🚚</div><div className="tx"><b>نقاط التوصيل المجاني</b><span>النقاط التي يستبدلها العميل مقابل توصيل مجاني لكل طلبه — من ٥٠ إلى ٢٠٠٠</span></div>
+   417→<div style={{display:'flex',gap:'6px',flexShrink:0,alignItems:'center'}}><input className="inp" id="fd-inp" type="number" step="10" min="50" max="2000" defaultValue={fdPts()} style={{width:'84px',padding:'8px',textAlign:'center'}}/><button className="btn sm" onClick={()=>setFreeDlPts($('#fd-inp').value)}>حفظ</button></div></div>
+   418→<div className="setrow"><div className="ic">🏦</div><div className="tx"><b>محفظة الإدارة من النقاط</b><span>رسوم تمويل النقاط المحصّلة من التجار — تُستخدم في مكافآت العملاء</span></div><b className="fx" style={{color:'var(--amb2)'}}>{money(DB.aPtsWallet||0)}</b></div>
+   419→{DB.ptsFunding.length?<><div className="hr"></div><b style={{fontSize:'11.5px'}}>آخر تمويلات التجار</b>
+   420→<div className="rows">{DB.ptsFunding.slice(0,4).map((x,xi)=><div className="row" key={xi}><div style={{flex:'1',minWidth:'0'}}><b>{ST(x.store).name} — {x.pname}</b><div className="hint">{ago(x.at)}</div></div><span className="hint">{x.pts>0?'+':null}{ar(x.pts)} نقطة</span><b className="fx" style={{color:'var(--amb2)'}}>{money(x.amt)}</b></div>)}</div></>:null}
+   421→</div>
+   422→<div className="acard mt"><h3>أرصدة تجار الضمان</h3>
+   423→<div className="rows">{STORES.map((s:any)=><div className="row" key={s.id}>
+   424→<div style={{width:'34px',height:'34px',borderRadius:'10px',background:s.color,color:'#fff',display:'grid',placeItems:'center',fontSize:'13px',fontFamily:'Alexandria',fontWeight:800,overflow:'hidden'}}>{s.logo?<img src={s.logo} style={{width:'100%',height:'100%',objectFit:'cover'}}/>:s.name[0]}</div>
+   425→<div style={{flex:'1'}}><b>{s.name}</b><div className="hint">{SEC(s.sec).name} · محجوز لصالحه {money(heldFor(s.id))}</div></div>
+   426→<b className="fx" style={{color:'var(--grn)'}}>{money(DB.storeWallets[s.id]||0)}</b></div>)}</div></div>
+   427→<AcouponCard/>
+   428→</>;
+   429→}
+   430→export function setPtsVal(v){v=+v;if(!(v>=0.01&&v<=1)){toast('أدخل قيمة النقطة بين ٠٫٠١ و ١ ر.س','err');return}DB.ptsVal=+v.toFixed(2);toast('صارت قيمة النقطة '+money(DB.ptsVal)+' — تسري على تمويلات التجار الجديدة','ok');render()}
+   431→export function setFreeDlPts(v){v=Math.round(+v);if(!(v>=50&&v<=2000)){toast('أدخل نقاط التوصيل بين ٥٠ و ٢٠٠٠','err');return}DB.freeDlPts=v;toast('صار استبدال التوصيل المجاني بـ'+ar(v)+' نقطة للعميل','ok');render()}
+   432→

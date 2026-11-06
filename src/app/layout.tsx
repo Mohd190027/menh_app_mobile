@@ -26,6 +26,10 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="ar" dir="rtl" suppressHydrationWarning>
+      <head>
+        {/* نفس ملف CSS الأصلي حرفياً — يضمن تطابق التصميم بالضبط */}
+        <link rel="stylesheet" href="/dameen/dameen.css" />
+      </head>
       <body>{children}</body>
     </html>
   );

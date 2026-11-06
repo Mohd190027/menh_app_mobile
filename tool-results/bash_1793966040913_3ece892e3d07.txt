@@ -1,0 +1,348 @@
+     1→/* ضمين — core.ts
+     2→ * البيانات والدوال النقية — منقولة حرفياً من dameen.js (السطور ٢-٣١٢) عبر scripts/make-core.js
+     3→ * مولَّد آلياً: لا تُحرَّر يدوياً. الاستثناءات المنقولة يدوياً: impInfo و playVid (shop.tsx) و custCity (store.ts).
+     4→ */
+     5→export const $=s=>document.querySelector(s);
+     6→
+     7→export const ar=n=>String(n).replace(/[0-9]/g,d=>'٠١٢٣٤٥٦٧٨٩'[d]);
+     8→
+     9→export const ard=n=>{let s=(+(+n).toFixed(2)).toLocaleString('en-US');return ar(s).replace(/,/g,'٬').replace(/\./g,'٫')};
+    10→
+    11→export const money=n=>ard(n)+' ر.س';
+    12→
+    13→export const pctf=n=>ard(n)+'٪';
+    14→
+    15→export const r2=n=>Math.round(n*100)/100;
+    16→
+    17→export const esc=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+    18→
+    19→export function hash(s){let h=0;s=String(s);for(let i=0;i<s.length;i++){h=(h*31+s.charCodeAt(i))|0}return Math.abs(h)}
+    20→
+    21→export function imgTag(src,cls,alt){src=src||'';const seed='d'+(hash(src+alt)%9973);return `<img src="${src}" class="${cls||''}" alt="${esc(alt||'صورة')}" loading="lazy" onerror="this.onerror=null;this.src='https://picsum.photos/seed/${seed}/700/700'">`}
+    22→
+    23→export const MONTHS=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+    24→
+    25→export function dt(ts){const d=new Date(ts);const h=d.getHours(),m=String(d.getMinutes()).padStart(2,'0');const t=(h%12||12)+':'+ar(m)+(h<12?' ص':' م');return ar(d.getDate())+' '+MONTHS[d.getMonth()]+'، '+t}
+    26→
+    27→export function ago(ts){const s=(Date.now()-ts)/1000;if(s<60)return'قبل لحظات';if(s<3600)return'قبل '+ar(Math.floor(s/60))+' د';if(s<86400)return'قبل '+ar(Math.floor(s/3600))+' س';return'قبل '+ar(Math.floor(s/86400))+' يوم'}
+    28→
+    29→export function clock(ms){if(ms<0)ms=0;const t=Math.floor(ms/1000);const h=String(Math.floor(t/3600)).padStart(2,'0'),m=String(Math.floor(t%3600/60)).padStart(2,'0'),s=String(t%60).padStart(2,'0');return ar(h+':'+m+':'+s)}
+    30→
+    31→export function toast(msg,type){const t=document.createElement('div');t.className='toast '+(type||'');t.innerHTML=(type==='ok'?'✓ ':type==='err'?'⚠ ':'◆ ')+msg;$('#toasts').appendChild(t);setTimeout(()=>{t.style.opacity=0;t.style.transform='translateY(-10px)';setTimeout(()=>t.remove(),320)},3400)}
+    32→
+    33→export const STARS=r=>{r=Math.round(r);return '<span class="stars">'+'★'.repeat(r)+'☆'.repeat(5-r)+'</span>'};
+    34→
+    35→export const SECTIONS=[
+    36→{id:'fashion',name:'عالم الأزياء والجمال',icon:'👗',color:'#7A3B44',winMin:120,win:'ساعتان',desc:'عبايات وأزياء وعطور وعناية بلمسة محلية',img:'/dameen/img/6f94d1cccea3.jpg'},
+    37→{id:'family',name:'عالم المأكولات والضيافة',icon:'🏡',color:'#556636',winMin:30,win:'٣٠ دقيقة',desc:'عسل وتمور وأطباق مطابخ وحلويات طازجة',img:'/dameen/img/foodcat.jpg'},
+    38→{id:'deco',name:'عالم الهدايا والديكور والمناسبات',icon:'🎁',color:'#A45A3A',winMin:1440,win:'٢٤ ساعة',desc:'هدايا وديكور وتنسيق مناسبات ميداني',img:'/dameen/img/0dcd6b176ac1.jpg'},
+    39→{id:'gaming',name:'عالم الألعاب والأجهزة والمنتجات الرقمية',icon:'🎮',color:'#50489E',winMin:180,win:'٣ ساعات',desc:'أجهزة ألعاب وملحقات وأصول رقمية بتسليم فوري',img:'/dameen/img/68dae69f3198.webp'}];
+    40→
+    41→export const CATS={fashion:[{n:'عبايات',comm:2.5},{n:'أزياء',comm:2.5},{n:'حقائب وعطور',comm:2.5},{n:'العناية والجمال',comm:2.5}],family:[{n:'عسل وتمور',comm:2.5},{n:'ألبان ومخبوزات',comm:2.5},{n:'حلويات وأطباق',comm:2.5},{n:'سدو وحرف',comm:2.5}],deco:[{n:'ديكور',comm:2.5},{n:'هدايا',comm:2.5},{n:'قهوة وضيافة',comm:2.5},{n:'تنسيق مناسبات',comm:2.5}],gaming:[{n:'أجهزة وملحقات',comm:3},{n:'ألعاب رقمية وأكواد',comm:1.5},{n:'اشتراكات رقمية',comm:1.5},{n:'كتب وثيمات رقمية',comm:1}]};
+    42→
+    43→export const catComm=(sec,cat)=>{const c=(CATS[sec]||[]).find(x=>x.n===cat);return +((c?c.comm:2.5).toFixed(2))};
+    44→
+    45→export const SEC=id=>SECTIONS.find(s=>s.id===id);
+    46→
+    47→export const STORES=[
+    48→{id:'s1',name:'دَفى العبايات',sec:'fashion',owner:'0500000002',color:'#7A3B44',cover:'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?q=80&w=760&auto=format&fit=crop',desc:'عبايات كتان وخامات فاخرة بخياطة سعودية متقنة',rt:4.8,sales:342,susp:false,open:true,city:'الرياض',dlMode:'customer',freeMin:300},
+    49→{id:'s2',name:'خيوط الغندورة',sec:'fashion',owner:'0500000004',color:'#96505E',cover:'/dameen/img/b79232a91370.jpg',desc:'طرق بيتية وأزياء مطرزة يدوياً بخيوط ملونة',rt:4.6,sales:198,susp:false,open:true,city:'جدة',dlMode:'customer',freeMin:350},
+    50→{id:'s3',name:'مزرعة الواحة',sec:'family',owner:'0500000005',color:'#556636',cover:'/dameen/img/c2626d093c49.jpg',desc:'عسل سدر وتمور خلاص من مزارعنا مباشرة',rt:4.9,sales:521,susp:false,open:true,city:'الأحساء',dlMode:'half',freeMin:250},
+    51→{id:'s4',name:'بيت السدو',sec:'family',owner:'0500000006',color:'#6B7A3F',cover:'/dameen/img/cfe35a802f4f.jpg',desc:'منتجات سدو أصيلة منسوجة على النول التقليدي',rt:4.7,sales:87,susp:false,open:true,city:'بريدة',dlMode:'customer',freeMin:0,qs:['هل لديك ملاحظة على درجة تمليح الجبن؟','التميس بالبر أم بالعسل الأسود؟']},
+    52→{id:'s5',name:'لمسة ديكور',sec:'deco',owner:'0500000007',color:'#A45A3A',cover:'/dameen/img/11c491ea9778.jpg',desc:'شموع ومباخر ومستلزمات منزل بأناقة هادئة',rt:4.5,sales:264,susp:false,open:true,city:'الطائف',dlMode:'customer',freeMin:400},
+    53→{id:'s6',name:'هدايا المعمور',sec:'deco',owner:'0500000008',color:'#B26640',cover:'/dameen/img/vgifts.jpg',desc:'بوكسات هدايا مغلفة بفخامة تناسب كل مناسبة',rt:4.8,sales:173,susp:false,open:true,city:'الرياض',dlMode:'free',freeMin:0},
+    54→{id:'s7',name:'فخار الطائف',sec:'deco',owner:'0500000009',color:'#8F5B36',cover:'/dameen/img/9a3a0638140e.jpg',desc:'فخاريات مدوّرة يدوياً من طين الطائف',rt:4.4,sales:12,susp:false,open:true,city:'الطائف',dlMode:'customer',freeMin:0},
+    55→{id:'s8',name:'مطبخ أم خالد',sec:'family',owner:'0500000010',color:'#7C5A3A',cover:'/dameen/img/1c2383e2b42c.jpg',desc:'طبخ بيتي سعودي — كيك مناسبات وورق عنب على أصولها',rt:4.7,sales:156,susp:false,open:true,city:'الرياض',dlMode:'customer',freeMin:150,qs:['هل لديك حساسية من أي مكسرات؟','الكريمة أم التمر على الكيكة؟','وقت التسليم المفضل لديك؟']},
+    56→{id:'s9',name:'قيمز زون',sec:'gaming',owner:'0500000011',color:'#50489E',cover:'/dameen/img/gstore.jpg',desc:'أجهزة ألعاب وملحقات تقنية أصلية بضمان الوكيل — تغليف حماية خاص للأجهزة القابلة للكسر',rt:4.7,sales:214,susp:false,open:true,city:'الرياض',dlMode:'customer',freeMin:500},
+    57→{id:'s10',name:'بايت كود',sec:'gaming',owner:'0500000012',color:'#3D7B8C',cover:'/dameen/img/codes.jpg',desc:'أكواد ألعاب واشتراكات رقمية وكتب إلكترونية وثيمات — تسليم فوري لحظة الدفع بلا شحن',rt:4.8,sales:342,susp:false,open:true,city:'جدة',dlMode:'free',freeMin:0}];
+    58→
+    59→export const ST=id=>STORES.find(s=>s.id===id);
+    60→
+    61→export const U='https://images.unsplash.com/photo-';
+    62→
+    63→export const IM=(id,s)=>U+id+'?q=80&w=760&auto=format&fit=crop';
+    64→
+    65→export const PICS=(s)=>'https://picsum.photos/seed/'+encodeURIComponent(s)+'/760/760';
+    66→
+    67→export const ZPOOL=['/dameen/img/dates.jpg','/dameen/img/syrup.jpg','/dameen/img/cfe35a802f4f.jpg','/dameen/img/291826012a56.jpg','/dameen/img/ed876a628b49.jpg','/dameen/img/8792c1cd454c.jpg','/dameen/img/11c491ea9778.jpg','/dameen/img/basket.jpg','/dameen/img/cups.jpg','/dameen/img/burner.jpg','/dameen/img/enab.jpg','/dameen/img/ffebfbe70844.jpg','/dameen/img/9a3a0638140e.jpg','/dameen/img/1c2383e2b42c.jpg','/dameen/img/giftbox.jpg','/dameen/img/e44feac627da.jpg','/dameen/img/vgifts.jpg','/dameen/img/b79232a91370.jpg','/dameen/img/a2ad882f2382.jpg','/dameen/img/c2626d093c49.jpg','/dameen/img/7bd7eee784a6.jpg','/dameen/img/headset1.jpg','/dameen/img/6f94d1cccea3.jpg','/dameen/img/headset2.jpg','/dameen/img/0dcd6b176ac1.jpg','/dameen/img/controller1.jpg','/dameen/img/e28496a66dff.jpg','/dameen/img/controller2.jpg','/dameen/img/console.png','/dameen/img/keyboard.jpg','/dameen/img/gcode.jpg'];
+    68→
+    69→export let PRODUCTS=[
+    70→{id:'p1',store:'s1',name:'عباية كتان «نسمة»',cat:'عبايات',price:349,off:15,stock:12,sold:214,rt:4.9,rc:86,imgs:[IM('1594633312681-425c7b97ccd1'),IM('1515372039744-b8f02a3ae446'),IM('1523381210434-271e8be1f52b')],vids:[{src:'https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/360/Big_Buck_Bunny_360_10s_1MB.mp4',dur:10}],qs:[{q:'لون التطريز على الأكمام؟',t:'opts',o:['ذهبي','فضي','بلا تطريز']},{q:'ملاحظتك على التغليف (تصل مع الطلب)',t:'txt'}],
+    71→desc:'عباية كتان بخامة مصرية مريحة وقَصّة واسعة تناسب يومك كامل. تطريز يدوي دقيق على الأكمام يمنحها لمسة أنيقة بعيدة عن المبالغة، مع سحّاب جانبي مخفي وجيوب داخلية عملية.',
+    72→specs:{'الخامة':'كتان مصري ١٠٠٪','اللون':'كحلي غامق','المقاسات':'S / M / L / XL','العناية':'غسيل بارد يدوي'},ratings:[{by:'0500000001',name:'نورة',stars:5,txt:'الخامة ثقيلة وفخمة والخياطة نظيفة جداً، وصلت قبل الموعد.',at:Date.now()-864e5*5}]},
+    73→{id:'p2',store:'s1',name:'عباية حرير مطرزة «ليان»',cat:'عبايات',price:520,off:0,stock:7,sold:97,rt:4.7,rc:41,imgs:[IM('1515372039744-b8f02a3ae446'),IM('1594633312681-425c7b97ccd1')],
+    74→desc:'عباية مناسبات من الحرير الطبيعي بتطريز لؤلؤي على الصدر والأكمام. مناسبة للمناسبات المسائية والدعوات الخاصة، تأتي مع كيس حفظ مبطن بالقطن.',
+    75→specs:{'الخامة':'حرير طبيعي','التطريز':'لؤلؤ يدوي','الطول':'متوفر حتى ٦٠ سم','التغليف':'كيس حفظ مبطن'},ratings:[]},
+    76→{id:'p3',store:'s1',name:'طرحة شيفون مزدوجة',cat:'عبايات',price:95,off:20,stock:30,sold:186,rt:4.6,rc:52,imgs:[IM('1523381210434-271e8be1f52b')],
+    77→desc:'طرحة شيفون بطبقتين لا تكشف ولا تنزلق، بخياطة مزدوجة تحفظ شكلها بعد الغسيل. متوفرة بعدة ألوان هادئة تناسب العبايات اليومية.',
+    78→specs:{'الخامة':'شيفون مزدوج','المقاس':'١٨٠ × ٧٥ سم','الألوان':'أسود / كحلي / زيتي'},ratings:[]},
+    79→{id:'p4',store:'s2',name:'طقم بيت قطني مطرز «دفء»',cat:'أزياء',price:189,off:0,stock:15,sold:143,rt:4.6,rc:33,imgs:['/dameen/img/pajamas.jpg','/dameen/img/b79232a91370.jpg'],
+    80→desc:'طقم بيت من القطن المشغول بتطريز يدوي على الصدر. مريح للاستخدام اليومي والاستقبالات العائلية، خامة تتنفس ولا تسبب الحكة.',
+    81→specs:{'الخامة':'قطن مشغول','المقاسات':'M / L / XL','الألوان':'بيج / رمادي'},ratings:[]},
+    82→{id:'p5',store:'s2',name:'فستان سواريه مخمل «سهرة»',cat:'أزياء',price:640,off:10,stock:4,sold:58,rt:4.8,rc:19,imgs:['/dameen/img/a2ad882f2382.jpg'],
+    83→desc:'فستان مخمل بقَصّة A كلاسيكية وأزرار لؤلؤية ظهرية. مثالي لحفلات الزواج والمناسبات المسائية، مع حاشية داخلية ناعمة تمنع الالتصاق.',
+    84→specs:{'الخامة':'مخمل مستورد','الطول':'ميدي','التنظيف':'تنظيف جاف فقط'},ratings:[]},
+    85→{id:'p6',store:'s2',name:'حقيبة يد جلد طبيعي',cat:'حقائب وعطور',price:280,off:0,stock:9,sold:121,rt:4.8,rc:22,imgs:[IM('1548036328-c9fa89d128fa')],
+    86→desc:'حقيبة يد من الجلد الطبيعي المدبوغ نباتياً، تصنع يدوياً وتأتي برائحة الجلد الأصيلة. تتسع للجوال والمحفظة والأساسيات، بحزام كتف قابل للفك.',
+    87→specs:{'الخامة':'جلد طبيعي مدبوغ','الحجم':'٢٤ × ١٦ سم','الحزام':'قابل للفك والتعديل'},ratings:[]},
+    88→{id:'p7',store:'s2',name:'عطر عود ملكي ٥٠ مل',cat:'حقائب وعطور',price:220,off:0,stock:18,sold:167,rt:4.7,rc:44,imgs:[IM('1541643600914-78a08a3003d8')],
+    89→desc:'عطر زيتي مركّز بمزيج العود الكمبودي والورد الطائفي، ثبات يمتد لأكثر من ثماني ساعات. يأتي في علبة خشبية تصلح للإهداء.',
+    90→specs:{'النوع':'زيتي مركّز','الحجم':'٥٠ مل','الثبات':'٨+ ساعات','التغليف':'علبة خشب'},ratings:[]},
+    91→{id:'p8',store:'s3',name:'عسل سدر جبلي ٥٠٠ جم',cat:'عسل وتمور',price:185,off:0,stock:26,sold:412,rt:4.9,rc:154,imgs:['/dameen/img/c2626d093c49.jpg','/dameen/img/7bd7eee784a6.jpg'],vids:[{src:'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',dur:7}],
+    92→desc:'عسل سدر جبلي خام غير مبستر، يُقطف من مناحلنا في مرتفعات الجنوب مرة واحدة في السنة. قوامه كثيف وطعمه غني، ويأتي ببرطمان زجاجي محكم الغلق مع شهادة منشأ.',
+    93→specs:{'النوع':'سدر خام','الوزن':'٥٠٠ جم','المصدر':'مرتفعات الجنوب','التخزين':'بعيداً عن الشمس'},ratings:[{by:'0500000001',name:'نورة',stars:5,txt:'طعمه ما يشبه عسل جدي الله يرحمه، أصلي وواضح.',at:Date.now()-864e5*2}]},
+    94→{id:'p9',store:'s3',name:'تمر خلاص فاخر ١ كجم',cat:'عسل وتمور',price:65,off:10,stock:40,sold:380,rt:4.8,rc:96,imgs:['/dameen/img/dates.jpg'],
+    95→desc:'تمر خلاص مفضل بدرجة أولى، حبة كبيرة لينة بحلاوة متوازنة. يُنتقى حبة حبة ويُعبأ في علبة أنيقة مناسبة للضيافة والإهداء.',
+    96→specs:{'النوع':'خلاص مفضل','الوزن':'١ كجم','الدرجة':'أولى'},ratings:[]},
+    97→{id:'p10',store:'s3',name:'دبس تمر بلدي',cat:'عسل وتمور',price:45,off:0,stock:22,sold:154,rt:4.6,rc:38,imgs:['/dameen/img/syrup.jpg'],
+    98→desc:'دبس تمر بلدي مطبوخ على الحطب دون أي إضافات أو سكريات. كثيف بلون العنبر، مثالي مع الفطور الشتوي والحلويات الشعبية.',
+    99→specs:{'الوزن':'٤٠٠ جم','المكوّنات':'تمر فقط'},ratings:[]},
+   100→{id:'p11',store:'s3',name:'سلة الواحة (عسل + تمر + دبس)',cat:'عسل وتمور',price:265,off:12,stock:14,sold:98,rt:4.9,rc:27,imgs:['/dameen/img/basket.jpg'],
+   101→desc:'سلة خشبية تجمع عسل سدر ٢٥٠ جم وتمر خلاص ٥٠٠ جم ودبس بلدي، مغلفة بجبينة كتان وشريط. الهدية المثالية للمناسبات وزيارات العزيمة.',
+   102→specs:{'المحتوى':'٣ منتجات','التغليف':'سلة خشب + كتان'},ratings:[]},
+   103→{id:'p12',store:'s4',name:'مفرش سدو للطاولة',cat:'سدو وحرف',price:420,off:0,stock:5,sold:64,rt:4.7,rc:29,imgs:['/dameen/img/cfe35a802f4f.jpg'],
+   104→desc:'مفرش منسوج على النول الأصلي بخيوط صوف ملونة بنقوش السدو النجدية. كل قطعة تستغرق أسبوعين من النسج اليدوي، ولا تتكرر بنفس توزيعة الألوان.',
+   105→specs:{'الخامة':'صوف طبيعي','المقاس':'١٤٠ × ٩٠ سم','الصناعة':'نول يدوي'},ratings:[]},
+   106→{id:'p13',store:'s4',name:'حزام سدو منسوج',cat:'سدو وحرف',price:150,off:0,stock:8,sold:73,rt:4.5,rc:17,imgs:['/dameen/img/291826012a56.jpg'],
+   107→desc:'حزام منسوج بخيوط السدو الملوّنة مع إبزيم نحاسي مصقول. قطعة تراثية عملية تلبس مع الثوب أو كإكسسوار عصري فوق المعطف.',
+   108→specs:{'العرض':'٤ سم','الإبزيم':'نحاس'},ratings:[]},
+   109→{id:'p14',store:'s4',name:'جبن قريش بلدي ٣٥٠ جم',cat:'ألبان ومخبوزات',ptype:'chilled',temp:'chilled',price:25,off:0,stock:20,sold:96,rt:4.6,rc:31,imgs:['/dameen/img/ed876a628b49.jpg'],
+   110→desc:'جبن قريش بلدي يُحضّر صباح كل يوم من حليب المزرعة، قوامه طري وملحه خفيف. يُسلّم مبرداً في نفس يوم صناعته.',
+   111→specs:{'الوزن':'٣٥٠ جم','الصلاحية':'٥ أيام مبردة'},ratings:[]},
+   112→{id:'p15',store:'s4',name:'خبز تميس بيتي (٤ حبات)',cat:'ألبان ومخبوزات',ptype:'instant',temp:'hot',price:12,off:0,stock:35,sold:640,rt:4.8,rc:203,imgs:['/dameen/img/8792c1cd454c.jpg'],
+   113→desc:'تميس بيتي يُخبز على التنور الحجري بعجين مخمّر ببطء. يخرج ساخناً مع الزبدة والعسل الأسود، ويُسلّم في أكياس حرارية تحفظ حرارته.',
+   114→specs:{'الكمية':'٤ حبات','التسليم':'ساخن يومياً'},ratings:[]},
+   115→{id:'p16',store:'s5',name:'شمعة ياسمين معطرة',cat:'ديكور',price:65,off:0,stock:28,sold:231,rt:4.5,rc:47,imgs:['/dameen/img/11c491ea9778.jpg'],
+   116→desc:'شمعة صويا معطرة برائحة الياسمين المسائي، فتيل قطني نظيف يحترق دون دخان. تعبئ المنزل بهدوء لأكثر من ٣٥ ساعة، في وعاء زجاجي يعاد استخدامه.',
+   117→specs:{'الشمعة':'شمع صويا','الرائحة':'ياسمين','مدة الاحتراق':'٣٥+ ساعة','الوزن':'٢٢٠ جم'},ratings:[]},
+   118→{id:'p17',store:'s5',name:'مبخرة نحاسية مزخرفة',cat:'ديكور',price:140,off:20,stock:11,sold:158,rt:4.7,rc:39,imgs:['/dameen/img/burner.jpg'],
+   119→desc:'مبخرة نحاسية بنقش يدوي ومقبض حراري معزول. تأتي مع طبق فحم عازل وغطاء محفور يوزع الدخان بلطف، قطعة تجمع بين الأصالة والاستخدام اليومي.',
+   120→specs:{'الخامة':'نحاس مطروق','التشطيب':'نقش يدوي','يشمل':'طبق فحم + غطاء'},ratings:[]},
+   121→{id:'p18',store:'s5',name:'طقم فناجيل قهوة مذهّب (٦)',cat:'قهوة وضيافة',fragile:true,price:195,off:0,stock:9,sold:129,rt:4.8,rc:26,imgs:['/dameen/img/cups.jpg'],
+   122→desc:'ستة فناجيل بورسلين بحافة مذهّبة مقاومة للاحتكاك، تصلح للقهوة والشاي. تصميم بقوارير رفيعة يليق بالمجالس، وتأتي في علبة مبطنة تصلح للإهداء.',
+   123→specs:{'العدد':'٦ فناجيل','الخامة':'بورسلين','الطلاء':'ذهبي ٢٤ قيراط'},ratings:[]},
+   124→{id:'p19',store:'s6',name:'بوكس هدايا «شكراً» مخمل',cat:'هدايا',ptype:'ship',giftOk:true,customOk:true,price:240,off:0,stock:16,sold:174,rt:4.8,rc:31,imgs:[IM('1549465220-1a8b9238cd48'),'/dameen/img/giftbox.jpg'],
+   125→desc:'بوكس مخمل فارغ يضم ٤ علب داخلية و٣ بطاقات إهداء بألوان هادئة، يعاد تشكيله حسب المناسبة. التغليف يشمل شريط ساتان وبطاقة يدوية بخط جميل.',
+   126→specs:{'المحتوى':'٤ علب + ٣ بطاقات','اللون':'أخضر زيتي / كحلي','التغليف':'ساتان + بطاقة'},ratings:[]},
+   127→{id:'p20',store:'s6',name:'لوحة خط عربي مؤطرة «الفرج»',cat:'هدايا',ptype:'ship',giftOk:true,price:160,off:0,stock:7,sold:88,rt:4.6,rc:18,imgs:['/dameen/img/ffebfbe70844.jpg'],
+   128→desc:'لوحة خط ديواني بكلمة «الفرج» مرسومة يدوياً بالحبر الأسود على ورق مقوى عاجي، بإطار خشب طبيعي وزجاج عاكس. توقيع الخطاط على الزاوية.',
+   129→specs:{'المقاس':'٤٠ × ٣٠ سم','الإطار':'خشب طبيعي','الخط':'ديواني حر'},ratings:[]},
+   130→{id:'p21',store:'s7',name:'مزهرية فخار مزججة',cat:'ديكور',fragile:true,price:110,off:0,stock:6,sold:12,rt:4.4,rc:5,imgs:['/dameen/img/9a3a0638140e.jpg'],
+   131→desc:'مزهرية فخارية مدوّرة على الدولاب ومزججة بطلاء لامع غير متكرر. كل قطعة فريدة بدرجة لونها، من طين الطائف الأحمر.',
+   132→specs:{'الارتفاع':'٢٤ سم','الخامة':'فخار مزجج'},ratings:[]},
+   133→{id:'p22',store:'s8',name:'كيكة العيد بالكريمة (حساسة للحرارة)',cat:'حلويات وأطباق',ptype:'chilled',temp:'chilled',price:145,off:0,stock:6,sold:89,rt:4.8,rc:21,imgs:['/dameen/img/1c2383e2b42c.jpg'],
+   134→desc:'كيكة إسفنجية بطبقات الكريمة المخفوقة، تُخبز يوم الطلب وتُسلّم مبردة في صندوق حافظ للحرارة. حساسة للحرارة — يُجدول لها النظام تلقائياً توصيلاً مبرداً مع أقرب شركة متعاقدة.',
+   135→specs:{'الحجم':'٨ أشخاص','الحفظ':'مبردة حتى التسليم','التحضير':'يوم الطلب'},ratings:[]},
+   136→{id:'p23',store:'s8',name:'صحن ورق عنب عائلي (طازج)',cat:'حلويات وأطباق',ptype:'instant',price:55,off:0,stock:15,sold:132,rt:4.7,rc:30,imgs:['/dameen/img/enab.jpg'],
+   137→desc:'ورق عنب بلدي ملفوف يدوياً ومطبوخ على أصوله مع لحم مفروم وأرز بسمتي. يُحضّر يوم الطلب ويُرسل فور تأكيده مع مندوب فوري — وقت التسليم المتوقع ٤٥ دقيقة.',
+   138→specs:{'الحجم':'صحن عائلي','التسليم':'فوري خلال ٤٥ دقيقة','التحضير':'يوم الطلب'},ratings:[]},
+   139→{id:'p24',store:'s5',name:'تنسيق طاولة ضيافة كاملة (خدمة ميدانية)',cat:'تنسيق مناسبات',ptype:'field',price:850,off:0,stock:4,sold:23,rt:4.9,rc:9,imgs:['/dameen/img/e44feac627da.jpg'],
+   140→desc:'خدمة تنسيق ميداني لطاولة المناسبة: خلفية قماش، تنسيق ورد طبيعي، أدوات تقديم وإضاءة هادئة. فريق المتجر يركّب قبل المناسبة ويفكّ بعدها — بلا بوليصة شحن تجاري، ومع حجز موعد مسبق ومشاركة موقع المناسبة.',
+   141→specs:{'الخدمة':'تركيب + فك','المدة':'حتى ٦ ساعات','الحجز':'موعد مسبق إلزامي'},ratings:[]},
+   142→{id:'p25',store:'s9',name:'سماعة ألعاب لاسلكية «صقر برو»',cat:'أجهزة وملحقات',ptype:'std',fragile:true,price:349,off:10,stock:14,sold:167,rt:4.8,rc:38,imgs:['/dameen/img/headset1.jpg','/dameen/img/headset2.jpg'],vids:[{src:'https://media.w3.org/2010/05/sintel/trailer.mp4',dur:52}],
+   143→desc:'سماعة ألعاب لاسلكية بتقنية صوت محيطي ٧٫١ افتراضي وبطارية تدوم ٤٠ ساعة متواصلة، مع مايك عازل للضوضاء بإلغاء بيئي وإضاءة RGB قابلة للتخصيص من التطبيق. تُشحن بتغليف حماية خاص لأنها من الأجهزة القابلة للكسر، وتشمل وسادتين احتياطيتين وحمّال مغناطيسي.',
+   144→specs:{'الاتصال':'لاسلكي ٢٫٤ جيجا + بلوتوث ٥٫٣','البطارية':'٤٠ ساعة','الصوت':'محيطي ٧٫١ افتراضي','الوزن':'٣١٢ جم'},ratings:[{by:'0500000001',name:'نورة',stars:5,txt:'خفيفة على الرأس والصوت غامر، وصلت بتغليف حماية ممتاز.',at:Date.now()-864e5*3}]},
+   145→{id:'p26',store:'s9',name:'ذراع تحكم احترافي «نمر»',cat:'أجهزة وملحقات',ptype:'std',price:189,off:0,stock:26,sold:241,rt:4.7,rc:52,imgs:['/dameen/img/controller1.jpg','/dameen/img/controller2.jpg'],
+   146→desc:'ذراع تحكم احترافي بأزرار ميكانيكية قابلة للبرمجة وعصا مقاومة للانحراف بدقة عالية، مع أذرع خلفية قابلة للتبديل ووضعيات إعدادات محفوظة لثلاث ألعاب. مناسب لمنصات PC والأندرويد، ويأتي بحافظة صلبة تناسب السفر.',
+   147→specs:{'التوافق':'PC / أندرويد','الأزرار':'٨ ميكانيكية قابلة للبرمجة','البطارية':'٢٠ ساعة'},ratings:[]},
+   148→{id:'p27',store:'s9',name:'جهاز ألعاب محمول «وهج X»',cat:'أجهزة وملحقات',ptype:'std',fragile:true,price:1499,off:5,stock:6,sold:87,rt:4.9,rc:24,imgs:['/dameen/img/04fd480125c5.jpg','/dameen/img/console.png'],
+   149→desc:'جهاز ألعاب محمول بشاشة أموليد ٧ بوصة بمعدل تحديث ١٤٤ هرتز ومعالج ثماني النوى مخصص للألعاب، يشغّل مكتبتك الرقمية بالكامل مع دعم البث السحابي. يُشحن بصندوق مقوّى بعلامة قابل للكسر وتغليف ممتص للصدمات + تأمين شحن إضافي.',
+   150→specs:{'الشاشة':'أموليد ٧ بوصة / ١٤٤ هرتز','التخزين':'٥١٢ جيجابايت','البطارية':'حتى ٨ ساعات لعب'},ratings:[]},
+   151→{id:'p28',store:'s9',name:'لوحة مفاتيح ميكانيكية RGB «قوس»',cat:'أجهزة وملحقات',ptype:'std',price:279,off:0,stock:18,sold:198,rt:4.6,rc:41,imgs:['/dameen/img/e28496a66dff.jpg','/dameen/img/keyboard.jpg'],
+   152→desc:'لوحة مفاتيح ميكانيكية بمفاتيح حمراء قابلة للتبديل الساخن وإضاءة RGB لكل مفتاح مع ٢٢ نمط إضاءة جاهز، وهيكل ألمنيوم مختوم مقاوم للغبار. تدعم الاتصال السلكي ولاسلكي مع ثلاث أجهزة في آن واحد، وتشمل مسند معصم مغناطيسي.',
+   153→specs:{'المفاتيح':'حمراء قابلة للتبديل','الاتصال':'سلكي + ٢٫٤ جيجا + بلوتوث','الإضاءة':'RGB لكل مفتاح'},ratings:[]},
+   154→{id:'p29',store:'s10',name:'كود لعبة «سباق الرمال ٥» الرقمي',cat:'ألعاب رقمية وأكواد',ptype:'digital',digi:{kind:'code',val:'DRR5-9K2M-X7Q4-88FV'},price:149,off:15,stock:99,sold:512,rt:4.8,rc:117,imgs:['/dameen/img/gcode.jpg'],
+   155→desc:'كود رقمي أصلي للعبة سباق الرمال ٥ كاملة الإصدار القياسي، يُسلّم فور إتمام الدفع في مكتبتك الرقمية دون أي شحن أو انتظار. الكود صالح للتفعيل مرة واحدة على حسابك، ويعمل بكل اللغات بما فيها العربية.',
+   156→specs:{'النوع':'كود تفعيل رقمي','التسليم':'فوري بعد الدفع','الصلاحية':'تفعيل واحد'},ratings:[]},
+   157→{id:'p30',store:'s10',name:'اشتراك ١٢ شهراً بلس جيمنج',cat:'اشتراكات رقمية',ptype:'digital',digi:{kind:'code',val:'PSN-4T8B-22LD-QW90'},price:235,off:0,stock:99,sold:368,rt:4.9,rc:88,imgs:['/dameen/img/gsub.jpg'],
+   158→desc:'كود اشتراك ١٢ شهراً كاملة في خدمة بلس جيمنج مع ألعاب شهرية مجانية وخصومات حصرية على المتجر الرقمي. يصل الكود لحظة الدفع في مكتبتك الرقمية عبر رابط مؤقت آمن، ويفعّل على حسابك بثلاث خطوات دون بطاقة.',
+   159→specs:{'المدة':'١٢ شهراً','المنطقة':'السعودية والخليج','التسليم':'فوري بعد الدفع'},ratings:[]},
+   160→{id:'p31',store:'s10',name:'كتاب إلكتروني «احترف صناعة الألعاب» PDF',cat:'كتب وثيمات رقمية',ptype:'digital',digi:{kind:'file',val:'game-dev-master-ar.pdf',size:'٤٫٢ م.ب'},price:45,off:0,stock:99,sold:156,rt:4.7,rc:33,imgs:['/dameen/img/gbook.jpg'],
+   161→desc:'كتاب إلكتروني عربي شامل من ٣٢٠ صفحة يأخذك من أساسيات محركات الألعاب إلى نشر أول لعبة لك على المتاجر، مع أمثلة كود قابلة للتنزيل ومشاريع عملية موزعة على كل فصل. يُسلّم فور الدفع عبر رابط مؤقت آمن، وتبقى نسخته دائمة في مكتبتك.',
+   162→specs:{'الصيغة':'PDF','الصفحات':'٣٢٠ صفحة','اللغة':'العربية'},ratings:[]},
+   163→{id:'p32',store:'s10',name:'حزمة ثيمات «نيون نايت» (١٢ واجهة)',cat:'كتب وثيمات رقمية',ptype:'digital',digi:{kind:'file',val:'neon-night-themes.zip',size:'١٨ م.ب'},price:25,off:0,stock:99,sold:203,rt:4.6,rc:47,imgs:['/dameen/img/1f1482a46bbb.jpg'],
+   164→desc:'حزمة من ١٢ ثيم واجهة نيون بتدرجات ليلية متناسقة للأجهزة وسطح المكتب، تشمل خلفيات وأيقونات مؤشرات وأصوات تنبيه مطابقة. ملف واحد مضغوط يُسلّم فوراً بعد الدفع، مع دليل تركيب مصور بالعربية داخل الحزمة.',
+   165→specs:{'المحتوى':'١٢ ثيم متكامل','الصيغة':'ZIP','التوافق':'ويندوز / ماك / أندرويد'},ratings:[]}];
+   166→
+   167→export const NOW=Date.now();
+   168→
+   169→export const USERS={
+   170→'0500000001':{name:'نورة العبدالله',role:'customer',pass:'1234',pts:340,bal:240,since:NOW-864e5*210,
+   171→ptsLog:[{t:'تحرير طلب #١٠٢١',v:29,at:NOW-864e5*6},{t:'تقييم تجربتك',v:10,at:NOW-864e5*6},{t:'استبدال في السلة',v:-100,at:NOW-864e5*9},{t:'تحرير طلب #١٠١٨',v:24,at:NOW-864e5*12}],
+   172→favs:['p1','p8'],addrs:[{t:'المنزل',a:'الرياض، حي الياسمين، شارع الأمير سلطان، مبنى ١٢',def:true},{t:'العمل',a:'الرياض، طريق الملك فهد، برج المملكة، الدور ١٤'}],
+   173→notif:{ord:true,off:true,dis:true,rev:true},hidePhone:false,email:'noura@mail.com'},
+   174→'0500000002':{name:'ريم الدوسري',role:'merchant',pass:'1234',store:'s1',since:NOW-864e5*400,notif:{ord:true,dis:true},email:'rima@dafi.sa'},
+   175→'0500000003':{name:'فهد العتيبي',role:'admin',pass:'1234',since:NOW-864e5*500,notif:{dis:true},email:'fahd@dameen.sa'},
+   176→'0500000004':{name:'سارة الحربي',role:'merchant',pass:'1234',store:'s2',since:NOW-864e5*300},
+   177→'0500000005':{name:'ماجد القحطاني',role:'merchant',pass:'1234',store:'s3',since:NOW-864e5*380},
+   178→'0500000006':{name:'حصة الشمري',role:'merchant',pass:'1234',store:'s4',since:NOW-864e5*250},
+   179→'0500000007':{name:'عبدالله الزهراني',role:'merchant',pass:'1234',store:'s5',since:NOW-864e5*180},
+   180→'0500000008':{name:'منال الغامدي',role:'merchant',pass:'1234',store:'s6',since:NOW-864e5*150},
+   181→'0500000009':{name:'تركي الثقفي',role:'merchant',pass:'1234',store:'s7',since:NOW-864e5*20},
+   182→'0500000010':{name:'أم خالد السالم',role:'merchant',pass:'1234',store:'s8',since:NOW-864e5*90},
+   183→'0500000011':{name:'فيصل الحربي',role:'merchant',pass:'1234',store:'s9',since:NOW-864e5*120,notif:{ord:true,dis:true}},
+   184→'0500000012':{name:'لينا العسيري',role:'merchant',pass:'1234',store:'s10',since:NOW-864e5*100,notif:{ord:true,dis:true}},
+   185→'0500000013':{name:'خالد المطيري',role:'staff',pass:'1234',since:NOW-864e5*30,notif:{ord:true,dis:true},email:'khaled.m@dameen.sa',staffTitle:'مشرف متاجر ونزاعات'}};
+   186→
+   187→export const DB={
+   188→notifs:[
+   189→{to:'0500000001',ic:'🚚',t:'طلبك في الطريق',b:'مزرعة الواحة شحنت طلبك #١٠٢٢',at:NOW-36e5*5,read:false,go:['orders']},
+   190→{to:'0500000001',ic:'⏳',t:'نافذة الحماية بدأت',b:'بقي أقل من ٨ دقائق لتحرير تلقائي لطلب #١٠٢٣',at:NOW-6e5,read:false,go:['orders']},
+   191→{to:'0500000001',ic:'🎁',t:'عرض من قسم الأزياء',b:'خصومات تصل إلى ٢٠٪ على العبايات',at:NOW-864e5,read:true,go:['section','fashion']}],
+   192→aRevenue:1268.75,
+   193→revMonths:[{m:'يونيو',v:186},{m:'يوليو',v:212},{m:'أغسطس',v:254},{m:'سبتمبر',v:301},{m:'أكتوبر',v:316}],
+   194→storeWallets:{s1:4820.5,s2:2160,s3:9130.25,s4:1540,s5:3310,s6:2980,s7:0,s9:2760,s10:4180},
+   195→orders:[
+   196→{id:1018,customer:'0500000001',at:NOW-864e5*12,pay:'mada',addr:'الرياض، حي الياسمين، شارع الأمير سلطان، مبنى ١٢',
+   197→groups:[{store:'s6',items:[{pid:'p19',qty:1,price:240}],sub:240,dl:0,status:'refunded',payout:{sub:240,comm:0,net:0}}]},
+   198→{id:1021,customer:'0500000001',at:NOW-864e5*6,pay:'mada',addr:'الرياض، حي الياسمين، شارع الأمير سلطان، مبنى ١٢',
+   199→groups:[{store:'s1',items:[{pid:'p1',qty:1,price:296.65},{pid:'p3',qty:1,price:76}],sub:372.65,dl:0,status:'released',rated:{stars:5,txt:'وصلت بسرعة والخامات فخمة'},payout:{sub:372.65,comm:9.32,net:363.33},releasedAt:NOW-864e5*5}]},
+   200→{id:1022,customer:'0500000001',at:NOW-864e5*2,pay:'visa',addr:'الرياض، حي الياسمين، شارع الأمير سلطان، مبنى ١٢',
+   201→groups:[{store:'s3',items:[{pid:'p8',qty:1,price:185},{pid:'p9',qty:2,price:58.5}],sub:243.5,dl:0,status:'shipped'}]},
+   202→{id:1023,customer:'0500000001',at:NOW-36e5*7,pay:'bal',addr:'الرياض، حي الياسمين، شارع الأمير سلطان، مبنى ١٢',
+   203→groups:[{store:'s5',items:[{pid:'p16',qty:2,price:130}],sub:130,dl:12,status:'received',complaintUntil:NOW+8*60e3}]},
+   204→{id:1024,customer:'0500000001',at:NOW-864e5,pay:'mada',addr:'الرياض، حي الياسمين، شارع الأمير سلطان، مبنى ١٢',
+   205→groups:[{store:'s4',items:[{pid:'p12',qty:1,price:420}],sub:420,dl:0,status:'disputed',complaintUntil:NOW+864e5}]}],
+   206→disputes:[
+   207→{id:'d0',order:1018,store:'s6',customer:'0500000001',subject:'لا يطابق الوصف',openedAt:NOW-864e5*11,status:'resolved',
+   208→ruling:{act:'refund',by:'الإدارة',text:'بعد الاطلاع على الصور المرفقة ومقارنتها بوصف المنتج، تبيّن اختلاف درجة اللون بشكل جوهري. اعتُمد استرجاع كامل المبلغ إلى محفظة العميلة.',at:NOW-864e5*10},
+   209→messages:[
+   210→{r:'sys',t:'فتحت العميلة نزاعاً على الطلب #١٠١٨ (متجر هدايا المعمور) بسبب: لا يطابق الوصف',at:NOW-864e5*11},
+   211→{r:'customer',t:'طلبت البوكس باللون الأخضر الزيتي كما في الصورة ووصل كحلي غامق تماماً، الفرق واضح جداً.',at:NOW-864e5*11+5e5,img:'/dameen/img/wbox.jpg'},
+   212→{r:'merchant',t:'نعتذر عن الخطأ، يبدو أنه التباس في اللون عند التغليف. مستعدون لاستبدالها أو استرجاع المبلغ حسب ما تقرر الإدارة.',at:NOW-864e5*11+9e5},
+   213→{r:'sys',t:'أصدرت الإدارة حكمها: استرجاع كامل المبلغ للعميلة + تحذير للمتجر بضبط مطابقة الألوان.',at:NOW-864e5*10}]},
+   214→{id:'d1',order:1024,store:'s4',customer:'0500000001',subject:'المنتج تالف',openedAt:NOW-864e5+36e5,status:'open',ruling:null,
+   215→messages:[
+   216→{r:'sys',t:'فتحت العميلة نزاعاً على الطلب #١٠٢٤ (متجر بيت السدو) بسبب: المنتج تالف',at:NOW-864e5+36e5},
+   217→{r:'customer',t:'المفرش وصل بشد واضح عند أحد الأطراف مع خيط مقطوع، الضرر ظاهر من أول نظرة. مرفق صور الوضع عند الوصول.',at:NOW-864e5+36e5+3e5,img:'/dameen/img/torn.jpg'},
+   218→{r:'merchant',t:'وعليكم السلام، نعتذر جداً عما وصلك. راجعنا تقرير الجودة قبل الشحن وكان سليماً، ويحتمل أن يكون الضرر من النقل. نرجو احتساب صور زاوية آخر للتأكد.',at:NOW-864e5+36e5+7e5}]}],
+   219→coupons:{DAMIN10:{type:'pct',v:10,max:50,store:'all',min:0,uses:0},SAVE20:{type:'pct',v:20,max:80,store:'all',min:200,uses:14},DAFI15:{type:'pct',v:15,max:60,store:'s1',min:150,uses:37},BYTE10:{type:'pct',v:10,max:30,store:'s10',min:30,uses:9}},
+   220→ptsVal:0.1,freeDlPts:250,aPtsWallet:0,ptsFunding:[],logiWallet:418.6,vat:527.4,
+   221→reqs:[
+   222→{id:'rq-101',kind:'store',own:'هند الشهري',store:'عطور تلال الطائف',email:'hind@talal.sa',phone:'0501122334',cr:'1010456789',iban:'SA0380000000608010167519',sec:'fashion',at:NOW-864e5*2,status:'pending'},
+   223→{id:'rq-102',kind:'admin',own:'خالد المطيري',email:'khaled.m@dameen.sa',phone:'0505544332',role:'مشرف تحكيم ونزاعات',code:'DMN-2026',at:NOW-36e5*30,status:'pending'}]};
+   224→
+   225→export let MED={imgs:6,vids:2,secs:60,stores:{}};
+   226→
+   227→export const medOf=s=>Object.assign({},MED,MED.stores[s.id]||{});
+   228→
+   229→export let IMP={total:0,n:0,users:{},stores:{}};
+   230→
+   231→export const IMP_STEP=0.5;
+   232→
+   233→export const durTxt=s=>{s=Math.max(0,Math.round(s||0));return ar(Math.floor(s/60))+':'+ar(String(s%60).padStart(2,'0'))};
+   234→
+   235→export const tempTxt=p=>p.temp==='chilled'?'🧊 مبرد':p.temp==='hot'?'🔥 يُسلَّم ساخناً':'🌡️ عادي';
+   236→
+   237→export function impSeed(){let n=0;const users={},stores={};
+   238→DB.orders.forEach(o=>{const ok=o.groups.filter(g=>g.status!=='refunded');
+   239→if(ok.length){n++;users[o.customer]=r2((users[o.customer]||0)+IMP_STEP);
+   240→ok.forEach(g=>{stores[g.store]=r2((stores[g.store]||0)+IMP_STEP)})}});
+   241→IMP={total:r2(n*IMP_STEP),n,users,stores};}
+   242→
+   243→export function impAdd(o){IMP.total=r2(IMP.total+IMP_STEP);IMP.n++;
+   244→IMP.users[o.customer]=r2((IMP.users[o.customer]||0)+IMP_STEP);
+   245→o.groups.forEach(g=>{if(g.status!=='refunded')IMP.stores[g.store]=r2((IMP.stores[g.store]||0)+IMP_STEP)});
+   246→appSave();}
+   247→
+   248→export function impRefund(o,g){IMP.stores[g.store]=r2(Math.max(0,(IMP.stores[g.store]||0)-IMP_STEP));
+   249→if(o.groups.every(x=>x.status==='refunded')){IMP.total=r2(Math.max(0,IMP.total-IMP_STEP));IMP.n=Math.max(0,IMP.n-1);IMP.users[o.customer]=r2(Math.max(0,(IMP.users[o.customer]||0)-IMP_STEP))}
+   250→appSave();}
+   251→
+   252→export function impAnim(){const el=$('#impnum');if(!el)return;const target=IMP.total||0;const t0=performance.now();
+   253→const stepFn=t=>{const k=Math.min(1,(t-t0)/1400);el.textContent=ard(r2(target*(1-Math.pow(1-k,3))));if(k<1)requestAnimationFrame(stepFn)};
+   254→requestAnimationFrame(stepFn);}
+   255→
+   256→export function impactBlock(){return `<button class="impbar" type="button" onclick="impInfo()" title="اضغط لعرض تفاصيل العدّاد المجتمعي">
+   257→<span class="impstar">🌟</span>
+   258→<span class="impmain"><span class="implb">🌟 العدّاد المجتمعي الشفاف — أثر ضمين</span>
+   259→<span class="impval"><b id="impnum">${ard(IMP.total)}</b><small>ر.س معتمدة لأعمال الخير</small></span></span>
+   260→<span class="impsep"></span>
+   261→<span class="impmeta"><span>من <b>${ar(IMP.n)}</b> عملية شراء ناجحة عبر ضمين</span><span>اقتطاع <b>٠٫٥٠ ر.س</b> عن كل عملية — لا من العميل ولا التاجر</span></span>
+   262→<span class="impq">؟</span>
+   263→</button>`;}
+   264→
+   265→export function impHero(){return `<div class="imphero">
+   266→<div class="spread"><b style="font-size:13.5px">🌟 مساهماتي الخيرية</b><span class="tag wht">من أرباح ضمين — لا من مالك</span></div>
+   267→<div style="display:flex;align-items:baseline;gap:8px;margin-top:6px"><span class="bignum">${ard(IMP.users[SES.phone]||0)}</span><span style="font-size:12px;font-weight:800">ر.س</span></div>
+   268→<div class="hint" style="margin-top:2px">اقتطعت ضمين ٠٫٥٠ ريال من أرباحها مع كل عملية شراء ناجحة لك${(IMP.users[SES.phone]||0)>0?' — مجموع أثرك الخيري باسمك':': أول عملية شراء لك تضيف أول ٠٫٥٠ ر.س ✨'}</div>
+   269→</div>`;}
+   270→
+   271→export function vidFail(v){try{v.style.display='none';v.insertAdjacentHTML('afterend','<div class="verr">🎬 تعذّر تشغيل المقطع من مصدره — تأكد من الرابط أو جرّب مقطعاً آخر</div>')}catch(e){}}
+   272→
+   273→export function pvidsBlock(p){if(!p.vids||!p.vids.length)return '';
+   274→return `<div class="pvids"><b>🎬 مقاطع ترويجية من المتجر</b>
+   275→<div class="vrail">${p.vids.map((v,vi)=>`<div class="mcard" onclick="playVid('${p.id}','${esc(v.src)}',${+v.dur||0})">${imgTag(p.imgs[0],'',p.name)}<span class="play">▶</span><span class="vtag">🎬 ${v.dur?durTxt(v.dur):'مقطع '+ar(vi+1)}</span><div class="mcap"><b>مقطع ${ar(vi+1)}</b><small>${money(eff(p))}</small></div></div>`).join('')}</div></div>`;}
+   276→
+   277→export const ptsVal=()=>DB.ptsVal||0.1;
+   278→
+   279→export const fdPts=()=>DB.freeDlPts||250;
+   280→
+   281→export const P=id=>PRODUCTS.find(p=>p.id===id);
+   282→
+   283→export const eff=p=>p.off?r2(p.price*(1-p.off/100)):p.price;
+   284→
+   285→export const stOK=s=>!s.susp;
+   286→
+   287→export const storeOwner=id=>{const s=ST(id);return s?USERS[s.owner]:null};
+   288→
+   289→export const secOf=id=>{const s=ST(id);return s?SEC(s.sec):SECTIONS[0]};
+   290→
+   291→export const CITIES=['الرياض','جدة','مكة المكرمة','المدينة المنورة','الدمام','الخبر','الأحساء','الطائف','بريدة','أبها','تبوك'];
+   292→
+   293→export const CITY_DL=(a,b)=>a===b?12:22;
+   294→
+   295→export const PTI=p=>({chilled:'🧊 توصيل مبرد',instant:'🛵 توصيل فوري',field:'🎪 خدمة ميدانية',digital:'⚡ رقمي فوري'}[p.ptype]||'');
+   296→
+   297→export function shipQuote(items,st,city,fd){
+   298→const ptypes=items.map(x=>x.p.ptype||'std');
+   299→const gsub=r2(items.reduce((a,x)=>a+eff(x.p)*x.qty,0));
+   300→let mode='std',cost=CITY_DL(st.city||'الرياض',city),label='شحن سريع عبر شركاء ضمين (OTO/Torod)',fragile=false,blocked=null;
+   301→if(ptypes.every(t=>t==='digital')){mode='digital';cost=0;label='تسليم رقمي فوري — ٠ ر.س شحن'}
+   302→else if(ptypes.every(t=>t==='field')){mode='field';cost=0;label='توصيل وتركيب فريق المتجر'}
+   303→else if(ptypes.includes('instant')){
+   304→if((st.city||'الرياض')!==city){mode='instant';cost=0;label='توصيل فوري محلي';blocked='خارج نطاق التوصيل الفوري — «'+st.name+'» يوصل داخل مدينة '+st.city+' فقط (نطاق '+ar(st.rangeKm||20)+' كم) حفاظاً على حرارة الوجبة'}
+   305→else{mode='instant';cost=10;label='مندوب فوري — ٤٥ دقيقة تقريباً داخل '+city}}
+   306→else if(ptypes.includes('chilled')){
+   307→mode='chilled';const same=(st.city||'الرياض')===city;cost=r2(cost+8);
+   308→label=same?'توصيل مبرد بمندوب مجهز بحافظة برودة (Cooling Box) داخل المدينة':'شحن مبرد بين المدن عبر شركات مبردة متعاقدة (OTO/Torod)'}
+   309→if(mode==='std'&&items.some(x=>x.p.fragile)){fragile=true;cost=r2(cost+15);label='شحن سريع + قابل للكسر (تغليف خاص ورسوم حماية ١٥ ر.س)'}
+   310→let charge=cost,subsidy=0,source='customer',why='';
+   311→if(mode==='field'||mode==='digital'){charge=0;subsidy=cost;source='merchant';why=mode==='field'?'خدمة ميدانية بفريق المتجر':'تسليم رقمي فوري'}
+   312→else if(st.dlMode==='free'){charge=0;subsidy=cost;source='merchant';why='توصيل مجاني من المتجر'}
+   313→else if((st.freeMin||0)>0&&gsub>=st.freeMin){charge=0;subsidy=cost;source='merchant';why='تخطيت سقف الشحن المجاني'}
+   314→else if(st.dlMode==='half'){charge=r2(cost/2);subsidy=r2(cost/2);source='merchant';why='مناصفة مع المتجر'}
+   315→if(fd&&mode!=='field'&&mode!=='digital'&&charge>0){charge=0;subsidy=cost;source='pts';why='استبدال نقاط الولاء'}
+   316→return{mode,cost,charge,subsidy,source,why,label,gsub,fragile,blocked};
+   317→}
+   318→
+   319→export const COURIERS={std:['OTO Express','Torod Shipping','سمسا عبر OTO'],chilled:['OTO Fresh — سلسلة التبريد','Torod Cooler المتعاقدة'],instant:['Torod Now — مندوب فوري','مرسول فوري']};
+   320→
+   321→export function mkLogi(mode,seed){
+   322→const cs=COURIERSode]||COURIERS.std;
+   323→const courier=csash(String(seed))%cs.length];
+   324→const wb='WB-'+(100000+hash('wb'+seed)%899999);
+   325→return{wb,courier,mode,events:[{t:'أُصدرت بوليصة الشحن آلياً عبر الربط اللوجستي ('+courier+')',at:Date.now()},{t:'أُرسل طلب استلام (Pickup Request) للمندوب',at:Date.now()+1}]}
+   326→}
+   327→
+   328→export const BYPASS_WORDS=['واتساب','واتس اب','واتس','جوال','تحويل','حساب خارجي','رقمي','رقمك','رقم الهاتف','هاتفي','سناب','سناب شات','انستقرام','انستغرام','تويتر','تيليجرام','تليجرام','ايميل','بريد إلكتروني','stc pay','stcpay','حوالة','كاش خارجي'];
+   329→
+   330→export function chatGuard(txt){
+   331→const t=String(txt||'');
+   332→if(/(https?:\/\/|www\.|\S+\.(com|net|org|io|me|co)(\s|$|\/))/i.test(t))return{ok:false,why:'رابط خارجي'};
+   333→const digits=t.replace(/[٠-٩]/g,d=>String('٠١٢٣٤٥٦٧٨٩'.indexOf(d))).replace(/[\s\-–—ـ.,_/]/g,'');
+   334→if(/(05\d{8}|9665\d{8}|009665\d{8}|\d{9,})/.test(digits))return{ok:false,why:'رقم جوال'};
+   335→const norm=t.replace(/[أإآ]/g,'ا').toLowerCase();
+   336→for(const w of BYPASS_WORDS){if(norm.includes(w.replace(/[أإآ]/g,'ا').toLowerCase()))return{ok:false,why:'مصطلح تواصل خارجي'}}
+   337→return{ok:true};
+   338→}
+   339→
+   340→/* vidFail — منقولة حرفياً (DOM خالص، السطر ٢٤٩) */
+   341→export function vidFail(v){try{v.style.display='none';v.insertAdjacentHTML('afterend','<div class="verr">🎬 تعذّر تشغيل المقطع من مصدره — تأكد من الرابط أو جرّب مقطعاً آخر</div>')}catch(e){}}
+   342→
+   343→/* مطاوعات MED/IMP — إعادة الإسناد تحدث داخل core فقط (روابط الاستيراد للقراءة) */
+   344→export function setMED(v){MED=v}
+   345→export function setIMP(v){IMP=v}
+   346→export const getMED=()=>MED
+   347→export const getIMP=()=>IMP
+   348→

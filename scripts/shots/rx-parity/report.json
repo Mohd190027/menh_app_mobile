@@ -1,0 +1,483 @@
+[
+ {
+  "id": "guest-home",
+  "top": true,
+  "app": true,
+  "modals": true,
+  "fab": true,
+  "text": true,
+  "ok": true,
+  "appH": [
+   1295,
+   1295
+  ]
+ },
+ {
+  "id": "guest-search",
+  "top": true,
+  "app": true,
+  "modals": true,
+  "fab": true,
+  "text": true,
+  "ok": true,
+  "appH": [
+   517,
+   517
+  ]
+ },
+ {
+  "id": "guest-section",
+  "top": true,
+  "app": true,
+  "modals": true,
+  "fab": true,
+  "text": true,
+  "ok": true,
+  "appH": [
+   1376,
+   1376
+  ]
+ },
+ {
+  "id": "guest-store",
+  "top": true,
+  "app": true,
+  "modals": true,
+  "fab": true,
+  "text": true,
+  "ok": true,
+  "appH": [
+   955,
+   955
+  ]
+ },
+ {
+  "id": "guest-product",
+  "top": true,
+  "app": true,
+  "modals": true,
+  "fab": true,
+  "text": true,
+  "ok": true,
+  "appH": [
+   1323,
+   1323
+  ]
+ },
+ {
+  "id": "guest-cart",
+  "top": true,
+  "app": true,
+  "modals": true,
+  "fab": true,
+  "text": true,
+  "ok": true,
+  "appH": [
+   430,
+   430
+  ]
+ },
+ {
+  "id": "guest-favs",
+  "top": true,
+  "app": true,
+  "modals": true,
+  "fab": true,
+  "text": true,
+  "ok": true,
+  "appH": [
+   430,
+   430
+  ]
+ },
+ {
+  "id": "guest-disputes",
+  "top": true,
+  "app": true,
+  "modals": true,
+  "fab": true,
+  "text": true,
+  "ok": true,
+  "appH": [
+   430,
+   430
+  ]
+ },
+ {
+  "id": "guest-account",
+  "top": true,
+  "app": true,
+  "modals": true,
+  "fab": true,
+  "text": true,
+  "ok": true,
+  "appH": [
+   430,
+   430
+  ]
+ },
+ {
+  "id": "guest-dlib",
+  "top": true,
+  "app": true,
+  "modals": true,
+  "fab": true,
+  "text": true,
+  "ok": true,
+  "appH": [
+   430,
+   430
+  ]
+ },
+ {
+  "id": "guest-orders",
+  "top": true,
+  "app": true,
+  "modals": true,
+  "fab": true,
+  "text": true,
+  "ok": true,
+  "appH": [
+   430,
+   430
+  ]
+ },
+ {
+  "id": "cust-home",
+  "top": true,
+  "app": true,
+  "modals": true,
+  "fab": true,
+  "text": true,
+  "ok": true,
+  "appH": [
+   1295,
+   1295
+  ]
+ },
+ {
+  "id": "cust-section",
+  "top": true,
+  "app": true,
+  "modals": true,
+  "fab": true,
+  "text": true,
+  "ok": true,
+  "appH": [
+   1376,
+   1376
+  ]
+ },
+ {
+  "id": "cust-store",
+  "top": true,
+  "app": true,
+  "modals": true,
+  "fab": true,
+  "text": true,
+  "ok": true,
+  "appH": [
+   955,
+   955
+  ]
+ },
+ {
+  "id": "cust-product",
+  "top": true,
+  "app": true,
+  "modals": true,
+  "fab": true,
+  "text": true,
+  "ok": true,
+  "appH": [
+   1178,
+   1178
+  ]
+ },
+ {
+  "id": "cust-orders",
+  "top": true,
+  "app": true,
+  "modals": true,
+  "fab": true,
+  "text": true,
+  "ok": true,
+  "appH": [
+   1769,
+   1769
+  ]
+ },
+ {
+  "id": "cust-account",
+  "top": true,
+  "app": true,
+  "modals": true,
+  "fab": true,
+  "text": true,
+  "ok": true,
+  "appH": [
+   1915,
+   1915
+  ]
+ },
+ {
+  "id": "cust-favs",
+  "top": true,
+  "app": true,
+  "modals": true,
+  "fab": true,
+  "text": true,
+  "ok": true,
+  "appH": [
+   459,
+   459
+  ]
+ },
+ {
+  "id": "cust-disputes",
+  "top": true,
+  "app": true,
+  "modals": true,
+  "fab": true,
+  "text": true,
+  "ok": true,
+  "appH": [
+   382,
+   382
+  ]
+ },
+ {
+  "id": "cust-dlib",
+  "top": true,
+  "app": true,
+  "modals": true,
+  "fab": true,
+  "text": true,
+  "ok": true,
+  "appH": [
+   461,
+   461
+  ]
+ },
+ {
+  "id": "mer-home",
+  "top": true,
+  "app": true,
+  "modals": true,
+  "fab": true,
+  "text": true,
+  "ok": true,
+  "appH": [
+   1295,
+   1295
+  ]
+ },
+ {
+  "id": "mer-dash",
+  "top": true,
+  "app": true,
+  "modals": true,
+  "fab": true,
+  "text": true,
+  "ok": true,
+  "appH": [
+   579,
+   579
+  ]
+ },
+ {
+  "id": "mer-prods",
+  "top": true,
+  "app": true,
+  "modals": true,
+  "fab": true,
+  "text": true,
+  "ok": true,
+  "appH": [
+   690,
+   690
+  ]
+ },
+ {
+  "id": "mer-media",
+  "top": true,
+  "app": true,
+  "modals": true,
+  "fab": true,
+  "text": true,
+  "ok": true,
+  "appH": [
+   985,
+   985
+  ]
+ },
+ {
+  "id": "mer-orders",
+  "top": true,
+  "app": true,
+  "modals": true,
+  "fab": true,
+  "text": true,
+  "ok": true,
+  "appH": [
+   587,
+   587
+  ]
+ },
+ {
+  "id": "mer-wallet",
+  "top": true,
+  "app": true,
+  "modals": true,
+  "fab": true,
+  "text": true,
+  "ok": true,
+  "appH": [
+   711,
+   711
+  ]
+ },
+ {
+  "id": "mer-disputes",
+  "top": true,
+  "app": true,
+  "modals": true,
+  "fab": true,
+  "text": true,
+  "ok": true,
+  "appH": [
+   403,
+   403
+  ]
+ },
+ {
+  "id": "mer-set",
+  "top": true,
+  "app": true,
+  "modals": true,
+  "fab": true,
+  "text": true,
+  "ok": true,
+  "appH": [
+   1748,
+   1748
+  ]
+ },
+ {
+  "id": "adm-hub",
+  "top": true,
+  "app": true,
+  "modals": true,
+  "fab": true,
+  "text": true,
+  "ok": true,
+  "appH": [
+   932,
+   932
+  ]
+ },
+ {
+  "id": "adm-stores",
+  "top": true,
+  "app": true,
+  "modals": true,
+  "fab": true,
+  "text": true,
+  "ok": true,
+  "appH": [
+   975,
+   975
+  ]
+ },
+ {
+  "id": "adm-reqs",
+  "top": true,
+  "app": true,
+  "modals": true,
+  "fab": true,
+  "text": true,
+  "ok": true,
+  "appH": [
+   1004,
+   1004
+  ]
+ },
+ {
+  "id": "adm-disputes",
+  "top": true,
+  "app": true,
+  "modals": true,
+  "fab": true,
+  "text": true,
+  "ok": true,
+  "appH": [
+   553,
+   553
+  ]
+ },
+ {
+  "id": "adm-cats",
+  "top": true,
+  "app": true,
+  "modals": true,
+  "fab": true,
+  "text": true,
+  "ok": true,
+  "appH": [
+   1024,
+   1024
+  ]
+ },
+ {
+  "id": "adm-rev",
+  "top": true,
+  "app": true,
+  "modals": true,
+  "fab": true,
+  "text": true,
+  "ok": true,
+  "appH": [
+   3099,
+   3099
+  ]
+ },
+ {
+  "id": "stf-hub",
+  "top": true,
+  "app": true,
+  "modals": true,
+  "fab": true,
+  "text": true,
+  "ok": true,
+  "appH": [
+   785,
+   785
+  ]
+ },
+ {
+  "id": "stf-stores",
+  "top": true,
+  "app": true,
+  "modals": true,
+  "fab": true,
+  "text": true,
+  "ok": true,
+  "appH": [
+   975,
+   975
+  ]
+ },
+ {
+  "id": "stf-disputes",
+  "top": true,
+  "app": true,
+  "modals": true,
+  "fab": true,
+  "text": true,
+  "ok": true,
+  "appH": [
+   553,
+   553
+  ]
+ }
+]

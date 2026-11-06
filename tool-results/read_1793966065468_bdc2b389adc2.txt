@@ -1,0 +1,277 @@
+  2430→function mOfferForm(pid){
+  2431→const p=P(pid);OFFPID=pid;
+  2432→openModal(`<div class="mhead"><b>🏷️ عرض «${esc(p.name)}»</b><button class="x" onclick="closeModal()">✕</button></div>
+  2433→<div class="mbody">
+  2434→<div class="demo mb"><b style="font-size:12.5px">ضع خصماً على كيفك</b>
+  2435→<p class="hint" style="margin-top:2px">اختر نسبة جاهزة أو اكتب أي نسبة تريدها من ١ إلى ٩٠٪ — يُحدّث السعر للعملاء فوراً.</p></div>
+  2436→<div class="chiprow">${[5,10,15,20,25,30,40,50,60].map(v=>`<button class="chip" style="--acc:${ST(p.store).color}" onclick="$('#mp-off2').value=${v};offPrev()">${ar(v)}٪</button>`).join('')}<button class="chip" style="--acc:var(--red)" onclick="$('#mp-off2').value=0;offPrev()">إلغاء العرض</button></div>
+  2437→<div class="fld mt"><label>نسبة الخصم (٪) — ٠ يعني بلا عرض</label><input class="inp" id="mp-off2" type="number" min="0" max="90" value="${p.off||0}" oninput="offPrev()"></div>
+  2438→<div class="acard" style="padding:12px" id="offprev"></div>
+  2439→<div class="spread mt"><button class="btn gray" onclick="closeModal()">تراجع</button>
+  2440→<button class="btn" onclick="mOfferSet2()">حفظ العرض</button></div>
+  2441→</div>`);
+  2442→offPrev();
+  2443→}
+  2444→function offPrev(){
+  2445→const el=$('#offprev');if(!el)return;
+  2446→const p=P(OFFPID);const v=offVal();const e=r2(p.price*(1-v/100));
+  2447→el.innerHTML=`<div class="spread"><span class="hint">السعر الحالي</span><b>${money(p.off?r2(p.price*(1-p.off/100)):p.price)}</b></div>
+  2448→<div class="spread" style="margin-top:5px"><span class="hint">${v?'السعر بعد الخصم الجديد':'بلا خصم — السعر الأصلي'}</span><b class="fx" style="font-size:16px;color:${v?'var(--grn)':'var(--ink)'}">${money(e)}</b></div>
+  2449→${v?`<div class="hint" style="margin-top:5px">العميل يوفّر <b style="color:var(--red)">${money(r2(p.price-e))}</b> (${ar(v)}٪)</div>`:''}`;
+  2450→}
+  2451→function mOfferSet2(){
+  2452→const p=P(OFFPID);const v=offVal();p.off=v;
+  2453→closeModal();toast(v?'فُعّل خصم '+ar(v)+'٪ على «'+p.name+'» — السعر الجديد '+money(eff(p)):'أُلغي العرض على «'+p.name+'»','ok');render();
+  2454→}
+  2455→/* ===== تقييمات وتعليقات العملاء على المنتج ===== */
+  2456→function mProdRevs(pid){
+  2457→const p=P(pid);
+  2458→const dist=[5,4,3,2,1].map(n=>p.ratings.filter(r=>r.stars===n).length);
+  2459→const mx=Math.max(1,...dist);
+  2460→openModal(`<div class="mhead"><b>⭐ تقييمات «${esc(p.name)}»</b><button class="x" onclick="closeModal()">✕</button></div>
+  2461→<div class="mbody">
+  2462→<div class="acard" style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+  2463→<div style="text-align:center;min-width:92px"><b class="fx" style="font-size:31px;color:var(--amb2)">${ard(p.rt)}</b><div>${STARS(p.rt)}</div><div class="hint">${ar(p.rc)} تقييم · ${ar(p.sold)} عملية بيع</div></div>
+  2464→<div style="flex:1;min-width:170px">${dist.map((n,i)=>{const st=5-i;return `<div style="display:flex;align-items:center;gap:7px;font-size:10.5px;margin:3px 0"><span style="width:26px">${ar(st)}★</span><div style="flex:1;height:7px;background:#EFE9DA;border-radius:8px;overflow:hidden"><i style="display:block;height:100%;width:${n/mx*100}%;background:var(--amb)"></i></div><span class="mut" style="width:20px">${ar(n)}</span></div>`}).join('')}</div>
+  2465→</div>
+  2466→${p.ratings.length?[...p.ratings].reverse().map(r=>`<div class="mprev"><div class="spread" style="flex-wrap:wrap"><div style="display:flex;gap:8px;align-items:center"><div class="avat" style="width:30px;height:30px;border-radius:10px;font-size:12px">${esc((r.name||'ع')[0])}</div><b style="font-size:12px">${esc(r.name||'عميل')}</b>${STARS(r.stars)}</div><span class="hint">${ago(r.at)}</span></div><p>${esc(r.txt)||'<i class="mut">قيّم بالنجوم دون تعليق نصي</i>'}</p></div>`).join(''):`<div class="empty" style="padding:26px"><div class="em">💬</div><b>لا تعليقات بعد</b><span>سيظهر هنا كل تعليق وتقييم يكتبه عملاؤك عن هذا المنتج</span></div>`}
+  2467→</div>`,'lg');
+  2468→}
+  2469→function mDelProd(pid){
+  2470→openModal(`<div class="mhead"><b>حذف منتج</b><button class="x" onclick="closeModal()">✕</button></div><div class="mbody">
+  2471→<p style="font-size:13.5px">هل تريد حذف «${esc(P(pid).name)}» من متجرك؟ لا يمكن التراجع.</p>
+  2472→<div class="spread mt"><button class="btn gray" onclick="closeModal()">تراجع</button>
+  2473→<button class="btn red" onclick="PRODUCTS=PRODUCTS.filter(p=>p.pid!=='${pid}'&&p.id!=='${pid}');closeModal();toast('حُذف المنتج');render()">تأكيد الحذف</button></div></div>`)}
+  2474→function pgMOrders(){
+  2475→const gs=myGroups();
+  2476→const NR=['pending','preparing','shipped'],RC=['received','released'];
+  2477→const stat=x=>x.g.status;
+  2478→const C={all:gs.length,
+  2479→nr:gs.filter(x=>NR.includes(stat(x))).length,
+  2480→rcv:gs.filter(x=>RC.includes(stat(x))).length,
+  2481→pnd:gs.filter(x=>stat(x)==='pending').length,
+  2482→prep:gs.filter(x=>stat(x)==='preparing').length,
+  2483→ship:gs.filter(x=>stat(x)==='shipped').length,
+  2484→recv:gs.filter(x=>stat(x)==='received').length,
+  2485→rel:gs.filter(x=>stat(x)==='released').length,
+  2486→bad:gs.filter(x=>['disputed','refunded'].includes(stat(x))).length};
+  2487→const relVal=r2(gs.filter(x=>stat(x)==='released').reduce((a,x)=>a+x.g.sub,0));
+  2488→const f=VIEW.mof||'all';
+  2489→const PRED={all:()=>true,pnd:x=>stat(x)==='pending',prep:x=>stat(x)==='preparing',ship:x=>stat(x)==='shipped',recv:x=>stat(x)==='received',rel:x=>stat(x)==='released',bad:x=>['disputed','refunded'].includes(stat(x)),nr:x=>NR.includes(stat(x)),rcv:x=>RC.includes(stat(x))};
+  2490→const FILTS=[['all','📦 الكل'],['nr','⏳ لم تُستلم بعد'],['rcv','📥 تم استلامها'],['pnd','بانتظار القبول'],['prep','قيد التحضير'],['ship','تم شحنها'],['recv','قيد الفحص'],['rel','🔓 محررة'],['bad','⚖️ نزاعات واسترجاعات']];
+  2491→const list=gs.filter(PRED[f]);
+  2492→return `<div class="pghead"><h1>📦 طلبات متجري (${ar(gs.length)})</h1></div>
+  2493→<div class="kpis mb">
+  2494→<div class="kpi nvy"><i>📦</i><b>${ar(C.all)}</b><span>إجمالي الطلبات</span></div>
+  2495→<div class="kpi amb"><i>⏳</i><b>${ar(C.nr)}</b><span>لم تُستلم بعد</span></div>
+  2496→<div class="kpi grn"><i>📥</i><b>${ar(C.rcv)}</b><span>استلمها العميل</span></div>
+  2497→<div class="kpi grn"><i>🔓</i><b>${ar(C.rel)}</b><span>محررة (مكتملة)</span></div>
+  2498→<div class="kpi red"><i>⚖️</i><b>${ar(C.bad)}</b><span>نزاعات واسترجاعات</span></div>
+  2499→<div class="kpi"><i>💰</i><b>${money(relVal)}</b><span>قيمة الشحنات المحررة</span></div>
+  2500→</div>
+  2501→<div class="chiprow">${FILTS.map(([k,l])=>`<button class="chip ${f===k?'on':''}" onclick="VIEW.mof='${k}';render()">${l} (${ar(C[k])})</button>`).join('')}</div>
+  2502→<div class="mt">
+  2503→${list.map(({o,g,gi})=>{
+  2504→const cust=USERS[o.customer];
+  2505→const dis=DB.disputes.find(d=>d.order===o.id&&d.store===SES.store);
+  2506→return `<div class="ocard">
+  2507→<div class="spread" style="flex-wrap:wrap">
+  2508→<div><b class="fx" style="font-size:13.5px">طلب #${ar(o.id)}</b>
+  2509→<div class="hint">${cust?esc(cust.name.split(' ')[0]):'عميل'} ${cust&&cust.hidePhone?'· رقمه مخفي بطلبه':'· '+ar(o.customer)} · ${dt(o.at)}</div></div>
+  2510→<span class="tag ${g.status==='pending'?'amb':g.status==='released'?'grn':g.status==='disputed'?'red':'gry'}">${GLBL[g.status]}</span>
+  2511→</div>
+  2512→${o.freeDl?'<span class="tag grn" style="margin-top:6px">🚚 توصيل مجاني — استبدلها العميل بالنقاط</span>':''}
+  2513→<div class="oitems">${g.items.map(it=>{const p=P(it.pid);return `<span class="oitag">${p?imgTag(p.imgs[0],'',''):''} ${ar(it.qty)}× ${p?esc(p.name):'—'}${p&&(p.pts||0)>0?` <span style="color:var(--amb2)">🌟${ar(p.pts*it.qty)}</span>`:''}</span>`}).join('')}</div>
+  2514→${g.logi?`<div class="hint" style="margin-top:6px">📄 ${g.logi.wb?'بوليصة '+ar(g.logi.wb)+' · ':''}${esc(g.logi.courier)}${g.logi.wb?` · <a style="color:var(--grn);font-weight:700;cursor:pointer" onclick="toast('أُرسلت البوليصة للطباعة 🖨️','ok')">طباعة البوليصة 🖨️</a>`:' — بلا بوليصة (خدمة ميدانية)'} · من ${esc(ST(g.store).city||'—')} إلى ${esc(o.city||'—')}</div>`:''}
+  2515→${shipBlock(o,g,gi)}
+  2516→${g.booking?`<div class="bkcard"><b style="font-size:11.5px">🎪 مناسبة العميل — حجز مؤكد</b>
+  2517→<div class="hint" style="line-height:1.8;margin-top:4px">📅 ${esc(g.booking.date)} · التركيب ${esc(g.booking.setup)}${g.booking.tear?' · الفك '+esc(g.booking.tear):''}${g.booking.dl==='pickup'?' · 🚶 يستلمها العميل من مقرك بلا توصيل':' · 🚚 فريقك يوصل ويركّب في الموقع'}${g.booking.geo?' · 📍 موقع محدد ('+ard(g.booking.geo.lat)+'، '+ard(g.booking.geo.lng)+')':''}${g.booking.note?' · '+esc(g.booking.note):''}</div></div>`:''}
+  2518→${g.custom?`<div class="giftrow" style="background:#A45A3A12;border-color:#A45A3A66">✏️ طلب قابل للتعديل — ناقش العميل في المحادثة واطلب مبلغ أي إضافة من زر «طلب مبلغ إضافي» داخل الدردشة (يُحجز بضمان ضمين)</div>`:''}
+  2519→${g.digi?`<div class="giftrow" style="background:#50489E12;border-color:#50489E66">⚡ طلب رقمي — سُلّم فوراً للعميل عند الدفع في مكتبته الرقمية، والمبلغ محجوز حتى نهاية نافذة الحماية (${secOf(g.store).win})</div>`:''}
+  2520→${g.ship&&g.ship.fragile?`<div class="giftrow" style="background:#8A4B080f;border-color:#8A4B0866">⚠️ شحنة قابلة للكسر — نُقلت العلامة لشركة الشحن آلياً: تغليف خاص إلزامي + رسوم حماية ١٥ ر.س ضمن الشحن</div>`:''}
+  2521→${g.gift?`<div class="giftrow">🎁 إهداء — المستلم: <b>${esc(g.gift.name)}</b> · ${ar(g.gift.phone)} (يُطبع على البوليصة كمتسلم)</div>`:''}
+  2522→${g.ans&&g.ans.length?`<div class="hint" style="margin-top:6px">❓ إجابات العميل على أسئلتك: ${g.ans.map(x=>esc(x.q)+' ← <b>'+esc(x.a)+'</b>').join(' · ')}</div>`:''}
+  2523→${g.pans&&g.pans.length?`<div class="hint" style="margin-top:6px">❓ إجابات العميل على أسئلة المنتجات: ${g.pans.map(x=>esc(x.pn)+' — '+x.ans.map(y=>esc(y.q)+' ← <b>'+esc(y.a)+'</b>').join(' · ')).join(' · ')}</div>`:''}
+  2524→${g.chat?`<button class="btn soft xs" style="margin-top:7px" onclick="openOChat(${o.id},${gi})">💬 محادثة الطلب${g.chatDeleted?' — محذوفة لمخالفة':(g.chatArchived||['received','released','refunded','disputed'].includes(g.status))?' — مؤرشفة':''}</button>`:''}
+  2525→${['disputed','refunded'].includes(g.status)?'':`<div class="osteps">${GSTEPS.map((l,i)=>`<div class="st ${i<gstep(g)?'on':i===gstep(g)?'on':''}"><i></i>${l}</div>`).join('')}</div>`}
+  2526→${g.status==='received'?`<div class="hint">⏳ العميل يفحص الشحنة — يُحرر المبلغ تلقائياً بعد <b class="cd" style="border:0;background:none;padding:0" data-cd="${g.complaintUntil}">${clock(g.complaintUntil-Date.now())}</b></div>`:''}
+  2527→${g.status==='pending'?`<button class="btn sm mt" onclick="mAccept(${o.id},${gi})">✅ اقبل الطلب وابدأ التحضير</button>`:''}
+  2528→${g.status==='preparing'?`<button class="btn amb sm mt" onclick="mShip(${o.id},${gi})">${g.logi&&g.logi.wb?'🚚 سلّم الشحنة للمندوب — بوليصة '+ar(g.logi.wb):(g.ship&&g.ship.mode==='field'?(g.booking&&g.booking.dl==='pickup'?'🚶 جهّز الطلب — العميل سيستلمه من مقرك':'🎪 انطلق الفريق إلى موقع المناسبة'):'🚚 حدّث حالة الشحن')}</button>`:''}
+  2529→${g.status==='shipped'&&g.ship&&g.ship.mode==='field'?(g.otp?`<div class="bkcard" style="border-color:#1D443255;background:#1D44320a"><b style="font-size:11.5px">🎯 كود تأكيد إتمام الخدمة: <b class="fx" style="letter-spacing:3px;font-size:15px">${ar(g.otp)}</b></b><div class="hint" style="margin-top:4px;line-height:1.7">أظهره للعميل في موقع المناسبة — تُحرر مستحقاتك فور إدخاله من تطبيق العميل (لا تُصرف إلا بهذا الكود).</div></div>`:`<button class="btn amb sm mt" onclick="mSendOTP(${o.id},${gi})">🎯 اكتمل التركيب — أرسل كود التأكيد للعميل</button>`):''}
+  2530→${g.status==='disputed'&&dis?`<button class="btn red sm mt" onclick="openDispute('${dis.id}')">⚖️ متابعة النزاع والرد على العميل</button>`:''}
+  2531→${g.status==='released'&&g.payout?`<div class="hint mt" style="background:#1D443208;border-radius:10px;padding:7px 11px">🔓 حُرر ${money(g.payout.net)} صافياً (عمولة ضمين ${money(g.payout.comm)})${g.rated?' · تقييم العميل '+STARS(g.rated.stars):''}</div>`:''}
+  2532→<div class="hint" style="margin-top:6px">قيمة الشحنة: <b>${money(g.sub)}</b> → صافيك عند التحرير: <b style="color:var(--grn)">${money(r2(g.sub*0.975-((g.ship&&g.ship.source==='merchant')?g.ship.subsidy:0)))}</b>${g.ship&&g.ship.source==='merchant'?` <span class="tag amb" style="font-size:9px">شمل ${money(g.ship.subsidy)} دعمك للشحن — لا يمس العمولة</span>`:''}</div>
+  2533→</div>`}).join('')||`<div class="empty"><div class="em">📦</div><b>لا طلبات في هذا التصنيف</b><span>غيّر الفلتر أو تابع كل الطلبات</span></div>`}
+  2534→</div>`;
+  2535→}
+  2536→function mAccept(oid,gi){const o=DB.orders.find(x=>x.id===oid);const g=o.groups[gi];
+  2537→g.status='preparing';
+  2538→if(g.logi)g.logi.events.push({t:'قَبِل المتجر الطلب وبدأ التحضير — تحديث Webhook',at:Date.now()});
+  2539→pushNotif(o.customer,'🧵','متجرك بدأ التحضير',ST(g.store).name+' قبلت طلبك #'+ar(oid)+' وقيد التحضير الآن',['orders']);
+  2540→toast('قُبل الطلب — بدأ التحضير ✅','ok');render()}
+  2541→function mShip(oid,gi){const o=DB.orders.find(x=>x.id===oid);const g=o.groups[gi];
+  2542→g.status='shipped';
+  2543→if(g.logi&&g.logi.wb)g.logi.events.push({t:'استلم المندوب الشحنة من المتجر (Pickup مؤكد) — تحديث Webhook',at:Date.now()});
+  2544→else if(g.logi&&g.logi.mode==='field'&&g.booking&&g.booking.dl==='pickup')g.logi.events.push({t:'جُهّز الطلب لاستلام العميل من مقر المتجر — بلا توصيل',at:Date.now()});
+  2545→else if(g.logi)g.logi.events.push({t:'انطلق فريق المتجر للتركيب في موعد المناسبة',at:Date.now()});
+  2546→pushNotif(o.customer,'🚚','تحديث على طلبك',ST(g.store).name+' حدّثت طلبك #'+ar(oid)+(g.ship&&g.ship.mode==='field'?' — الفريق في موقع المناسبة، وبعد اكتمال التركيب يصلك كود التأكيد':' — أكّد الاستلام عند وصوله'),['orders']);
+  2547→toast('سُجل التحديث 🚚','ok');render()}
+  2548→function pgMWallet(){
+  2549→const s=myStore();
+  2550→const tx=[];DB.orders.forEach(o=>o.groups.forEach(g=>{if(g.store===s.id&&g.payout&&g.payout.net>0)tx.push({o,g})}));
+  2551→tx.sort((a,b)=>b.g.releasedAt-a.g.releasedAt);
+  2552→const totalIn=tx.reduce((a,x)=>a+x.g.payout.net,0);
+  2553→const totalComm=tx.reduce((a,x)=>a+x.g.payout.comm,0);
+  2554→const myLogi=r2(DB.orders.reduce((a,o)=>a+o.groups.filter(g=>g.store===s.id&&g.payout).reduce((x,g)=>x+((g.ship&&g.ship.charge)||0)+((g.payout.ship&&g.payout.ship.merchant)||0),0),0));
+  2555→const fund=DB.ptsFunding.filter(x=>x.store===s.id);
+  2556→const fundNet=r2(fund.reduce((a,x)=>a+x.amt,0));
+  2557→return `<div class="pghead"><h1>💰 محفظة ${esc(s.name)}</h1><button class="btn amb sm" onclick="toast('أُرسل طلب السحب — يُحوَّل خلال ٢٤ ساعة 🏦','ok')">🏦 طلب سحب الرصيد</button></div>
+  2558→<div class="kpis">
+  2559→<div class="kpi grn"><i>💵</i><b>${money(DB.storeWallets[s.id]||0)}</b><span>رصيدك المتاح للسحب</span></div>
+  2560→<div class="kpi amb"><i>🔒</i><b>${money(heldFor(s.id))}</b><span>محجوز لحظة تحرير الطلبات</span></div>
+  2561→<div class="kpi nvy"><i>📈</i><b>${money(totalIn)}</b><span>صافي التحريرات بعد العمولة</span></div>
+  2562→<div class="kpi red"><i>🧾</i><b>${money(totalComm)}</b><span>عمولات الإدارة (حسب التصنيف)</span></div>
+  2563→<div class="kpi nvy"><i>🚚</i><b>${money(myLogi)}</b><span>حُوّل للشريك اللوجستي (OTO/Torod)</span></div>
+  2564→</div>
+  2565→<div class="acard mt"><h3>⚙️ كيف يتوزع كل مبلغ محرَّر؟ (توزيع ثلاثي لحظي)</h3>
+  2566→<div class="splitbar"><i class="net"></i><i class="comm"></i></div>
+  2567→<div class="splitrow"><span><b style="color:var(--grn)">■</b> صافي المتجر (بعد عمولة تصنيفاته) ← محفظتك مباشرة</span><span><b style="color:var(--amb)">■</b> عمولة الإدارة ← حساب التطبيق</span><span><b style="color:var(--navy)">■</b> رسوم الشحن ← حساب الشريك اللوجستي</span></div>
+  2568→<p class="hint mt" style="line-height:1.9">عند تحرير أي شحنة يتوزع المبلغ ثلاثياً لحظياً: <b>صافي حقك</b> يدخل رصيدك المتاح، و<b>عمولة ضمين (حسب تصنيف كل منتج)</b> تتحول لحساب التطبيق، و<b>رسوم الشحن</b> (ما دفعه العميل + ما تدعمه أنت من توصيل مجاني أو مناصفة أو سقف مجاني) تتحول لحساب الشريك اللوجستي (OTO/Torod) — ودعمك للشحن يُقتطع من صافيك فقط ولا يمس العمولة أبداً.</p></div>
+  2569→<div class="acard mt"><h3>🔓 سجل التحريرات (كل تحرير بتوزيعه: صافيك + العمولة + الشحن)</h3>
+  2570→<div class="rows">${tx.map(({o,g})=>`<div class="row" style="cursor:pointer;flex-wrap:wrap" onclick="go('m-orders')">
+  2571→<div style="flex:1;min-width:150px"><b>طلب #${ar(o.id)} · ${USERS[o.customer]?esc(USERS[o.customer].name.split(' ')[0]):'عميل'}</b>
+  2572→<div class="hint">${dt(g.releasedAt)} · بواسطة ${esc(g.releasedBy||'—')}</div></div>
+  2573→<div style="text-align:left">
+  2574→<div class="hint">قيمة الشحنة ${money(g.payout.sub)}</div>
+  2575→<b class="fx" style="color:var(--grn)">+ ${money(g.payout.net)} صافيك</b>
+  2576→<div class="hint" style="color:var(--amb2)">− ${money(g.payout.comm)} عمولة الإدارة ← مباشرة</div>
+  2577→${g.payout.ship&&(g.payout.ship.charge||g.payout.ship.merchant)?`<div class="hint" style="color:var(--navy)">🚚 شحن: ${money(g.payout.ship.charge||0)} من العميل${g.payout.ship.merchant?' + '+money(g.payout.ship.merchant)+' دعمك':''} ← اللوجستي</div>`:''}
+  2578→</div></div>`).join('')||'<div class="hint">لا تحريرات بعد — تُحرر الشحنات بعد استلام العميل</div>'}</div></div>
+  2579→${fund.length?`<div class="acard mt"><h3>🌟 تمويلات نقاط الولاء</h3>
+  2580→<p class="hint mb" style="line-height:1.8">كل نقطة تضيفها لمنتجاتك تُخصم من محفظتك فوراً وتُحوَّل لمحفظة الإدارة، ويستلمها العميل نقاط ولاء عند تحرير طلبه.</p>
+  2581→<div class="rows">${fund.map(f=>`<div class="row">
+  2582→<div style="flex:1"><b>${f.pts>0?'تمويل '+ar(f.pts)+' نقطة':'استرجاع '+ar(-f.pts)+' نقطة'} — ${esc(f.pname)}</b>
+  2583→<div class="hint">${dt(f.at)}</div></div>
+  2584→<b class="fx" style="color:${f.amt>=0?'var(--amb2)':'var(--grn)'}">${f.amt>=0?'−':'+'} ${money(Math.abs(f.amt))}</b></div>`).join('')}</div>
+  2585→<div class="hint mt">إجمالي تمويلك للنقاط: <b>${money(fundNet)}</b> — تجدها في محفظة الإدارة</div></div>`:''}
+  2586→<button class="btn amb wide mt" onclick="toast('أُرسل طلب السحب — يُحوَّل خلال ٢٤ ساعة 🏦','ok')">🏦 طلب سحب الرصيد المتاح</button>`;
+  2587→}
+  2588→function pgMDisputes(){
+  2589→const ds=DB.disputes.filter(d=>d.store===SES.store);
+  2590→return `<div class="pghead"><h1>⚖️ نزاعات متجري (${ar(ds.length)})</h1></div>
+  2591→${ds.length?ds.map(d=>{const o=DB.orders.find(x=>x.id===d.order);
+  2592→return `<div class="ocard" style="border-inline-start:4px solid ${d.status==='open'?'var(--red)':'var(--grn)'}">
+  2593→<div class="spread" style="flex-wrap:wrap">
+  2594→<div><b class="fx" style="font-size:13px">⚖️ ${esc(d.subject)}</b><div class="hint">طلب #${ar(d.order)} · ${USERS[d.customer]?esc(USERS[d.customer].name.split(' ')[0]):'عميل'} · ${ago(d.openedAt)}</div></div>
+  2595→${d.status==='open'?'<span class="tag red">بانتظار حكم الإدارة — المبلغ معلق</span>':`<span class="tag ${d.ruling.act==='release'?'grn':'gry'}">${d.ruling.act==='release'?'حُكم لصالحك':'استُرجع للعميل'}</span>`}</div>
+  2596→${d.ruling?`<div class="verd ${d.ruling.act==='release'?'rel':'ref'}" style="margin:9px 0 2px"><h4>تسبيب الحكم</h4><div class="why">${esc(d.ruling.text)}</div></div>`:''}
+  2597→<button class="btn sm ${d.status==='open'?'red':''} mt" onclick="openDispute('${d.id}')">💬 ${d.status==='open'?'الرد على العميل وإضافة أدلتك':'عرض المحادثة'}</button>
+  2598→</div>`}).join(''):'<div class="empty"><div class="em">🕊️</div><b>لا نزاعات على متجرك</b><span>استمر في الجودة والسرعة 🌟</span></div>'}`;
+  2599→}
+  2600→function pgMSet(){
+  2601→const s=myStore(),sec=SEC(s.sec);
+  2602→const own=USERS[s.owner];
+  2603→const med=medOf(s);
+  2604→const ps=PRODUCTS.filter(p=>p.store===s.id);
+  2605→const myFund=DB.ptsFunding.filter(x=>x.store===s.id);
+  2606→const myCats=[...new Set(ps.map(p=>p.cat))].map(cn=>({n:cn,c:catComm(s.sec,cn)}));
+  2607→const ccs=myCats.map(c=>c.c);const ccTxt=ccs.length?(Math.min(...ccs)===Math.max(...ccs)?ard(ccs[0])+'٪':ard(Math.min(...ccs))+'–'+ard(Math.max(...ccs))+'٪'):'—';
+  2608→return `<div class="pghead"><h1>⚙️ إعدادات المتجر</h1><span class="tag" style="background:${s.color}18;color:${s.color}">${sec.name}</span></div>
+  2609→<div class="grid2">
+  2610→<div>
+  2611→<div class="acard"><h3>🏪 ملف المتجر الكامل</h3>
+  2612→<div class="setrow"><div class="ic">🏷️</div><div class="tx"><b>اسم المتجر</b><span>${esc(s.name)}</span></div><span class="tag grn">معروض للعملاء</span></div>
+  2613→<div class="setrow"><div class="ic">🗂️</div><div class="tx"><b>القسم</b><span>${sec.name} — نافذة حماية ${sec.win} بعد الاستلام</span></div><span class="tag" style="background:${s.color}18;color:${s.color}">ثابت</span></div>
+  2614→<div class="setrow"><div class="ic">👤</div><div class="tx"><b>المالك</b><span>${own?esc(own.name)+' · '+ar(s.owner):'—'}</span></div><span class="tag grn">عضو ضمين</span></div>
+  2615→<div class="setrow"><div class="ic">🆔</div><div class="tx"><b>معرّف المتجر</b><span>${s.id.toUpperCase()} · عضوية المالك ${own?'منذ '+MONTHS[new Date(own.since).getMonth()]+' '+ar(new Date(own.since).getFullYear()):'—'}</span></div></div>
+  2616→${s.cr?`<div class="setrow"><div class="ic">🧾</div><div class="tx"><b>السجل التجاري / الوثيقة</b><span>${esc(s.cr)}${s.crDoc?` · مرفق: ${esc(s.crDoc)}`:''}</span></div><span class="tag grn">موثّق لدى الإدارة</span></div>`:''}
+  2617→${s.iban?`<div class="setrow"><div class="ic">🏦</div><div class="tx"><b>الآيبان — تحويل أرباحك</b><span>يُحوَّل إليه صافي محفظتك عند طلب السحب خلال ٢٤ ساعة</span></div><span class="tag nvy" style="font-size:10px;letter-spacing:.5px">${esc(String(s.iban).slice(0,10))}••</span></div>`:''}
+  2618→<div class="setrow"><div class="ic">⭐</div><div class="tx"><b>تقييم المتجر</b><span>${ard(s.rt)} من ٥ — ${ar(s.sales)} عملية بيع مكتملة</span></div>${STARS(s.rt)}</div>
+  2619→<div class="setrow"><div class="ic">🧺</div><div class="tx"><b>المنتجات المعروضة</b><span>${ar(ps.length)} منتج · ${ar(ps.filter(p=>p.off>0).length)} عليه عرض · ${ar(ps.filter(p=>(p.pts||0)>0).length)} يمنح نقاطاً</span></div></div>
+  2620→<div class="setrow"><div class="ic">🎬</div><div class="tx"><b>الوسائط الترويجية — حدود الإدارة لمتجرك</b><span>حتى ${ar(med.imgs)} صور و${ar(med.vids)} مقاطع بمدة ${ar(med.secs)} ثانية للمقطع، لكل منتج</span></div><span class="tag gry">من الإدارة</span></div>
+  2621→<div class="setrow"><div class="ic">💰</div><div class="tx"><b>المحفظة</b><span>متاح ${money(DB.storeWallets[s.id]||0)} · محجوز ${money(heldFor(s.id))}</span></div><button class="btn soft xs" onclick="go('m-wallet')">عرض</button></div>
+  2622→</div>
+  2623→<div class="acard"><h3>🖼️ هوية المتجر — اللوقو والصورة</h3>
+  2624→<div class="storeid" style="--c:${s.color}">
+  2625→<div class="big">${s.logo?`<img src="${s.logo}">`:s.name[0]}</div>
+  2626→<b>${esc(s.name)}</b>
+  2627→<div class="hint">اللوقو يظهر مكان الحرف في بطاقة متجرك وصفحته لكل العملاء</div>
+  2628→<div class="cov">${s.cover?`<img src="${s.cover}">`:'صورة غلاف متجرك (بانر صفحة المتجر)'}</div>
+  2629→</div>
+  2630→<div class="spread mt" style="gap:8px;flex-wrap:wrap">
+  2631→<button class="btn soft sm" onclick="pickStoreImg('logo')">📷 رفع/تغيير اللوقو</button>
+  2632→${s.logo?`<button class="btn gray xs" onclick="rmStoreImg('logo')">إزالة اللوقو</button>`:''}
+  2633→</div>
+  2634→<div class="spread mt" style="gap:8px;flex-wrap:wrap">
+  2635→<button class="btn soft sm" onclick="pickStoreImg('cover')">🖼️ رفع/تغيير صورة الغلاف</button>
+  2636→${s.cover?`<button class="btn gray xs" onclick="rmStoreImg('cover')">إزالة الغلاف</button>`:''}
+  2637→</div>
+  2638→<p class="hint mt" style="line-height:1.8">تظهر هوية متجرك لكل عملاء ضمين: اللوقو في بطاقات المتجر والبحث والأقسام، والغلاف كبانر لصفحة متجرك.</p>
+  2639→</div>
+  2640→${mcouponCard()}
+  2641→</div>
+  2642→<div>
+  2643→<div class="acard"><h3>✏️ بيانات قابلة للتعديل</h3>
+  2644→<div class="fld"><label>اسم المتجر</label><input class="inp" id="ms-nm" value="${esc(s.name)}"></div>
+  2645→<div class="fld mt"><label>وصف المتجر (يظهر لكل العملاء)</label><textarea class="inp" id="ms-ds" style="min-height:80px">${esc(s.desc)}</textarea></div>
+  2646→<button class="btn mt" onclick="mSaveStore()">حفظ البيانات</button>
+  2647→</div>
+  2648→<div class="acard"><h3>🚦 حالة التشغيل</h3>
+  2649→<div class="setrow"><div class="ic">${s.open?'🟢':'🔴'}</div><div class="tx"><b>استقبال الطلبات</b><span>${s.open?'متجرك مفتوح ويستقبل الطلبات':'مغلق مؤقتاً — منتجاتك تظهر دون زر شراء'}</span></div>
+  2650→<button class="sw ${s.open?'on':''}" onclick="myStore().open=!myStore().open;render()"></button></div>
+  2651→<div class="setrow"><div class="ic">🛡️</div><div class="tx"><b>نافذة حماية قسمك</b><span>${sec.name}: ${sec.win} بعد استلام العميل — ثابتة بسياسة ضمين</span></div><span class="tag grn">إلزامية</span></div>
+  2652→<div class="setrow"><div class="ic">⛔</div><div class="tx"><b>حالة المتجر</b><span>${s.susp?'متجرك موقوف مؤقتاً من الإدارة — راجع فريق الامتثال':'متجرك يعمل بكامل صلاحياته ومعروض للعملاء'}</span></div><span class="tag ${s.susp?'red':'grn'}">${s.susp?'موقوف':'سليم'}</span></div>
+  2653→</div>
+  2654→<div class="acard"><h3>🧾 العمولة ونظام النقاط</h3>
+  2655→<div class="setrow"><div class="ic">🧾</div><div class="tx"><b>عمولة ضمين على تصنيفاتك</b><span>${myCats.length?myCats.map(c=>esc(c.n)+' '+ard(c.c)+'٪').join(' · '):'لم تضف منتجات بعد'} — تحددها الإدارة لكل تصنيف، وتُقتطع لحظة التحرير فقط وتتحول مباشرة لمحفظة الإدارة ولا تُضاف على العميل</span></div><span class="tag amb">${ccTxt}</span></div>
+  2656→<div class="setrow"><div class="ic">🌟</div><div class="tx"><b>قيمة النقطة (تحددها الإدارة)</b><span>${money(ptsVal())} للنقطة — تُخصم من محفظتك عند إضافة نقاط لأي منتج وتُحوَّل لمحفظة الإدارة</span></div><span class="tag amb">${money(ptsVal())}</span></div>
+  2657→<div class="setrow"><div class="ic">📊</div><div class="tx"><b>تمويلك للنقاط حتى الآن</b><span>${ar(myFund.reduce((a,x)=>a+x.pts,0))} نقطة تمّولها · ${money(r2(myFund.reduce((a,x)=>a+x.amt,0)))}</span></div><button class="btn soft xs" onclick="go('m-wallet')">السجل</button></div>
+  2658→</div>
+  2659→<div class="acard"><h3>📍 موقع المتجر — حماية من الالتفاف</h3>
+  2660→<div class="fld"><label>مدينة النشاط (الوحيدة الظاهرة للعملاء)</label>
+  2661→<select class="inp" id="ms-city">${CITIES.map(c=>`<option ${s.city===c?'selected':''}>${c}</option>`).join('')}</select></div>
+  2662→<div class="fld mt"><label>الحي والشارع (محجوب دائماً عن العملاء)</label><input class="inp" id="ms-area" value="${esc(s.area||'')}" placeholder="مثال: حي الياسمين، شارع الأمير سلطان"></div>
+  2663→<p class="hint mt" style="line-height:1.8">🔒 ما يراه العميل: <b>📍 ${esc(s.city)}</b> فقط — العنوان التفصيلي يُنقل داخل السيرفر إلى شريك الشحن لإصدار البوليصة دون أن يظهر في أي واجهة، ولا يوجد استلام شخصي «يد بيد» في ضمين، والتتبع بالحالات فقط.</p>
+  2664→<button class="btn mt sm" onclick="mSaveLoc()">حفظ الموقع</button>
+  2665→</div>
+  2666→<div class="acard"><h3>🚚 خيارات التوصيل وسقف الشحن المجاني</h3>
+  2667→<div class="fld"><label>من يتحمل رسوم التوصيل؟</label>
+  2668→<select class="inp" id="ms-dlm">
+  2669→<option value="customer" ${s.dlMode==='customer'?'selected':''}>توصيل على العميل (١٠٠٪)</option>
+  2670→<option value="half" ${s.dlMode==='half'?'selected':''}>توصيل مناصفة (٥٠٪ عليك / ٥٠٪ على العميل)</option>
+  2671→<option value="free" ${s.dlMode==='free'?'selected':''}>توصيل مجاني (١٠٠٪ عليك)</option>
+  2672→</select></div>
+  2673→<div class="fld mt"><label>سقف الشحن المجاني — أدنى قيمة طلب (ر.س، 0 = معطَّل)</label><input class="inp" id="ms-fmin" type="number" min="0" value="${s.freeMin||0}"></div>
+  2674→${sec.id==='family'?`<div class="fld mt"><label>🛵 نطاق التوصيل الفوري (كم داخل «${esc(s.city)}» فقط)</label><input class="inp" id="ms-range" type="number" min="1" max="60" value="${s.rangeKm||20}">
+  2675→<p class="hint" style="margin-top:5px;line-height:1.8">الأطباق الطازجة تُوصل بمناديب فوريين داخل مدينتك فقط — يُمنع أي طلب من خارج النطاق تلقائياً حفاظاً على حرارة الوجبة (مثال: داخل الرياض أو على بعد ٢٠ كم).</p></div>`:''}
+  2676→<p class="hint mt" style="line-height:1.8">⚖️ ما تتحمله من رسوم الشحن يُقتطع من <b>صافيك فقط</b> لحظة التحرير — ولا يمس عمولة المنصة (٢٫٥٪) أبداً، ويُحوَّل كاملاً لحساب الشريك اللوجستي. ويرى العميل شريط تقدم في سلة التسوق يشجعه على بلوغ سقفك.</p>
+  2677→<button class="btn mt sm" onclick="mSaveShip()">حفظ خيارات التوصيل</button>
+  2678→</div>
+  2679→${sec.id==='family'?`<div class="acard"><h3>❓ أسئلة متجري عند الطلب</h3>
+  2680→<p class="hint mb" style="line-height:1.8">أضف أسئلة تناسب مطبخك — تظهر للعميل عند إتمام الطلب وتصلك إجاباته مع الشحنة (متاحة لقسم المأكولات والضيافة).</p>
+  2681→${(s.qs||[]).map((q,i)=>`<div class="setrow"><div class="ic">❓</div><div class="tx"><b>${esc(q)}</b><span>سؤال رقم ${ar(i+1)} — يظهر للعميل عند الطلب</span></div><button class="btn gray xs" onclick="mDelQ(${i})">حذف</button></div>`).join('')||'<div class="hint mb">لا أسئلة بعد</div>'}
+  2682→<div class="fld mt"><label>سؤال جديد</label><input class="inp" id="ms-q" placeholder="مثال: هل تريد الكيكة بالكريمة أم بالتمر؟"></div>
+  2683→<button class="btn soft sm mt" onclick="mAddQ()">＋ إضافة السؤال</button>
+  2684→</div>`:''}</div>
+  2685→</div>`;
+  2686→}
+  2687→function pickStoreImg(kind){
+  2688→$('#fup').onchange=e=>{const f=e.target.files[0];if(!f)return;
+  2689→const rd=new FileReader();rd.onload=()=>{myStore()[kind]=rd.result;$('#fup').value='';
+  2690→toast(kind==='logo'?'حُدّث لوقو متجرك — يظهر الآن لكل العملاء ✓':'حُدّثت صورة غلاف متجرك ✓','ok');render()};rd.readAsDataURL(f)};
+  2691→$('#fup').click();}
+  2692→function rmStoreImg(kind){delete myStore()[kind];toast(kind==='logo'?'أُزيل اللوقو وعاد الحرف الافتراضي':'أُزيلت صورة الغلاف وعاد اللون الافتراضي');render()}
+  2693→function mSaveStore(){const s=myStore();
+  2694→const nm=($('#ms-nm').value||'').trim();
+  2695→if(nm.length<2){toast('اسم المتجر قصير','err');return}
+  2696→s.name=nm;s.desc=($('#ms-ds').value||'').trim();
+  2697→toast('حُفظت بيانات متجرك ✓','ok');render()}
+  2698→
+  2699→function mSaveLoc(){const s=myStore();s.city=$('#ms-city').value;s.area=($('#ms-area').value||'').trim();toast('حُفظ الموقع — يظهر للعملاء مدينة النشاط فقط ✓','ok');render()}
+  2700→function mSaveShip(){const s=myStore();s.dlMode=$('#ms-dlm').value;s.freeMin=Math.max(0,Math.round(+($('#ms-fmin').value||0)));if($('#ms-range'))s.rangeKm=Math.min(60,Math.max(1,Math.round(+($('#ms-range').value||20))));toast('حُفظت خيارات التوصيل ✓','ok');render()}
+  2701→function mAddQ(){const v=($('#ms-q').value||'').trim();if(v.length<3){toast('اكتب سؤالاً أوضح','err');return}const s=myStore();s.qs=s.qs||[];s.qs.push(v);toast('أُضيف السؤال — سيظهر للعملاء عند الطلب ✓','ok');render()}
+  2702→function mDelQ(i){const s=myStore();s.qs.splice(i,1);toast('حُذف السؤال');render()}
+  2703→/* ================= صفحات الإدارة ================= */
+  2704→/* مركز الإدارة: نظرة عامة فقط — طلبات التسجيل والمتاجر في صفحة «المتاجر» المستقلة */
+
+[showing lines 2430-2704 of 3126; use offset=2705 with limit to continue reading]

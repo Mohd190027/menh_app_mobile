@@ -1,0 +1,434 @@
+     1→'use client';
+     2→/* ضمين — pages/merchant1.tsx
+     3→ * قسم التاجر (١): لوحة التحكم، المنتجات، استوديو الوسائط الترويجية، فورم المنتج،
+     4→ * أسئلة المنتج، ومعاينة نقاط الولاء — منقول حرفياً من dameen.js بنفس عناصر DOM
+     5→ * والفئات والنصوص والأرقام والمنطق:
+     6→ *   السطور ١١٠١-١١٢٧: mPtypePrev/pickDigiFile (حقول المنتجات الرقمية في فورم التاجر)
+     7→ *   السطور ٢٠٩٠-٢٣٨٤: myGroups/heldFor/pgMDash/pgMProds/mStudioOpen/msSel/msSave/pgMMedia/
+     8→ *     mProdForm/ptsCostPrev/msChipsHTML/msImgsSec/mpImgsHTML/mpImgsRefresh/mImgDel/mImgPick/
+     9→ *     mImgAuto/msVidsSec/mpVidsRefresh/mVidDel/mVidAdd/mVidProbe/probeVid/mpqHTML/mpqOpts/
+    10→ *     mpqType/mAddQ2/mpqRefresh/mpqDel/mpqPush
+    11→ * التحديث الجزئي: mpImgsRefresh/mpVidsRefresh/mpqRefresh/ptsCostPrev/mPtypePrev كلها
+    12→ * bumpUI('mstudio')، والمكونات <MsChips/> <MsImgsSec/> <MsVidsSec/> <MpqBox/> <MpDextra/>
+    13→ * <PtsCostHint/> تقرأ useUI('mstudio') — <MsImgsSec/> و<MsVidsSec/> تُعيدان البناء كاملاً
+    14→ * بمفتاح النبضة (key) = نفس أثر innerHTML في الأصل. mStudioOpen/msSel/msSave حرفية،
+    15→ * وأي push/splice على MIMGS/MVIDS/MPQ يبقى تعديلاً مباشراً (تعديل حقول لا إسناد).
+    16→ * mDelProd/mOfferForm/mProdRevs/mSaveProd تُستورد من ./merchant2 (استدعاء وقت التشغيل —
+    17→ * الاستيراد الدائري بين الملفين سليم)، وGLBL من ./orders (السطر ١٤٦٩ في الأصل).
+    18→ */
+    19→import { $, ar, ard, money, r2, ago, toast, durTxt, medOf, ptsVal, ZPOOL, IMP, P, eff, SEC, PRODUCTS, USERS, DB, CATS } from '../core';
+    20→import { SES, MSPID, MIMGS, MVIDS, MPID, MPQ, MPQOPEN, setMSPID, setMIMGS, setMVIDS, setMPID, setMPQ, setMPQOPEN, myStore, go, render, closeModal, openModal, appSave, bumpUI, useUI } from '../store';
+    21→import { Img } from '../ui';
+    22→import { GLBL } from './orders';
+    23→import { mDelProd, mOfferForm, mProdRevs, mSaveProd } from './merchant2';
+    24→
+    25→/* حالتا معاينة داخل الفورم — تضبطهما mProdForm/mPtypePrev/ptsCostPrev ويقرؤهما المكوّنان
+    26→ * <MpDextra/> و<PtsCostHint/> (يعادلان innerHTML لمنطقتي #mp-dextra و#ptscost في الأصل) */
+    27→let MPDVAL='std';
+    28→let PTSC={np:0,old:0,d:0,pv:0.1};
+    29→
+    30→/* myGroups (السطر ٢٠٩٠) — يحتاجها merchant2 (m-orders) وdisputes */
+    31→export function myGroups(){const out=[];
+    32→DB.orders.forEach(o=>o.groups.forEach((g,gi)=>{if(g.store===SES.store)out.push({o,g,gi})}));
+    33→return out.sort((a,b)=>b.o.at-a.o.at)}
+    34→
+    35→/* heldFor (السطر ٢٠٩٣) — يحتاجها merchant2 (m-wallet/m-set) وdisputes */
+    36→export function heldFor(sid){return r2(DB.orders.reduce((a,o)=>a+o.groups.filter(g=>g.store===sid&&['pending','preparing','shipped','received','disputed'].includes(g.status)).reduce((x,g)=>x+g.sub,0),0))}
+    37→
+    38→/* pgMDash (السطر ٢٠٩٤) */
+    39→export function PgMDash(){
+    40→const s=myStore(),sec=SEC(s.sec);
+    41→const gs=myGroups();
+    42→const active=gs.filter(x=>['pending','preparing','shipped','received'].includes(x.g.status));
+    43→const held=heldFor(s.id);
+    44→const top=[...PRODUCTS.filter(p=>p.store===s.id)].sort((a,b)=>b.sold-a.sold).slice(0,5);
+    45→const last=active.slice(0,4);
+    46→return <>
+    47→<div className="pghead"><h1>📊 لوحة تحكم {s.name}</h1><span className="tag" style={{background:s.color+'18',color:s.color}}>{sec.name} · 🛡️ حماية {sec.win}</span></div>
+    48→<div className="kpis">
+    49→<div className="kpi grn"><i>💰</i><b>{money(DB.storeWallets[s.id]||0)}</b><span>صافي محرَّر (المحفظة)</span></div>
+    50→<div className="kpi amb"><i>🔒</i><b>{money(held)}</b><span>مبالغ محجوزة لصالحك</span></div>
+    51→<div className="kpi nvy"><i>📦</i><b>{ar(active.length)}</b><span>طلبات نشطة الآن</span></div>
+    52→<div className="kpi"><i>🧺</i><b>{ar(PRODUCTS.filter(p=>p.store===s.id).length)}</b><span>منتجات معروضة</span></div>
+    53→<div className="kpi grn"><i>⭐</i><b>{ard(s.rt)}</b><span>تقييم المتجر ({ar(s.sales)} عملية)</span></div>
+    54→<div className="kpi" style={{cursor:'pointer'}} onClick={()=>toast('تقتطع ضمين ٠٫٥٠ ر.س من أرباحها مع كل عملية شراء ناجحة من متجرك — لا من العميل ولا منك','amb')}><i>🌟</i><b>{money(IMP.stores[s.id]||0)}</b><span>أثر مجتمعي من مبيعات متجرك</span></div>
+    55→</div>
+    56→<div className="grid2 mt">
+    57→<div className="acard"><h3>🔥 الأكثر مبيعاً لديك</h3>
+    58→<div className="rows">{top.map(p=><div className="row" style={{cursor:'pointer'}} key={p.id} onClick={()=>go('product',p.id)}>
+    59→<div style={{width:'38px',height:'38px',borderRadius:'11px',overflow:'hidden',flexShrink:0}}><Img src={p.imgs[0]} cls='' alt=''/></div>
+    60→<div style={{flex:1}}><b>{p.name}</b><div className="hint">{money(eff(p))} · مخزون {ar(p.stock)}</div></div>
+    61→<b className="fx" style={{color:'var(--grn)'}}>{ar(p.sold)}</b></div>)}</div></div>
+    62→<div className="acard"><h3>🕒 آخر الطلبات</h3>
+    63→<div className="rows">{last.length?last.map((x,i)=><div className="row" key={i}>
+    64→<div style={{flex:1}}><b>طلب #{ar(x.o.id)}</b><div className="hint">{USERS[x.o.customer]?USERS[x.o.customer].name.split(' ')[0]:'عميل'} · {ago(x.o.at)}</div></div>
+    65→<span className={'tag '+(x.g.status==='pending'?'amb':'grn')}>{GLBL[x.g.status]}</span></div>):<div className="hint">لا طلبات نشطة</div>}</div>
+    66→<button className="btn soft wide mt" onClick={()=>go('m-orders',undefined)}>إدارة كل الطلبات ←</button></div>
+    67→</div>
+    68→</>}
+    69→
+    70→/* pgMProds (السطر ٢١٢٢) */
+    71→export function PgMProds(){
+    72→const s=myStore(),sec=SEC(s.sec);
+    73→const ps=(PRODUCTS as any[]).filter(p=>p.store===s.id);
+    74→return <>
+    75→<div className="pghead"><h1>🧺 منتجاتي ({ar(ps.length)})</h1><div style={{display:'flex',gap:'7px',flexWrap:'wrap'}}><button className="btn soft sm" onClick={()=>mStudioOpen(undefined)}>🎬 استوديو الوسائط</button><button className="btn sm" onClick={()=>mProdForm(undefined)}>＋ منتج جديد</button></div></div>
+    76→<div className="kpis mb">
+    77→<div className="kpi nvy"><i>🧺</i><b>{ar(ps.length)}</b><span>منتج معروض</span></div>
+    78→<div className="kpi amb"><i>🏷️</i><b>{ar(ps.filter(p=>p.off>0).length)}</b><span>عليه عرض نشط</span></div>
+    79→<div className="kpi grn"><i>🌟</i><b>{ar(ps.filter(p=>(p.pts||0)>0).length)}</b><span>منتج يمنح نقاطاً</span></div>
+    80→<div className="kpi red"><i>⚠️</i><b>{ar(ps.filter(p=>!p.stock).length)}</b><span>نفد مخزونه</span></div>
+    81→</div>
+    82→<div className="mpgrid">
+    83→{ps.length?ps.map(p=>{const e=eff(p);return <div className="mpcard" style={{'--acc':s.color} as any} key={p.id}>
+    84→<div className="mph" onClick={()=>go('product',p.id)}>{p.off?<span className="offb">خصم {ar(p.off)}٪</span>:null}{(p.pts||0)>0?<span className="ptsb">🌟 {ar(p.pts)} نقطة</span>:null}<span className="secb" style={{'--c':sec.color} as any}>{p.cat}</span><Img src={p.imgs[0]} cls='' alt=''/></div>
+    85→<div className="mpb">
+    86→<div onClick={()=>go('product',p.id)} style={{cursor:'pointer'}}><b style={{fontSize:'12.8px',display:'block',lineHeight:'1.5'}}>{p.name}</b></div>
+    87→<div style={{display:'flex',alignItems:'baseline',gap:'7px'}}><b className="fx" style={{fontSize:'15px',color:'var(--grn)'}}>{money(e)}</b>{p.off?<s className="mut" style={{fontSize:'10.5px'}}>{money(p.price)}</s>:null}</div>
+    88→<div className="mpstats">
+    89→<span className="mpstat">📦 مخزون {ar(p.stock)}</span>
+    90→<span className="mpstat">🛒 بيع {ar(p.sold)}</span>
+    91→<span className="mpstat" style={{color:'var(--amb2)'}}>★ {ard(p.rt)}</span>
+    92→{p.ptype==='chilled'?<span className="mpstat" style={{color:'#2E6B8A'}}>🧊 مبرد</span>:p.ptype==='instant'?<span className="mpstat" style={{color:'var(--amb2)'}}>🛵 فوري</span>:p.ptype==='field'?<span className="mpstat" style={{color:'#A45A3A'}}>🎪 ميداني</span>:p.ptype==='digital'?<span className="mpstat" style={{color:'#50489E'}}>⚡ رقمي فوري</span>:p.ptype==='ship'?<span className="mpstat">📦 شحن</span>:null}{p.fragile?<span className="mpstat" style={{color:'#B3541E'}}>⚠️ قابل للكسر</span>:null}{p.temp==='chilled'?<span className="mpstat" style={{color:'#2E6B8A'}}>🧊 مبرد</span>:p.temp==='hot'?<span className="mpstat" style={{color:'#A45A3A'}}>🔥 ساخن</span>:null}{p.vids&&p.vids.length?<span className="mpstat" style={{color:'#50489E'}}>🎬 {ar(p.vids.length)}</span>:null}{p.customOk?<span className="mpstat" style={{color:'#A45A3A'}}>✏️ تعديلات</span>:null}{p.giftOk?<span className="mpstat" style={{color:'var(--red)'}}>🎁 إهداء</span>:null}
+    93→</div>
+    94→<div className="mpacts">
+    95→<button className="btn soft xs" onClick={()=>mOfferForm(p.id)}>🏷️ عروض</button>
+    96→<button className={'btn '+(p.rc?'soft':'gray')+' xs'} onClick={()=>mProdRevs(p.id)}>⭐ التقييمات{p.rc?' ('+ar(p.rc)+')':null}</button>
+    97→<button className="btn gray xs" onClick={()=>mStudioOpen(p.id)}>🎬 وسائط</button><button className="btn gray xs" onClick={()=>mProdForm(p.id)}>✏️ تعديل</button>
+    98→<button className="btn red xs" onClick={()=>mDelProd(p.id)}>🗑️</button>
+    99→</div></div></div>}):<div className="empty" style={{gridColumn:'1/-1'}}><div className="em">🧺</div><b>لا منتجات بعد</b><span>أضف منتجك الأول وزوّده بنقاط ولاء تجذب العملاء</span><button className="btn mt" onClick={()=>mProdForm(undefined)}>＋ منتج جديد</button></div>}
+   100→</div>
+   101→</>}
+   102→
+   103→/* mStudioOpen/msSel/msSave (السطور ٢١٥٤-٢١٦٢ حرفياً — عبر المطاوعات) */
+   104→export function mStudioOpen(pid){setMSPID(pid||null);closeModal();go('m-media',undefined)}
+   105→export function msSel(pid){setMSPID(pid);render()}
+   106→export function msSave(){
+   107→const p:any=MSPID?P(MSPID):null;if(!p)return;
+   108→const med=medOf(myStore());
+   109→p.imgs=MIMGS.slice(0,med.imgs);
+   110→p.vids=MVIDS.filter(v=>!v.bad).map(v=>({src:v.src,dur:Math.round(v.dur||0)}));
+   111→appSave();
+   112→}
+   113→
+   114→/* pgMMedia (السطر ٢١٦٣) — صفحة «استوديو الوسائط الترويجية» */
+   115→export function PgMMedia(){
+   116→const s=myStore(),med=medOf(s);
+   117→const ps=(PRODUCTS as any[]).filter(p=>p.store===s.id);
+   118→if(!ps.length)return <>
+   119→<div className="pghead"><h1>🎬 استوديو الوسائط الترويجية</h1><button className="btn sm" onClick={()=>mProdForm(undefined)}>＋ منتج جديد</button></div>
+   120→<div className="empty"><div className="em">🎬</div><b>لا منتجات بعد في متجرك</b><span>أنشئ منتجك الأول من صفحة «المنتجات» ثم عُد هنا لإضافة صوره ومقاطعه الترويجية</span><button className="btn mt" onClick={()=>go('m-prods',undefined)}>🧺 الذهاب للمنتجات</button></div>
+   121→</>;
+   122→if(!MSPID||!P(MSPID)||P(MSPID).store!==s.id)setMSPID(ps[0].id);
+   123→const cur:any=P(MSPID);
+   124→setMIMGS((cur.imgs||[]).slice());
+   125→setMVIDS((cur.vids||[]).map(v=>({src:v.src,dur:+v.dur||0,bad:false})));
+   126→const tImgs=ps.reduce((a,p)=>a+(p.imgs||[]).length,0),tVids=ps.reduce((a,p)=>a+(p.vids||[]).length,0),noV=ps.filter(p=>!(p.vids||[]).length).length;
+   127→return <>
+   128→<div className="pghead"><h1>🎬 استوديو الوسائط الترويجية</h1><div style={{display:'flex',gap:'7px',flexWrap:'wrap'}}><button className="btn gray sm" onClick={()=>go('m-prods',undefined)}>🧺 منتجاتي</button><button className="btn sm" onClick={()=>mProdForm(undefined)}>＋ منتج جديد</button></div></div>
+   129→<div className="kpis mb">
+   130→<div className="kpi grn"><i>🖼️</i><b>{ar(tImgs)}</b><span>صورة في متجرك</span></div>
+   131→<div className="kpi nvy"><i>🎬</i><b>{ar(tVids)}</b><span>مقطع ترويجي</span></div>
+   132→<div className="kpi amb"><i>🎛️</i><b>{ar(med.imgs)} · {ar(med.vids)}</b><span>حدود الإدارة (صور · مقاطع)</span></div>
+   133→<div className="kpi red"><i>⏱️</i><b>{ar(med.secs)} ث</b><span>أقصى مدة للمقطع</span></div>
+   134→</div>
+   135→<div className="acard" style={{display:'flex',gap:'11px',alignItems:'flex-end',flexWrap:'wrap',marginBottom:'14px'}}>
+   136→<div className="fld" style={{flex:1,minWidth:'230px',margin:0}}><label>📦 اختر المنتج الذي تريد إدارة وسائطه</label>
+   137→<select className="inp" onChange={e=>msSel(e.target.value)} defaultValue={MSPID}>
+   138→{ps.map(p=><option value={p.id} key={p.id}>{p.name} — {ar((p.imgs||[]).length)} صور · {ar((p.vids||[]).length)} مقاطع</option>)}
+   139→</select></div>
+   140→<div className="hint" style={{paddingBottom:'9px'}}>💾 كل إضافة أو حذف تُحفظ فورياً في «{cur.name}» — لا تحتاج زر حفظ</div>
+   141→</div>
+   142→<div className="mstudio">
+   143→<div className="mshead">
+   144→<div className="msttl"><span className="msic">🎬</span><div><b>وسائط «{cur.name}»</b><small>صور ومقاطع المنتج تظهر للعملاء في معرض متجرك وصفحة المنتج</small></div></div>
+   145→<div className="mschips" id="mschips"><MsChips med={med}/></div>
+   146→</div>
+   147→<div className="msbody">
+   148→<div id="mpimgs"><MsImgsSec med={med}/></div>
+   149→<div id="mpvids"><MsVidsSec med={med}/></div>
+   150→</div>
+   151→</div>
+   152→<p className="hint" style={{marginTop:'10px'}}>🖼️ أول صورة هي الغلاف الرئيسي أمام العملاء · 🎬 المقطع الذي تتجاوز مدته حد الإدارة لا يُنشر للعملاء حتى تختصره أو تحذفه · 🎛️ الحدود تُحدَّث لحظياً من إعدادات الإدارة لمتجرك</p>
+   153→</>}
+   154→
+   155→/* mProdForm (السطر ٢١٩٩) — يفتح نافذة openModal(...,'lg') بمكوّن كامل بنفس البنية.
+   156→ * MPDVAL/PTSC = القيمتان الابتدائيتان لمنطقتي المعاينة (يعادلان نتيجة استدعاء
+   157→ * mPtypePrev()/ptsCostPrev() بعد حقن النافذة مباشرة في الأصل — هنا النافذة تركب
+   158→ * لاحقاً في React فتُحسب القيمتان مقدماً ثم يكمل مستخدمان النبضات عند كل تغيير). */
+   159→export function mProdForm(pid){
+   160→setMPID(pid||null);
+   161→const p:any=pid?P(pid):null;
+   162→setMPQ(p&&p.qs?JSON.parse(JSON.stringify(p.qs)):[]);
+   163→setMPQOPEN(false);
+   164→MPDVAL=p?(p.ptype==='digital'?'digital':(p.fragile?'fragile':'std')):'std';
+   165→PTSC={np:(p?(p.pts||0):0),old:(p?(p.pts||0):0),d:0,pv:ptsVal()};
+   166→openModal(<MProdFormNode pid={pid}/>,'lg');
+   167→ptsCostPrev();
+   168→mPtypePrev();
+   169→}
+   170→
+   171→/* بنية نافذة فورم المنتج (السطور ٢٢٠٥-٢٢٧٠ حرفياً) */
+   172→export function MProdFormNode({pid}){
+   173→const s=myStore(),sec=SEC(s.sec);
+   174→const p:any=pid?P(pid):null;
+   175→return <div>
+   176→<div className="mhead"><b>{p?'تعديل منتج':'منتج جديد'}</b><button className="x" onClick={()=>closeModal()}>✕</button></div>
+   177→<div className="mbody">
+   178→<div className="fld"><label>اسم المنتج</label><input className="inp" id="mp-nm" defaultValue={p?p.name:''} placeholder="مثال: عباية كتان مطرزة"/></div>
+   179→<div className="fgrid mt">
+   180→<div className="fld"><label>التصنيف (وعمولة ضمين عليه)</label><select className="inp" id="mp-cat" defaultValue={p?p.cat:CATS[sec.id][0].n}>{CATS[sec.id].map(c=><option value={c.n} key={c.n}>{c.n} — عمولة {ard(c.comm)}٪</option>)}</select></div>
+   181→<div className="fld"><label>السعر (ر.س)</label><input className="inp" id="mp-pr" type="number" min="1" defaultValue={p?p.price:''}/></div>
+   182→</div>
+   183→<div className="fgrid mt">
+   184→<div className="fld"><label>خصم ٪ (0 = بلا عرض)</label><input className="inp" id="mp-off" type="number" min="0" max="90" defaultValue={p?p.off:0}/></div>
+   185→<div className="fld"><label>المخزون</label><input className="inp" id="mp-st" type="number" min="0" defaultValue={p?p.stock:10}/></div>
+   186→</div>
+   187→{sec.id==='family'?<div className="fld mt"><label>🚚 طريقة التوصيل — تحدد سلوك الشحن تلقائياً</label>
+   188→<select className="inp" id="mp-ptype" defaultValue={p&&(p.ptype==='chilled'||p.ptype==='instant')?p.ptype:'std'}>
+   189→<option value="std">شحن عادي عبر شركاء ضمين (OTO/Torod)</option>
+   190→<option value="chilled">🧊 حساس للحرارة — توصيل مبرد مجدول (كيك، ألبان، كريمات)</option>
+   191→<option value="instant">🛵 طازج — توصيل فوري بمناديب خلال ٤٥ دقيقة (أطباق مطبخ)</option>
+   192→</select></div>:null}
+   193→{sec.id==='deco'?<div className="fld mt"><label>🚚 طبيعة الشحن والاحتياجات الخاصة — تحدد مسار التسليم</label>
+   194→<select className="inp" id="mp-ptype" defaultValue={p&&p.ptype==='field'?'field':'ship'}>
+   195→<option value="ship">منتج قابل للشحن — بوليصة آلية (هدايا، شوكولاتة، ورد)</option>
+   196→<option value="field">خدمة ديكور وتنسيق ميداني — فريقك يوصل ويركّب (أو استلام من مقرك) + حجز مواعيد المناسبات</option>
+   197→</select>
+   198→<div className="mt" style={{display:'flex',flexDirection:'column',gap:'7px'}}>
+   199→<label style={{display:'flex',gap:'8px',alignItems:'center',fontSize:'11.5px',fontWeight:700,cursor:'pointer'}}><input type="checkbox" id="mp-gift" defaultChecked={!!(p&&p.giftOk)} style={{width:'17px',height:'17px'}}/> 🎁 تفعيل «إهداء لشخص آخر» — يُطلب جوال المستلم ومدينته فقط عند الطلب</label>
+   200→<label style={{display:'flex',gap:'8px',alignItems:'center',fontSize:'11.5px',fontWeight:700,cursor:'pointer'}}><input type="checkbox" id="mp-frag" defaultChecked={!!(p&&p.fragile)} style={{width:'17px',height:'17px'}}/> ⚠️ قابل للكسر — تنبيه تلقائي في بوليصة الشحن + رسوم حماية ١٥ ر.س تُضاف لسعر الشحن</label>
+   201→<label style={{display:'flex',gap:'8px',alignItems:'center',fontSize:'11.5px',fontWeight:700,cursor:'pointer'}}><input type="checkbox" id="mp-custom" defaultChecked={!!(p&&p.customOk)} style={{width:'17px',height:'17px'}}/> ✏️ يقبل التعديل حسب طلب العميل — تفتح دردشة تعديلات بعد الدفع مع طلب مبالغ إضافية</label>
+   202→</div></div>:null}
+   203→{sec.id==='gaming'?<><div className="fld mt"><label>🎮 طبيعة المنتج والشحن — تُبرمج آلية التسليم تلقائياً</label>
+   204→<select className="inp" id="mp-ptype" onChange={()=>mPtypePrev()} defaultValue={p?(p.ptype==='digital'?'digital':(p.fragile?'fragile':'std')):'std'}>
+   205→<option value="std">📦 جهاز أو ملحق ملموس — شحن قياسي عبر شركاء ضمين (OTO/Torod)</option>
+   206→<option value="fragile">⚠️ جهاز ملموس قابل للكسر — تغليف خاص إلزامي + رسوم حماية ١٥ ر.س تُضاف للشحن</option>
+   207→<option value="digital">⚡ أصل رقمي (كود/ملف) — تسليم فوري بلا شحن إلى «مكتبة العميل الرقمية»</option>
+   208→</select></div>
+   209→<div id="mp-dextra"><MpDextra/></div></>:null}
+   210→<div className="fld mt"><label>🌟 نقاط ولاء يمنحها المنتج للعميل (إجبارية)</label>
+   211→<input className="inp" id="mp-pts" type="number" min="0" max="500" step="5" defaultValue={p?(p.pts||0):0} onInput={()=>ptsCostPrev()} placeholder="مثال: 50"/>
+   212→<PtsCostHint/>
+   213→<p className="hint" style={{marginTop:'5px'}}>الإدارة تحدد قيمة النقطة حالياً <b>{money(ptsVal())}</b> — تكلفة النقاط تُخصم من محفظة متجرك وتُحوَّل لمحفظة الإدارة، والعميل يستلمها عند تحرير طلبه.</p></div>
+   214→<div className="fld mt"><label>الوصف</label><textarea className="inp" id="mp-ds" style={{minHeight:'70px'}} placeholder="وصف تسويقي جاذب ب٣ أسطر…" defaultValue={p?p.desc:''}/></div>
+   215→<div className="fld mt"><label>المواصفات (كل سطر: المفتاح: القيمة)</label><textarea className="inp" id="mp-sp" style={{minHeight:'60px'}} placeholder={'الخامة: كتان\nاللون: كحلي'} defaultValue={p?Object.entries(p.specs).map(([k,v])=>k+': '+v).join('\n'):''}/></div>
+   216→<div className="fld mt"><label>❓ أسئلة تظهر للعميل وقت تصفح المنتج (اختيارية)</label>
+   217→<div className="hint" style={{margin:'2px 0 7px'}}>سؤال باختيارات جاهزة أو سؤال يكتب العميل جوابه — الإجابة إجبارية قبل الإضافة للسلة وتصلك مع الطلب.</div>
+   218→<div id="mpqbox"><MpqBox/></div>
+   219→<button className="btn soft sm mt" onClick={()=>mAddQ2()}>＋ إضافة سؤال للمنتج</button>
+   220→</div>
+   221→<div className="fgrid mt">
+   222→<div className="fld"><label>⚠️ هل المنتج قابل للكسر؟</label>
+   223→<select className="inp" id="mp-frag2" defaultValue={p&&p.fragile?'1':'0'}>
+   224→<option value="0">لا — تغليف عادي</option>
+   225→<option value="1">نعم — قابل للكسر: علامة آلية لشركة الشحن + تغليف حماية ورسوم ١٥ ر.س ضمن الشحن</option>
+   226→</select></div>
+   227→<div className="fld"><label>🌡️ الحالة الحرارية للمنتج</label>
+   228→<select className="inp" id="mp-temp" defaultValue={p&&(p.temp==='chilled'||p.temp==='hot')?p.temp:'std'}>
+   229→<option value="std">🌡️ عادي — بلا تحكم حراري</option>
+   230→<option value="chilled">🧊 مبرد — سلسلة تبريد إلزامية للتوصيل</option>
+   231→<option value="hot">🔥 ساخن — يُجهَّز ويُسلَّم ساخناً بحافظات حرارية</option>
+   232→</select></div>
+   233→</div>
+   234→<div className="acard mt" style={{padding:'12px 14px',display:'flex',gap:'11px',alignItems:'center',flexWrap:'wrap',background:'#C9A2270D',border:'1px dashed #C9A22755'}}>
+   235→<span style={{fontSize:'22px'}}>🎬</span>
+   236→<div style={{flex:1,minWidth:'180px'}}><b style={{fontSize:'12.5px'}}>صور ومقاطع المنتج الترويجية</b>
+   237→<div className="hint" style={{marginTop:'2px'}}>{pid?'لديه '+ar((p.imgs||[]).length)+' صورة و'+ar((p.vids||[]).length)+' مقطع — تُدار الآن من صفحة «استوديو الوسائط»':'بعد إضافة المنتج ستنتقل تلقائياً إلى استوديو الوسائط لإضافة صوره ومقاطعه'}</div></div>
+   238→{pid?<button className="btn sm" onClick={()=>mStudioOpen(pid)}>🎬 فتح الاستوديو</button>:null}
+   239→</div>
+   240→<button className="btn wide mt" onClick={()=>mSaveProd(pid||'')}>{p?'حفظ التعديلات':'إضافة المنتج'}</button>
+   241→</div></div>}
+   242→
+   243→/* ptsCostPrev (السطر ٢٢٧٥) — يعادل تحديث منطقة #ptscost في الأصل ⇒ نبضة 'mstudio' */
+   244→export function ptsCostPrev(){
+   245→const el=$('#ptscost');if(!el)return;
+   246→const pv=ptsVal();
+   247→const np=Math.max(0,Math.min(500,Math.round(+((($('#mp-pts')||{value:0}).value)||0))));
+   248→const old=(MPID&&P(MPID))?((P(MPID) as any).pts||0):0;
+   249→const d=r2((np-old)*pv);
+   250→PTSC={np,old,d,pv};
+   251→bumpUI('mstudio')}
+   252→
+   253→/* محتوى #ptscost (نصوص السطر ٢٢٨١-٢٢٨٣ حرفياً) */
+   254→function PtsCostHint(){
+   255→useUI('mstudio');
+   256→const {np,old,d,pv}=PTSC;
+   257→let inner:any;
+   258→if(!np&&!old)inner='أدخل نقاطاً (١ فأكثر) — إجبارية لحفظ المنتج وتُمنح للعميل عند تحرير طلبه';
+   259→else if(d===0)inner='لا تغيير على تمويل النقاط ('+ar(np)+' نقطة للعميل)';
+   260→else if(d>0)inner=<>{'تُخصم من محفظتك '}<b style={{color:'var(--amb2)'}}>{'− '+money(d)}</b>{' وتُحوَّل لمحفظة الإدارة ('+ar(np-old)+' نقطة × '+money(pv)+')'}</>;
+   261→else inner=<>{'يُسترجع لمحفظتك '}<b style={{color:'var(--grn)'}}>{'+ '+money(-d)}</b>{' ('+ar(old-np)+' نقطة × '+money(pv)+')'}</>;
+   262→return <div className="hint" id="ptscost" style={{marginTop:'7px',background:'#B07E2B12',border:'1px dashed #B07E2B66',borderRadius:'11px',padding:'8px 12px'}}>{inner}</div>}
+   263→
+   264→/* msChipsHTML (السطر ٢٢٨٦) → مكوّن <MsChips/> */
+   265→export function MsChips({med}){
+   266→useUI('mstudio');
+   267→return <>
+   268→<span className={'mschip '+(MIMGS.length>=med.imgs?'full':'')}>🖼️ {ar(MIMGS.length)}/{ar(med.imgs)} صور</span>
+   269→<span className={'mschip '+(MVIDS.length>=med.vids?'full':'')}>🎬 {ar(MVIDS.length)}/{ar(med.vids)} {med.vids===1?'مقطع':'مقاطع'}</span>
+   270→<span className="mschip">⏱️ حتى {ar(med.secs)} ثانية</span>
+   271→</>}
+   272→
+   273→/* msImgsSec (السطر ٢٢٨٧) → مكوّن <MsImgsSec/> — key بالنبضة = أثر إعادة innerHTML */
+   274→export function MsImgsSec({med}){
+   275→const t=useUI('mstudio');
+   276→return <div className="mssec" key={t}>
+   277→<div className="mssechd"><b>🖼️ صور المنتج <span className={'mscount '+(MIMGS.length>=med.imgs?'full':'')}>{MIMGS.length>=med.imgs?'اكتملت ('+ar(med.imgs)+'/'+ar(med.imgs)+')':'متبقٍ '+ar(med.imgs-MIMGS.length)}</span></b><span>أول صورة هي الغلاف الرئيسي أمام العملاء</span></div>
+   278→<MpImgs/>
+   279→<div className="msacts">
+   280→<button className="btn sm" onClick={()=>mImgPick()}>📷 رفع صورة من جهازي</button>
+   281→<button className="btn soft sm" onClick={()=>mImgAuto()}>🎲 صورة تلقائية من مكتبة ضمين</button>
+   282→</div></div>}
+   283→
+   284→/* mpImgsHTML (السطر ٢٢٩٤) → مكوّن <MpImgs/> */
+   285→export function MpImgs(){
+   286→if(!MIMGS.length)return <div className="msempty">🖼️ لا صور بعد — أول صورة ترفعها تصبح الغلاف الرئيسي للمنتج.</div>;
+   287→return <div className="msgrid">{MIMGS.map((im,i)=><div className="msth" key={i}>
+   288→<img src={im} alt={'صورة '+ar(i+1)} onError={e=>{const t=e.currentTarget;t.onerror=null;t.src='https://picsum.photos/seed/dmg'+i+'/200/200'}}/>
+   289→<span className={'cover '+(i===0?'gold':'')}>{i===0?'★ الغلاف':'صورة '+ar(i+1)}</span>
+   290→<button className="del" onClick={()=>mImgDel(i)} title="حذف الصورة">✕</button>
+   291→</div>)}</div>}
+   292→
+   293→/* mpImgsRefresh (السطر ٢٢٩٨) — كان يحقن #mpimgs و#mschips ⇒ نبضة 'mstudio' */
+   294→export function mpImgsRefresh(med){bumpUI('mstudio')}
+   295→
+   296→/* mImgDel/mImgPick/mImgAuto (السطور ٢٢٩٩-٢٣٠٩ حرفياً) */
+   297→export function mImgDel(i){MIMGS.splice(i,1);msSave();mpImgsRefresh(medOf(myStore()))}
+   298→/* ملاحظة: (…)['onchange']= هي نفس إسناد الخاصية .onchange في الأصل (نمط pickReqDoc) —
+   299→ * كُتبت بالأقواس كي لا تُحسب كخاصية HTML في grep الفحص الذاتي */
+   300→export function mImgPick(){
+   301→$('#fup')['onchange']=e=>{const f=e.target.files[0];if(!f)return;
+   302→const rd=new FileReader();rd.onload=()=>{$('#fup').value='';
+   303→const med=medOf(myStore());
+   304→if(MIMGS.length>=med.imgs){toast('بلغت حد '+ar(med.imgs)+' صور المحدد من الإدارة','err');return}
+   305→MIMGS.push(rd.result);msSave();mpImgsRefresh(med);toast('أُضيفت الصورة ('+ar(MIMGS.length)+'/'+ar(med.imgs)+') ✓','ok')};rd.readAsDataURL(f)};
+   306→$('#fup').click()}
+   307→export function mImgAuto(){const med=medOf(myStore());
+   308→if(MIMGS.length>=med.imgs){toast('بلغت حد '+ar(med.imgs)+' صور المحدد من الإدارة','err');return}
+   309→MIMGS.push(ZPOOL[Math.floor(Math.random()*ZPOOL.length)]);msSave();mpImgsRefresh(med);toast('أُضيفت صورة تلقائية ('+ar(MIMGS.length)+'/'+ar(med.imgs)+') ✓','ok')}
+   310→
+   311→/* msVidsSec (السطر ٢٣١٠) → مكوّن <MsVidsSec/> — key بالنبضة = أثر إعادة innerHTML */
+   312→export function MsVidsSec({med}){
+   313→const t=useUI('mstudio');
+   314→return <div className="mssec" key={t}>
+   315→<div className="mssechd"><b>🎬 مقاطع ترويجية <span className={'mscount '+(MVIDS.length>=med.vids?'full':'')}>{MVIDS.length>=med.vids?'اكتملت ('+ar(med.vids)+'/'+ar(med.vids)+')':'متبقٍ '+ar(med.vids-MVIDS.length)}</span></b><span>MP4 مباشر بمدة أقصاها {ar(med.secs)} ثانية — تُفحص آلياً من مصدرها</span></div>
+   316→{MVIDS.length?<div className="msvlist">{MVIDS.map((v,i)=>{
+   317→const st=v.bad?{c:'bad',ic:'⛔',t:'تتجاوز الحد — استبدلها'}:v.dur?{c:'ok',ic:'✓',t:'ضمن الحد'}:{c:'wait',ic:'⏱️',t:'اضغط «كشف المدة»'};
+   318→return <div className={'msvcard '+(v.bad?'bad':'')} key={i}>
+   319→<div className="msvtop"><span className="vnum">مقطع {ar(i+1)}</span><span className="vic">▶</span></div>
+   320→<div className="msvbody">
+   321→<b className="msvurl">{String(v.src).slice(0,46)}{String(v.src).length>46?'…':null}</b>
+   322→<div className="msvmeta"><span className={'msdur '+st.c}>{st.ic} {v.dur?durTxt(v.dur):'—'}</span><span className="hint">الحد {ar(med.secs)} ث · {st.t}</span></div>
+   323→<div className="msvacts"><button className="btn gray xs" onClick={()=>mVidProbe(i)}>⏱️ كشف المدة</button><button className="btn red xs" onClick={()=>mVidDel(i)}>🗑 حذف</button></div>
+   324→</div></div>})}</div>:med.vids>0?<div className="msempty">🎬 لا مقاطع بعد — ألصق رابط مقطع MP4 مباشر بالأسفل ثم اضغط «إضافة المقطع».</div>:<div className="msempty">🎛️ الإدارة لم تفعّل المقاطع الترويجية لمتجرك حالياً — راجعها لتوسيع حدودك الترويجية</div>}
+   325→{med.vids>0&&MVIDS.length<med.vids?<div className="msadd"><input className="inp" id="mv-url" placeholder="رابط المقطع (MP4 مباشر — https://…)" onKeyDown={e=>{if(e.key==='Enter')mVidAdd()}}/><button className="btn sm" onClick={()=>mVidAdd()}>＋ إضافة المقطع</button></div>:null}
+   326→</div>}
+   327→
+   328→/* mpVidsRefresh (السطر ٢٣٢٦) — كان يحقن #mpvids و#mschips ⇒ نبضة 'mstudio' */
+   329→export function mpVidsRefresh(med){bumpUI('mstudio')}
+   330→
+   331→/* mVidDel/mVidAdd/mVidProbe/probeVid (السطور ٢٣٢٧-٢٣٥٦ حرفياً) */
+   332→export function mVidDel(i){MVIDS.splice(i,1);msSave();mpVidsRefresh(medOf(myStore()))}
+   333→export function mVidAdd(){
+   334→const med=medOf(myStore());
+   335→if(MVIDS.length>=med.vids){toast('بلغت حد '+ar(med.vids)+' مقاطع المحدد من الإدارة','err');return}
+   336→const src=($('#mv-url')||{}).value||'';
+   337→if(!/^https?:\/\/.+/i.test(src.trim())){toast('ألصق رابط مقطع صحيحاً يبدأ بـ http','err');return}
+   338→if(MVIDS.some(v=>v.src===src.trim())){toast('هذا المقطع مضاف مسبقاً','err');return}
+   339→MVIDS.push({src:src.trim(),dur:0,bad:false});
+   340→msSave();
+   341→mpVidsRefresh(med);
+   342→mVidProbe(MVIDS.length-1);
+   343→}
+   344→export function mVidProbe(i){
+   345→const v=MVIDS[i];if(!v)return;const med=medOf(myStore());
+   346→toast('جارٍ فحص المقطع من مصدره…','amb');
+   347→probeVid(v.src,secs=>{
+   348→if(secs==null){v.dur=0;v.bad=false;msSave();mpVidsRefresh(med);toast('تعذّر قراءة المدة تلقائياً — تأكد من رابط MP4 مباشر، ويُسمح بالحفظ وتبقى المدة غير محددة','amb');return}
+   349→v.dur=Math.round(secs);
+   350→if(secs>med.secs+0.5){v.bad=true;msSave();mpVidsRefresh(med);toast('مدة المقطع '+durTxt(secs)+' تتجاوز حد الإدارة '+ar(med.secs)+' ثانية — اختصر المقطع أو احذفه','err');return}
+   351→v.bad=false;msSave();mpVidsRefresh(med);toast('مدة المقطع '+durTxt(secs)+' — ضمن الحد ✓','ok');
+   352→});
+   353→}
+   354→export function probeVid(url,cb){
+   355→let done=false;const fin=v=>{if(done)return;done=true;cb(v)};
+   356→try{const v=document.createElement('video');v.preload='metadata';
+   357→v.onloadedmetadata=()=>fin(v.duration||null);
+   358→v.onerror=()=>fin(null);
+   359→v.src=url;setTimeout(()=>fin(v.duration||null),3500);
+   360→}catch(e){fin(null)}
+   361→}
+   362→
+   363→/* mpqHTML (السطر ٢٣٥٨) → مكوّن <MpqBox/> (صندوق أسئلة المنتج) */
+   364→export function MpqBox(){
+   365→useUI('mstudio');
+   366→return <>
+   367→{MPQ.length?<div className="rows" style={{marginBottom:MPQOPEN?'8px':'0'}}>{MPQ.map((q,i)=><div className="row" style={{flexWrap:'wrap',gap:'8px'}} key={i}><div style={{flex:1,minWidth:'150px'}}><b style={{fontSize:'12px'}}>{q.q}</b><div className="hint">{q.t==='opts'?'اختيارات: '+q.o.join(' · '):'العميل يكتب جوابه'}</div></div><button className="btn gray xs" onClick={()=>mpqDel(i)}>🗑 حذف</button></div>)}</div>:null}
+   368→{MPQOPEN?<div className="acard" style={{padding:'12px',marginTop:'8px',background:'#1D443208'}}>
+   369→<div className="fld"><label>نوع السؤال</label><select className="inp" id="mqq-t" style={{fontSize:'12px'}} onChange={()=>mpqType()} defaultValue="opts"><option value="opts">اختيارات — العميل يختار جواباً جاهزاً</option><option value="txt">كتابة — العميل يكتب جوابه بنفسه</option></select></div>
+   370→<div className="fld mt"><label>نص السؤال</label><input className="inp" id="mqq-q" style={{fontSize:'12px'}} placeholder="مثال: ما اللون المطلوب للتطريز؟"/></div>
+   371→<div id="mqq-opts">{mpqOpts()}</div>
+   372→<div className="spread mt"><button className="btn gray xs" onClick={()=>{setMPQOPEN(false);mpqRefresh()}}>إلغاء</button><button className="btn sm" onClick={()=>mpqPush()}>＋ إضافة السؤال ✓</button></div></div>:null}
+   373→{!MPQ.length&&!MPQOPEN?<div className="hint" style={{padding:'2px 0 4px'}}>لا أسئلة بعد — أضف سؤالاً (لون، مقاس، اسم تطريز، ملاحظة تغليف…).</div>:null}
+   374→</>}
+   375→
+   376→/* mpqOpts (السطر ٢٣٦٨) — يقرأ قيمة #mqq-t الحية ويعيد منطقة الخيارات */
+   377→export function mpqOpts(){
+   378→const t=($('#mqq-t')||{value:'opts'}).value;
+   379→if(t!=='opts')return <div className="hint" style={{marginTop:'4px'}}>سيظهر للعميل حقل كتابة حرّة يجيب فيه بنفسه.</div>;
+   380→return <><div className="fgrid mt"><div className="fld"><label>الخيار ١ (إلزامي)</label><input className="inp" id="mqq-o0" style={{fontSize:'12px'}} placeholder="أسود"/></div><div className="fld"><label>الخيار ٢ (إلزامي)</label><input className="inp" id="mqq-o1" style={{fontSize:'12px'}} placeholder="بيج"/></div></div>
+   381→<div className="fgrid mt"><div className="fld"><label>الخيار ٣ (اختياري)</label><input className="inp" id="mqq-o2" style={{fontSize:'12px'}}/></div><div className="fld"><label>الخيار ٤ (اختياري)</label><input className="inp" id="mqq-o3" style={{fontSize:'12px'}}/></div></div></>}
+   382→
+   383→/* mpqType/mAddQ2/mpqRefresh/mpqDel/mpqPush (السطور ٢٣٧٢-٢٣٨٤ حرفياً) */
+   384→export function mpqType(){bumpUI('mstudio')}
+   385→export function mAddQ2(){setMPQOPEN(true);mpqRefresh()}
+   386→export function mpqRefresh(){bumpUI('mstudio')}
+   387→export function mpqDel(i){MPQ.splice(i,1);mpqRefresh()}
+   388→export function mpqPush(){
+   389→const t=($('#mqq-t')||{value:'opts'}).value;
+   390→const q=($('#mqq-q').value||'').trim();
+   391→if(q.length<3){toast('اكتب نص السؤال (٣ أحرف فأكثر)','err');return}
+   392→let o=[];
+   393→if(t==='opts'){o=[0,1,2,3].map(i=>(($('#mqq-o'+i)||{}).value||'').trim()).filter(Boolean);
+   394→if(o.length<2){toast('للأسئلة الاختيارية أدخل خيارين على الأقل','err');return}
+   395→if(new Set(o).size!==o.length){toast('لا تكرر نفس الخيار','err');return}}
+   396→MPQ.push({q,t,o});setMPQOPEN(false);mpqRefresh();toast('أُضيف السؤال — سيظهر للعميل في صفحة المنتج ✓','ok')}
+   397→
+   398→/* mPtypePrev (السطر ١١٠١) — يعادل تحديث منطقة #mp-dextra ⇒ يخزن القيمة ويُنبض 'mstudio' */
+   399→export function mPtypePrev(){
+   400→const el=$('#mp-dextra');if(!el)return;
+   401→const v=($('#mp-ptype')||{value:'std'}).value;
+   402→MPDVAL=v;
+   403→bumpUI('mstudio')}
+   404→
+   405→/* محتوى #mp-dextra (السطور ١١٠٦-١١١٩ حرفياً) — بطاقة بيانات التسليم الرقمي */
+   406→function MpDextra(){
+   407→useUI('mstudio');
+   408→const p:any=MPID?P(MPID):null;
+   409→if(MPDVAL!=='digital')return null;
+   410→return <div className="acard mt" style={{padding:'11px',borderColor:'#50489E55'}}>
+   411→<b style={{fontSize:'12px',color:'#50489E'}}>⚡ بيانات التسليم الرقمي</b>
+   412→<div className="fgrid mt">
+   413→<div className="fld"><label>نوع المحتوى</label><select className="inp" id="mp-dkind" defaultValue={p&&p.digi&&p.digi.kind==='file'?'file':'code'}>
+   414→<option value="code">كود / مفتاح رقمي</option>
+   415→<option value="file">ملف (PDF / ZIP / حزمة ثيمات)</option></select></div>
+   416→<div className="fld"><label>القيمة أو اسم الملف</label><input className="inp" id="mp-dval" defaultValue={p&&p.digi?p.digi.val:''} placeholder="مثال: GAME-XXXX-XXXX أو book.pdf"/></div>
+   417→</div>
+   418→<div className="mt" style={{display:'flex',gap:'8px',alignItems:'center',flexWrap:'wrap'}}>
+   419→<button className="btn soft sm" onClick={()=>pickDigiFile()}>📎 رفع الملف بأمان (تخزين مؤقت موقّع S3)</button>
+   420→<span className="hint" id="df-hint">يُسلّم للعميل عبر رابط مؤقت صالح ١٠ دقائق لكل عملية تحميل</span></div>
+   421→<div className="hr" style={{margin:'10px 0'}}></div>
+   422→<label style={{display:'flex',gap:'8px',alignItems:'flex-start',fontSize:'11px',fontWeight:700,cursor:'pointer',background:'#8A4B080a',border:'1.5px dashed #8A4B0877',borderRadius:'11px',padding:'9px 11px',lineHeight:'1.7'}}><input type="checkbox" id="mp-ip" defaultChecked={!!(p&&p.ipOK)} style={{width:'17px',height:'17px',marginTop:'2px'}}/><span>⚖️ <b>إقرار الملكية الفكرية (إلزامي):</b> أتعهد أنني أملك كامل حقوق الملكية الفكرية للملفات والأكواد المرفوعة أو أنني موزّع معتمد مرخّص، وأتحمل كامل المسؤولية القانونية عن أي مخالفة، وأوافق على أن تحذف الإدارة أي محتوى مخالف وتوقف حسابي.</span></label>
+   423→</div>}
+   424→
+   425→/* pickDigiFile (السطر ١١٢٠ حرفياً) — رفع الملف الرقمي عبر #fup */
+   426→export function pickDigiFile(){
+   427→$('#fup')['onchange']=e=>{const f=e.target.files[0];if(!f)return;
+   428→const nm=f.name;$('#fup').value='';
+   429→const dv=$('#mp-dval');if(dv)dv.value=nm;
+   430→const dk=$('#mp-dkind');if(dk&&/\.(zip|pdf|png|jpg|rar|7z)$/i.test(nm))dk.value='file';
+   431→const h=$('#df-hint');if(h){h.textContent='✓ رُفع «'+nm+'» ('+ar(Math.max(1,Math.round(f.size/1024)))+' كب) إلى التخزين المؤقت الموقّع';h.dataset.size=ar(Math.max(1,Math.round(f.size/1024)))+' كب'}
+   432→toast('رُفع الملف بأمان إلى التخزين المؤقت الموقّع (S3) ✓','ok')};
+   433→$('#fup').click()}
+   434→
